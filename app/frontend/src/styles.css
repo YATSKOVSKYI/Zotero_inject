@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #0d0f14;
+  --surface:      #13161f;
+  --surface-2:    #1a1d2a;
+  --surface-3:    #222536;
+  --border:       #2a2d3e;
+  --border-light: #333650;
+  --accent:       #e5484d;
+  --accent-dim:   rgba(229,72,77,0.12);
+  --accent-glow:  rgba(229,72,77,0.25);
+  --blue:         #4f8ef7;
+  --blue-dim:     rgba(79,142,247,0.12);
+  --success:      #22c55e;
+  --success-dim:  rgba(34,197,94,0.12);
+  --warning:      #f59e0b;
+  --warning-dim:  rgba(245,158,11,0.12);
+  --text:         #eef0f6;
+  --text-2:       #9396a8;
+  --text-3:       #5c5f72;
+  --radius:       12px;
+  --radius-sm:    8px;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }

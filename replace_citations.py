@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Замена числовых ссылок в .docx на citation keys из .bib.
+Замена числовых ссылок в .docx:
+1) в Pandoc-формат: [@key; @key2]
+2) в Scannable Cite маркеры Zotero ODF Scan: { |key| | |zu:...}{ |key2| | |zu:...}
 
 Ограничение текущей версии:
 - При изменении абзаца используется paragraph.text = ..., поэтому форматирование
@@ -18,7 +20,7 @@ from docx import Document
 from docx.document import Document as _Document
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
-from docx.table import _Cell, Table
+from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 
@@ -30,11 +32,13 @@ DEFAULT_REFS_HEADINGS = [
     "список литературы",
 ]
 
-# Ищем любые [] блоки, а затем валидируем содержимое как числовую цитату.
+# Ищем любые [] блоки, затем валидируем содержимое как числовую цитату.
 BRACKET_BLOCK_RE = re.compile(r"\[(?P<inner>[^\[\]]+)\]")
 
-# Разрешенный формат числовой ссылки:
-# [1], [1,2], [1-3], [1–3], [1,3-5, 8]
+# Склейка соседних ссылок: [1], [2] / [1][2]
+ADJACENT_BRACKETS_RE = re.compile(r"\[(?P<a>[^\[\]]+)\](?P<sep>\s*,?\s*)\[(?P<b>[^\[\]]+)\]")
+
+# Разрешенный формат: [1], [1,2], [1-3], [1–3], [1,3-5, 8]
 NUMERIC_CITATION_INNER_RE = re.compile(
     r"^\s*\d+\s*(?:[-–—]\s*\d+)?\s*(?:,\s*\d+\s*(?:[-–—]\s*\d+)?\s*)*$"
 )
@@ -45,10 +49,13 @@ BIB_ENTRY_KEY_RE = re.compile(r"@\w+\s*\{\s*([^,\s]+)\s*,", flags=re.IGNORECASE)
 # Для annotated-blocks: маркер # [n]
 ANNOTATED_MARK_RE = re.compile(r"^\s*#\s*\[(\d+)\]\s*$")
 
+# URI для Scannable Cite
+ZOTERO_URI_RE = re.compile(r"(zu:[^\s\}\]]+)")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Заменяет числовые ссылки в .docx на citation keys (Pandoc-стиль)."
+        description="Замена числовых ссылок в .docx на Pandoc или Scannable Cite маркеры."
     )
     parser.add_argument("--docx", required=True, help="Путь к входному .docx")
     parser.add_argument("--bib", required=True, help="Путь к .bib или кастомному текстовому файлу")
@@ -71,12 +78,26 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Список заголовков раздела литературы через запятую",
     )
+    parser.add_argument(
+        "--citation-format",
+        choices=["pandoc", "scannable"],
+        default="pandoc",
+        help="Формат выходных цитат: pandoc или scannable",
+    )
+    parser.add_argument(
+        "--uri-map",
+        default="",
+        help=(
+            "Путь к файлу соответствий для Scannable режима. "
+            "Поддержка строк: 'number<TAB>zu:...', 'key<TAB>zu:...', "
+            "или просто 'zu:...' построчно (тогда по порядку)."
+        ),
+    )
     return parser.parse_args()
 
 
 def normalize_heading(text: str) -> str:
-    normalized = re.sub(r"\s+", " ", text.strip()).rstrip(":").strip().lower()
-    return normalized
+    return re.sub(r"\s+", " ", text.strip()).rstrip(":").strip().lower()
 
 
 def parse_refs_headings(arg_value: str) -> Set[str]:
@@ -100,7 +121,7 @@ def parse_plain_bib(content: str) -> Dict[int, str]:
 
 def parse_annotated_blocks(content: str) -> Dict[int, str]:
     lines = content.splitlines()
-    positions: List[Tuple[int, int]] = []  # (line_index, citation_number)
+    positions: List[Tuple[int, int]] = []
     for i, line in enumerate(lines):
         m = ANNOTATED_MARK_RE.match(line)
         if m:
@@ -130,8 +151,56 @@ def load_number_to_key_map(bib_path: Path, bib_format: str) -> Dict[int, str]:
     raise ValueError(f"Неподдерживаемый формат bib: {fmt}")
 
 
+def load_uri_map(uri_map_path: Path) -> Tuple[Dict[int, str], Dict[str, str]]:
+    """
+    Загружает URI-мэппинг для Scannable режима.
+    Поддерживаемые строки:
+    - number<TAB>zu:...
+    - key<TAB>zu:...
+    - number;zu:...
+    - key,zu:...
+    - zu:...                      (в этом случае нумерация идет по порядку: 1,2,3...)
+    """
+    number_to_uri: Dict[int, str] = {}
+    key_to_uri: Dict[str, str] = {}
+    sequential_index = 1
+
+    for raw_line in uri_map_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or line.startswith("%"):
+            continue
+
+        uri_match = ZOTERO_URI_RE.search(line)
+        if not uri_match:
+            continue
+        uri = uri_match.group(1)
+
+        left = line[: uri_match.start()].strip()
+        left = left.strip("{}[]()|,; ")
+
+        if not left:
+            number_to_uri[sequential_index] = uri
+            sequential_index += 1
+            continue
+
+        # Сначала пробуем выделить "идентификатор" слева от URI.
+        id_token = left
+        for splitter in ("\t", ";", ","):
+            if splitter in left:
+                id_token = left.split(splitter, 1)[0].strip()
+                break
+        id_token = id_token.strip("{}[]()| ")
+
+        if id_token.isdigit():
+            number_to_uri[int(id_token)] = uri
+        else:
+            key_to_uri[id_token] = uri
+
+    return number_to_uri, key_to_uri
+
+
 def iter_block_paragraphs(parent) -> Iterator[Paragraph]:
-    """Итерирует абзацы в теле документа и внутри таблиц в порядке следования."""
+    """Итерирует абзацы в документе и внутри таблиц в порядке следования."""
     if isinstance(parent, _Document):
         parent_elm = parent.element.body
     elif isinstance(parent, _Cell):
@@ -161,10 +230,7 @@ def parse_numeric_citation_inner(inner: str) -> Optional[List[int]]:
             left, right = re.split(r"\s*[-–—]\s*", part, maxsplit=1)
             start = int(left)
             end = int(right)
-            if start <= end:
-                seq = range(start, end + 1)
-            else:
-                seq = range(start, end - 1, -1)
+            seq = range(start, end + 1) if start <= end else range(start, end - 1, -1)
             for n in seq:
                 if n not in seen:
                     seen.add(n)
@@ -181,17 +247,73 @@ def is_probable_bibliography_line(text: str) -> bool:
     stripped = text.strip()
     if not stripped:
         return False
-    # Пример: [12] Author, Title...
     return bool(re.match(r"^\[\d+\]\s+\S+", stripped))
+
+
+def merge_adjacent_numeric_citations(text: str, counters: Dict[str, int]) -> str:
+    def _merge_once(s: str) -> Tuple[str, int]:
+        merges = 0
+
+        def _repl(match: re.Match[str]) -> str:
+            nonlocal merges
+            left_nums = parse_numeric_citation_inner(match.group("a"))
+            right_nums = parse_numeric_citation_inner(match.group("b"))
+            if left_nums is None or right_nums is None:
+                return match.group(0)
+
+            merged: List[int] = []
+            seen: Set[int] = set()
+            for n in left_nums + right_nums:
+                if n not in seen:
+                    seen.add(n)
+                    merged.append(n)
+
+            merges += 1
+            return "[" + ", ".join(str(n) for n in merged) + "]"
+
+        new_s = ADJACENT_BRACKETS_RE.sub(_repl, s)
+        return new_s, merges
+
+    total_merges = 0
+    while True:
+        text, merged_count = _merge_once(text)
+        total_merges += merged_count
+        if merged_count == 0:
+            break
+
+    counters["merged_groups"] = counters.get("merged_groups", 0) + total_merges
+    return text
+
+
+def resolve_scannable_uri(
+    number: int,
+    key: str,
+    number_to_uri: Dict[int, str],
+    key_to_uri: Dict[str, str],
+) -> Optional[str]:
+    if number in number_to_uri:
+        return number_to_uri[number]
+    return key_to_uri.get(key)
+
+
+def build_scannable_marker(readable: str, uri: str) -> str:
+    # Формат ODF Scan: {prefix|cite|locator|suffix|uri}
+    return "{ |" + readable + "| | |" + uri + "}"
 
 
 def replace_citations_in_text(
     text: str,
     number_to_key: Dict[int, str],
     missing_numbers: Set[int],
+    missing_uri_numbers: Set[int],
     warnings: List[str],
     counters: Dict[str, int],
+    citation_format: str,
+    number_to_uri: Dict[int, str],
+    key_to_uri: Dict[str, str],
 ) -> str:
+    text = merge_adjacent_numeric_citations(text, counters)
+
     def _replace(match: re.Match[str]) -> str:
         raw = match.group(0)
         inner = match.group("inner")
@@ -207,9 +329,29 @@ def replace_citations_in_text(
             warnings.append(f"Пропуск {raw}: нет соответствия для номеров {missing}")
             return raw
 
-        new_citation = "[" + "; ".join(f"@{number_to_key[n]}" for n in nums) + "]"
+        if citation_format == "pandoc":
+            counters["replaced"] += 1
+            return "[" + "; ".join(f"@{number_to_key[n]}" for n in nums) + "]"
+
+        # scannable
+        markers: List[str] = []
+        missing_uri: List[int] = []
+        for n in nums:
+            key = number_to_key[n]
+            uri = resolve_scannable_uri(n, key, number_to_uri, key_to_uri)
+            if not uri:
+                missing_uri.append(n)
+                continue
+            markers.append(build_scannable_marker(readable=key, uri=uri))
+
+        if missing_uri:
+            counters["skipped"] += 1
+            missing_uri_numbers.update(missing_uri)
+            warnings.append(f"Пропуск {raw}: нет zu: URI для номеров {missing_uri}")
+            return raw
+
         counters["replaced"] += 1
-        return new_citation
+        return "".join(markers)
 
     return BRACKET_BLOCK_RE.sub(_replace, text)
 
@@ -220,14 +362,18 @@ def process_document(
     number_to_key: Dict[int, str],
     mode: str,
     refs_headings: Set[str],
-) -> Tuple[Dict[str, int], Set[int], List[str]]:
+    citation_format: str,
+    number_to_uri: Dict[int, str],
+    key_to_uri: Dict[str, str],
+) -> Tuple[Dict[str, int], Set[int], Set[int], List[str]]:
     doc = Document(str(doc_path))
     counters = {"found": 0, "replaced": 0, "skipped": 0}
     missing_numbers: Set[int] = set()
+    missing_uri_numbers: Set[int] = set()
     warnings: List[str] = []
 
     in_body = True
-    for idx, paragraph in enumerate(iter_block_paragraphs(doc), start=1):
+    for paragraph in iter_block_paragraphs(doc):
         original = paragraph.text
         if not original.strip():
             continue
@@ -244,24 +390,59 @@ def process_document(
             continue
 
         updated = replace_citations_in_text(
-            original, number_to_key, missing_numbers, warnings, counters
+            text=original,
+            number_to_key=number_to_key,
+            missing_numbers=missing_numbers,
+            missing_uri_numbers=missing_uri_numbers,
+            warnings=warnings,
+            counters=counters,
+            citation_format=citation_format,
+            number_to_uri=number_to_uri,
+            key_to_uri=key_to_uri,
         )
         if updated != original:
             paragraph.text = updated
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(out_path))
-    return counters, missing_numbers, warnings
+    return counters, missing_numbers, missing_uri_numbers, warnings
 
 
-def write_report(report_path: Path, number_to_key: Dict[int, str], missing_numbers: Set[int]) -> None:
+def write_report(
+    report_path: Path,
+    number_to_key: Dict[int, str],
+    missing_numbers: Set[int],
+    missing_uri_numbers: Set[int],
+    citation_format: str,
+    number_to_uri: Dict[int, str],
+    key_to_uri: Dict[str, str],
+) -> None:
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with report_path.open("w", encoding="utf-8", newline="") as f:
-        f.write("number\tcitation_key\tstatus\tnote\n")
+        f.write("number\tcitation_key\tzu_uri\tstatus\tnote\n")
         for number in sorted(number_to_key):
-            f.write(f"{number}\t{number_to_key[number]}\tOK\t\n")
+            key = number_to_key[number]
+            uri = resolve_scannable_uri(number, key, number_to_uri, key_to_uri) or ""
+            status = "OK"
+            note = ""
+
+            if citation_format == "scannable" and not uri:
+                status = "MISSING_URI"
+                note = "no zu URI found for this item"
+            if number in missing_numbers:
+                status = "MISSING_KEY"
+                note = "number used in text but not found in bib mapping"
+            if number in missing_uri_numbers:
+                status = "MISSING_URI_IN_TEXT"
+                note = "number used in text but has no zu URI"
+
+            f.write(f"{number}\t{key}\t{uri}\t{status}\t{note}\n")
+
         for number in sorted(missing_numbers):
-            f.write(f"{number}\t\tMISSING\tnumber not found in bib mapping\n")
+            if number not in number_to_key:
+                f.write(
+                    f"{number}\t\t\tMISSING_KEY_IN_TEXT\tnumber used in text but absent in bib mapping\n"
+                )
 
 
 def main() -> int:
@@ -282,24 +463,56 @@ def main() -> int:
     if not number_to_key:
         raise ValueError("Не удалось построить mapping номер -> citation key (пустой результат).")
 
-    counters, missing_numbers, warnings = process_document(
+    number_to_uri: Dict[int, str] = {}
+    key_to_uri: Dict[str, str] = {}
+    if args.citation_format == "scannable":
+        if not args.uri_map:
+            raise ValueError(
+                "Для --citation-format scannable нужен --uri-map с zu: URI соответствиями."
+            )
+        uri_map_path = Path(args.uri_map)
+        if not uri_map_path.exists():
+            raise FileNotFoundError(f"Файл uri-map не найден: {uri_map_path}")
+        number_to_uri, key_to_uri = load_uri_map(uri_map_path)
+        if not number_to_uri and not key_to_uri:
+            raise ValueError("Не удалось прочитать ни одного zu: URI из --uri-map.")
+
+    counters, missing_numbers, missing_uri_numbers, warnings = process_document(
         doc_path=docx_path,
         out_path=out_path,
         number_to_key=number_to_key,
         mode=args.mode,
         refs_headings=refs_headings,
+        citation_format=args.citation_format,
+        number_to_uri=number_to_uri,
+        key_to_uri=key_to_uri,
     )
 
-    write_report(report_path, number_to_key, missing_numbers)
+    write_report(
+        report_path=report_path,
+        number_to_key=number_to_key,
+        missing_numbers=missing_numbers,
+        missing_uri_numbers=missing_uri_numbers,
+        citation_format=args.citation_format,
+        number_to_uri=number_to_uri,
+        key_to_uri=key_to_uri,
+    )
 
     print("Готово.")
     print(f"Режим: {args.mode}")
+    print(f"Формат цитат: {args.citation_format}")
     print(f"Источник ключей: {bib_path}")
     print(f"Записей в mapping: {len(number_to_key)}")
+    if args.citation_format == "scannable":
+        print(f"URI по номерам: {len(number_to_uri)}")
+        print(f"URI по ключам: {len(key_to_uri)}")
     print(f"Найдено числовых цитат: {counters['found']}")
     print(f"Заменено цитат: {counters['replaced']}")
     print(f"Пропущено цитат: {counters['skipped']}")
-    print(f"Отсутствующих номеров: {len(missing_numbers)}")
+    print(f"Склеено соседних цитатных блоков: {counters.get('merged_groups', 0)}")
+    print(f"Отсутствующих номеров в bib: {len(missing_numbers)}")
+    if args.citation_format == "scannable":
+        print(f"Отсутствующих zu URI: {len(missing_uri_numbers)}")
     if warnings:
         print("\nПредупреждения:")
         for w in warnings:
@@ -311,3 +524,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru" prefix="og: https://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">Zotero Inject — Автоматические цитаты из ИИ в Zotero | Бесплатно</title>
+  <meta name="description" id="meta-desc" content="Бесплатный инструмент. ИИ пишет введение с маркерами [1][2][3] — Zotero Inject связывает их с Zotero динамически. Любой стиль цитирования мгновенно.">
+  <meta name="keywords" content="zotero автоматически, список литературы ИИ, ChatGPT цитаты, BibTeX зотеро, диплом введение ИИ, citation automation, zotero ai, bibliography generator">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Zotero Inject">
+  <link rel="alternate" hreflang="ru" href="/?lang=ru">
+  <link rel="alternate" hreflang="en" href="/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Zotero Inject — Бесплатные живые ссылки из ИИ в Zotero">
+  <meta property="og:description" content="ИИ пишет маркеры [1][2][3] — мы связываем их с Zotero динамически. Любой стиль цитирования.">
+  <meta property="og:site_name" content="Zotero Inject">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Zotero Inject","applicationCategory":"AcademicApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #030404;
+      --bg2:     #070909;
+      --surface: #0b0e0e;
+      --srf2:    #101414;
+      --border:  rgba(255,255,255,.07);
+      --lime:    #a3e635;
+      --lime2:   #d9f99d;
+      --lime3:   #bef264;
+      --emerald: #34d399;
+      --teal:    #2dd4bf;
+      --violet:  #5b21b6;
+      --sky:     #0ea5e9;
+      --text:    #edf7ed;
+      --text2:   #748f80;
+      --text3:   #3a4d42;
+      --mono:    'JetBrains Mono', monospace;
+      --r:       16px;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; line-height:1.6; -webkit-font-smoothing:antialiased; }
+
+    /* ─── NAV ─── */
+    nav {
+      position:fixed; top:16px; left:50%; transform:translateX(-50%);
+      z-index:100; width:calc(100% - 32px); max-width:920px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 18px;
+      background:rgba(3,4,4,.88); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+      border:1px solid rgba(163,230,53,.12); border-radius:100px;
+      transition:all .3s;
+    }
+    nav.scrolled { border-color:rgba(163,230,53,.28); box-shadow:0 0 0 1px rgba(163,230,53,.05), 0 4px 60px rgba(163,230,53,.07); }
+    .nav-logo { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); letter-spacing:.5px; white-space:nowrap; }
+    .nav-links { display:flex; gap:2px; list-style:none; }
+    .nav-links a { display:block; padding:6px 13px; font-size:13px; font-weight:500; color:var(--text2); text-decoration:none; border-radius:100px; transition:all .2s; }
+    .nav-links a:hover { color:var(--lime3); background:rgba(163,230,53,.06); }
+    .nav-right { display:flex; align-items:center; gap:8px; }
+    .lang-toggle { display:flex; background:rgba(255,255,255,.04); border-radius:100px; padding:3px; border:1px solid var(--border); }
+    .lang-btn { padding:4px 10px; font-size:11px; font-weight:700; color:var(--text3); border:none; background:none; cursor:pointer; border-radius:100px; transition:all .2s; }
+    .lang-btn.active { background:var(--lime); color:#050a05; }
+    .nav-free { padding:5px 12px; font-family:var(--mono); font-size:10px; font-weight:700; color:var(--lime); background:rgba(163,230,53,.08); border:1px solid rgba(163,230,53,.2); border-radius:100px; letter-spacing:.5px; }
+    .nav-cta { padding:8px 18px; font-size:13px; font-weight:800; color:#040804; background:var(--lime); border-radius:100px; text-decoration:none; transition:all .2s; white-space:nowrap; }
+    .nav-cta:hover { background:var(--lime3); transform:scale(1.03); }
+
+    /* ─── HERO ─── */
+    .hero {
+      position:relative; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:130px 20px 80px; overflow:hidden; text-align:center;
+    }
+    /* dot grid */
+    .hero::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background-image:radial-gradient(circle, rgba(163,230,53,.12) 1px, transparent 1px);
+      background-size:36px 36px;
+      mask-image:radial-gradient(ellipse 80% 80% at 50% 45%, black 0%, transparent 70%);
+    }
+    /* orbs */
+    .orb { position:absolute; border-radius:50%; filter:blur(110px); pointer-events:none; }
+    .orb1 { width:700px; height:700px; background:radial-gradient(circle,rgba(163,230,53,.22),transparent 65%); top:-300px; left:-200px; animation:fl1 13s ease-in-out infinite; }
+    .orb2 { width:500px; height:500px; background:radial-gradient(circle,rgba(91,33,182,.45),transparent 65%); bottom:-200px; right:-150px; animation:fl2 15s ease-in-out infinite; }
+    .orb3 { width:320px; height:320px; background:radial-gradient(circle,rgba(14,165,233,.25),transparent 65%); top:55%; left:58%; animation:fl3 10s ease-in-out infinite; }
+    @keyframes fl1 { 0%,100%{transform:translate(0,0)} 40%{transform:translate(40px,-30px)} 70%{transform:translate(-25px,20px)} }
+    @keyframes fl2 { 0%,100%{transform:translate(0,0)} 35%{transform:translate(-35px,28px)} 65%{transform:translate(22px,-16px)} }
+    @keyframes fl3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-28px,-22px)} }
+    /* scan line */
+    .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(163,230,53,.25),transparent); animation:scan 8s linear infinite; pointer-events:none; }
+    @keyframes scan { 0%{top:0} 100%{top:100%} }
+
+    .hero-top { display:flex; align-items:center; gap:10px; margin-bottom:28px; position:relative; z-index:1; flex-wrap:wrap; justify-content:center; }
+    .badge-free { display:inline-flex; align-items:center; gap:6px; padding:5px 13px; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.3); border-radius:100px; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--lime); letter-spacing:.5px; }
+    .badge-free::before { content:'◈'; }
+    .badge-new { display:inline-flex; align-items:center; gap:6px; padding:5px 13px; background:rgba(14,165,233,.08); border:1px solid rgba(14,165,233,.2); border-radius:100px; font-family:var(--mono); font-size:11px; font-weight:700; color:#7dd3fc; letter-spacing:.5px; }
+
+    .hero-h1 {
+      font-size:clamp(42px,7vw,96px); font-weight:900; line-height:1.02;
+      letter-spacing:clamp(-2px,-.04em,-4px); max-width:900px;
+      margin-bottom:24px; position:relative; z-index:1;
+    }
+    .grad-text {
+      background:linear-gradient(135deg,var(--lime2) 0%,var(--lime) 30%,var(--emerald) 65%,var(--teal) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      background-size:200% 200%; animation:gsh 7s ease infinite;
+    }
+    @keyframes gsh { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    .hero-sub { font-size:clamp(15px,1.7vw,18px); color:var(--text2); max-width:540px; margin-bottom:44px; line-height:1.75; position:relative; z-index:1; }
+
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:56px; position:relative; z-index:1; }
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:8px; padding:14px 30px;
+      background:var(--lime); color:#040804; font-size:15px; font-weight:800;
+      border-radius:100px; text-decoration:none; transition:all .25s; letter-spacing:-.2px;
+      box-shadow:0 0 40px rgba(163,230,53,.28);
+    }
+    .btn-primary:hover { background:var(--lime3); transform:translateY(-2px); box-shadow:0 8px 50px rgba(163,230,53,.45); }
+    .btn-ghost {
+      display:inline-flex; align-items:center; gap:8px; padding:14px 28px;
+      background:transparent; border:1px solid rgba(163,230,53,.2); color:var(--lime3);
+      font-size:15px; font-weight:600; border-radius:100px; text-decoration:none; transition:all .2s;
+    }
+    .btn-ghost:hover { background:rgba(163,230,53,.06); border-color:rgba(163,230,53,.4); }
+
+    /* Hero pipeline */
+    .pipeline {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+      max-width:820px; width:100%;
+      background:rgba(163,230,53,.03); border:1px solid rgba(163,230,53,.1);
+      border-radius:20px; overflow:hidden; position:relative; z-index:1;
+    }
+    .pipe-step {
+      padding:18px 16px; display:flex; flex-direction:column; align-items:center; gap:10px;
+      position:relative; transition:background .2s; cursor:default;
+    }
+    .pipe-step:hover { background:rgba(163,230,53,.04); }
+    .pipe-step + .pipe-step::before {
+      content:'→'; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+      color:var(--text3); font-size:14px; z-index:1;
+    }
+    .pipe-icon { font-size:24px; line-height:1; }
+    .pipe-label { text-align:center; }
+    .pipe-label strong { display:block; font-size:12px; font-weight:700; color:var(--text); }
+    .pipe-label span { font-size:10px; color:var(--text3); font-family:var(--mono); }
+    .pipe-tag {
+      font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.5px;
+      padding:2px 7px; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.2);
+      border-radius:4px; color:var(--lime); text-transform:uppercase;
+    }
+
+    /* ─── SECTION ─── */
+    .sec { max-width:1080px; margin:0 auto; padding:80px 20px; }
+    .stag {
+      display:inline-flex; align-items:center; gap:10px; margin-bottom:14px;
+      font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:2px;
+      text-transform:uppercase; color:var(--lime);
+    }
+    .stag::before { content:''; width:20px; height:2px; background:var(--lime); border-radius:2px; display:block; }
+    .sec-h { font-size:clamp(26px,3.5vw,48px); font-weight:800; letter-spacing:-1.5px; line-height:1.1; margin-bottom:14px; }
+    .sec-sub { font-size:16px; color:var(--text2); max-width:520px; line-height:1.75; }
+
+    /* ─── WHAT IT DOES (before/after) ─── */
+    .ba-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; margin-top:48px; }
+    .ba-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+      transition:all .3s;
+    }
+    .ba-card:hover { border-color:rgba(163,230,53,.25); }
+    .ba-head {
+      display:flex; align-items:center; gap:10px; padding:12px 18px;
+      border-bottom:1px solid var(--border); font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.5px;
+    }
+    .ba-head.before { color:#f87171; }
+    .ba-head.after { color:var(--lime); }
+    .ba-dot { width:7px; height:7px; border-radius:50%; }
+    .ba-body { padding:20px 18px; font-family:var(--mono); font-size:13px; line-height:1.9; }
+    .ba-arrow {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      font-family:var(--mono); font-size:11px; color:var(--text3);
+    }
+    .ba-arrow-icon {
+      width:36px; height:36px; border-radius:10px; background:rgba(163,230,53,.1);
+      border:1px solid rgba(163,230,53,.2); display:flex; align-items:center; justify-content:center;
+      font-size:16px; color:var(--lime);
+    }
+    .why-box {
+      margin-top:20px; padding:16px 20px; background:rgba(163,230,53,.04); border:1px solid rgba(163,230,53,.1);
+      border-radius:12px; font-size:13px; color:var(--text2); line-height:1.7;
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .why-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+
+    /* ─── STEPS ─── */
+    .steps-list { margin-top:52px; display:flex; flex-direction:column; gap:0; }
+    .step-row {
+      display:grid; grid-template-columns:80px 1fr; gap:0; position:relative;
+    }
+    .step-num-col {
+      display:flex; flex-direction:column; align-items:center; padding-top:2px;
+    }
+    .step-circle {
+      width:40px; height:40px; border-radius:50%; background:var(--surface);
+      border:2px solid rgba(163,230,53,.3); display:flex; align-items:center; justify-content:center;
+      font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime);
+      flex-shrink:0; position:relative; z-index:1; transition:all .3s;
+    }
+    .step-row:hover .step-circle { background:rgba(163,230,53,.1); border-color:var(--lime); box-shadow:0 0 20px rgba(163,230,53,.2); }
+    .step-line { flex:1; width:2px; background:linear-gradient(180deg,rgba(163,230,53,.2),rgba(163,230,53,.05)); margin:4px auto 0; }
+    .step-row:last-child .step-line { display:none; }
+    .step-content {
+      padding:0 0 40px 20px;
+    }
+    .step-tag { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:1.5px; color:var(--text3); text-transform:uppercase; margin-bottom:6px; }
+    .step-content h3 { font-size:20px; font-weight:700; letter-spacing:-.3px; margin-bottom:10px; }
+    .step-content p { font-size:14px; color:var(--text2); line-height:1.75; max-width:580px; }
+    .step-code {
+      margin-top:18px; background:var(--bg2); border-radius:12px; padding:16px 20px;
+      border:1px solid rgba(163,230,53,.08); font-family:var(--mono); font-size:12px; line-height:1.9;
+      max-width:580px;
+    }
+    .step-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+    .sch { padding:4px 12px; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:100px; font-size:12px; font-weight:600; color:var(--text2); }
+    .step-prereq {
+      margin-top:14px; padding:12px 16px; background:rgba(14,165,233,.05);
+      border:1px solid rgba(14,165,233,.15); border-radius:10px;
+      font-size:13px; color:#7dd3fc; display:flex; gap:10px; align-items:center; max-width:580px;
+    }
+
+    /* ─── PROMPT ─── */
+    .code-block { background:#050808; border:1px solid rgba(163,230,53,.12); border-radius:var(--r); overflow:hidden; }
+    .code-head {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:11px 16px; border-bottom:1px solid rgba(163,230,53,.08);
+    }
+    .mac-dots { display:flex; gap:5px; }
+    .mac-dot { width:10px; height:10px; border-radius:50%; }
+    .mac-dot:nth-child(1){background:#ff5f57} .mac-dot:nth-child(2){background:#febc2e} .mac-dot:nth-child(3){background:#28c840}
+    .code-type { font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:1px; color:var(--lime); opacity:.5; }
+    .copy-btn {
+      display:inline-flex; align-items:center; gap:6px; padding:5px 12px;
+      font-size:12px; font-weight:600; color:var(--text3);
+      background:rgba(163,230,53,.06); border:1px solid rgba(163,230,53,.15);
+      border-radius:7px; cursor:pointer; transition:all .2s;
+    }
+    .copy-btn:hover { color:var(--lime3); background:rgba(163,230,53,.1); border-color:rgba(163,230,53,.35); }
+    .copy-btn.ok { color:var(--lime); border-color:rgba(163,230,53,.5); }
+    .code-body { padding:22px 24px; font-family:var(--mono); font-size:12.5px; line-height:2; color:var(--text2); overflow-x:auto; white-space:pre-wrap; }
+
+    /* ─── BENTO ─── */
+    .bento { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:52px; }
+    .bcard {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+      padding:26px; position:relative; overflow:hidden; transition:all .3s; cursor:default;
+    }
+    /* sci-fi corner brackets */
+    .bcard::before, .bcard::after {
+      content:''; position:absolute; width:12px; height:12px; border-color:rgba(163,230,53,.2); border-style:solid; transition:border-color .3s;
+    }
+    .bcard::before { top:8px; left:8px; border-width:1px 0 0 1px; }
+    .bcard::after { bottom:8px; right:8px; border-width:0 1px 1px 0; }
+    .bcard:hover { border-color:rgba(163,230,53,.25); transform:translateY(-3px); box-shadow:0 12px 40px rgba(163,230,53,.06); }
+    .bcard:hover::before, .bcard:hover::after { border-color:rgba(163,230,53,.5); }
+    .bglow { position:absolute; width:180px; height:180px; border-radius:50%; filter:blur(55px); opacity:.14; bottom:-50px; right:-40px; pointer-events:none; }
+    .bcard.wide { grid-column:span 2; }
+    .bicon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:16px; background:rgba(163,230,53,.07); border:1px solid rgba(163,230,53,.1); }
+    .bcard h3 { font-size:15px; font-weight:700; letter-spacing:-.2px; margin-bottom:8px; }
+    .bcard p { font-size:13px; color:var(--text2); line-height:1.7; }
+    .btags { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+    .btag { padding:3px 10px; background:rgba(163,230,53,.07); border:1px solid rgba(163,230,53,.15); border-radius:100px; font-size:11px; font-weight:600; color:var(--lime3); font-family:var(--mono); }
+
+    /* big metric */
+    .big-metric { font-family:var(--mono); font-size:40px; font-weight:700; line-height:1; letter-spacing:-1px; color:var(--lime); margin-bottom:4px; }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap { padding:48px 0; background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); overflow:hidden; }
+    .ticker-lbl { text-align:center; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:18px; }
+    .ticker-track { display:flex; gap:10px; width:max-content; animation:tick 32s linear infinite; }
+    .ticker-track:hover { animation-play-state:paused; }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .titem { display:inline-flex; align-items:center; gap:8px; padding:7px 16px; background:var(--surface); border:1px solid var(--border); border-radius:100px; font-size:12px; font-weight:600; color:var(--text2); white-space:nowrap; transition:all .2s; font-family:var(--mono); }
+    .titem:hover { border-color:rgba(163,230,53,.3); color:var(--lime3); }
+    .tdot { width:5px; height:5px; border-radius:50%; background:var(--lime); }
+
+    /* ─── CTA ─── */
+    .cta-wrap { max-width:1080px; margin:0 auto; padding:80px 20px; }
+    .cta-box {
+      position:relative; overflow:hidden; border-radius:24px; padding:80px 48px; text-align:center;
+      background:var(--srf2); border:1px solid rgba(163,230,53,.15);
+    }
+    .cta-box::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(163,230,53,.08) 0%,transparent 65%),
+                 radial-gradient(ellipse 40% 40% at 85% 85%,rgba(91,33,182,.12) 0%,transparent 60%);
+    }
+    /* corner brackets on CTA */
+    .cta-box::after {
+      content:''; position:absolute; top:16px; left:16px; right:16px; bottom:16px; border-radius:18px;
+      border:1px solid rgba(163,230,53,.06); pointer-events:none;
+    }
+    .cta-free { display:inline-flex; align-items:center; gap:8px; padding:6px 18px; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.25); border-radius:100px; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--lime); letter-spacing:1px; margin-bottom:20px; position:relative; }
+    .cta-free::before { content:'◈ '; }
+    .cta-box h2 { font-size:clamp(26px,4vw,48px); font-weight:800; letter-spacing:-1.5px; margin-bottom:14px; position:relative; }
+    .cta-box p { font-size:16px; color:var(--text2); margin-bottom:36px; position:relative; }
+
+    /* ─── FOOTER ─── */
+    footer { border-top:1px solid var(--border); padding:36px 20px; }
+    .foot-in { max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+    .foot-logo { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); }
+    .foot-copy { font-size:12px; color:var(--text3); font-family:var(--mono); }
+
+    /* ─── REVEAL ─── */
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.vis { opacity:1; transform:translateY(0); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width:820px) {
+      .nav-links, .nav-free { display:none; }
+      .pipeline { grid-template-columns:1fr 1fr; }
+      .pipe-step:nth-child(3)::before, .pipe-step:nth-child(2)::before { content:none; }
+      .ba-grid { grid-template-columns:1fr; }
+      .ba-arrow { flex-direction:row; }
+      .step-row { grid-template-columns:60px 1fr; }
+      .bento { grid-template-columns:1fr; }
+      .bcard.wide { grid-column:span 1; }
+      .cta-box { padding:52px 24px; }
+      .foot-in { flex-direction:column; gap:14px; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">⚡ zotero_inject</div>
+  <ul class="nav-links">
+    <li><a href="#what" data-i="nav_what">Что это</a></li>
+    <li><a href="#how" data-i="nav_how">Как работает</a></li>
+    <li><a href="#prompt" data-i="nav_prompt">Промпт</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-free" data-i="nav_free">FREE</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="/app" class="nav-cta" data-i="nav_cta">Открыть</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="scan"></div>
+
+  <div class="hero-top">
+    <div class="badge-free" data-i="badge_free">БЕСПЛАТНО</div>
+    <div class="badge-new" data-i="badge_ai">Работает с любым ИИ</div>
+  </div>
+  <h1 class="hero-h1"><span data-i="h1a"></span><br><span class="grad-text" data-i="h1b"></span></h1>
+  <p class="hero-sub" data-i="hero_sub"></p>
+  <div class="hero-actions">
+    <a href="/app" class="btn-primary" data-i="cta_main"></a>
+    <a href="#what" class="btn-ghost" data-i="cta_how"></a>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-icon">🤖</div>
+      <div class="pipe-label"><strong data-i="p1a"></strong><span data-i="p1b"></span></div>
+      <div class="pipe-tag" data-i="p1t">INPUT</div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon">📄</div>
+      <div class="pipe-label"><strong data-i="p2a"></strong><span>[1][2][3] + .bib</span></div>
+      <div class="pipe-tag" data-i="p2t">OUTPUT</div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon">⚡</div>
+      <div class="pipe-label"><strong>Zotero Inject</strong><span data-i="p3b"></span></div>
+      <div class="pipe-tag" data-i="p3t">PROCESS</div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon">📚</div>
+      <div class="pipe-label"><strong data-i="p4a"></strong><span data-i="p4b"></span></div>
+      <div class="pipe-tag" data-i="p4t">RESULT</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT DOES -->
+<div class="sec reveal" id="what">
+  <div class="stag" data-i="s0_tag"></div>
+  <h2 class="sec-h" data-i="s0_h"></h2>
+  <p class="sec-sub" data-i="s0_sub"></p>
+
+  <div class="ba-grid">
+    <div class="ba-card">
+      <div class="ba-head before"><div class="ba-dot" style="background:#f87171"></div><span data-i="ba_before_lbl"></span></div>
+      <div class="ba-body">
+        <div style="color:var(--text3);margin-bottom:12px" data-i="ba_before_ctx"></div>
+        <div style="color:var(--text2)" data-i="ba_before_1"></div>
+        <div style="color:var(--text2)" data-i="ba_before_2"></div>
+        <div style="color:var(--text2);margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <span style="color:#f87171" data-i="ba_before_note"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ba-arrow">
+      <div class="ba-arrow-icon">⚡</div>
+      <span data-i="ba_arrow"></span>
+    </div>
+
+    <div class="ba-card">
+      <div class="ba-head after"><div class="ba-dot" style="background:var(--lime)"></div><span data-i="ba_after_lbl"></span></div>
+      <div class="ba-body">
+        <div style="color:var(--text3);margin-bottom:12px" data-i="ba_after_ctx"></div>
+        <div style="color:var(--lime3)" data-i="ba_after_1"></div>
+        <div style="color:var(--lime3)" data-i="ba_after_2"></div>
+        <div style="color:var(--text2);margin-top:12px;padding-top:12px;border-top:1px solid rgba(163,230,53,.12)">
+          <span style="color:var(--emerald)" data-i="ba_after_note"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="why-box">
+    <span class="why-icon">💡</span>
+    <span data-i="why_text"></span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="sec reveal" id="how">
+  <div class="stag" data-i="s1_tag"></div>
+  <h2 class="sec-h" data-i="s1_h"></h2>
+  <p class="sec-sub" data-i="s1_sub"></p>
+
+  <div class="steps-list">
+    <!-- Step 0: Prerequisite -->
+    <div class="step-row">
+      <div class="step-num-col">
+        <div class="step-circle" style="border-color:rgba(14,165,233,.3);color:#7dd3fc;font-size:11px">PRE</div>
+        <div class="step-line" style="background:linear-gradient(180deg,rgba(14,165,233,.2),rgba(163,230,53,.1))"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-tag" data-i="pre_tag"></div>
+        <h3 data-i="pre_h"></h3>
+        <p data-i="pre_p"></p>
+        <div class="step-prereq">
+          <span>🔌</span>
+          <span data-i="pre_note"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step-row">
+      <div class="step-num-col">
+        <div class="step-circle">01</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-tag" data-i="st1_tag"></div>
+        <h3 data-i="st1_h"></h3>
+        <p data-i="st1_p"></p>
+        <div class="step-chips">
+          <span class="sch">ChatGPT</span><span class="sch">Claude</span><span class="sch">Gemini</span><span class="sch">DeepSeek</span><span class="sch" data-i="any_ai">+ любой</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-row">
+      <div class="step-num-col">
+        <div class="step-circle">02</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-tag" data-i="st2_tag"></div>
+        <h3 data-i="st2_h"></h3>
+        <p data-i="st2_p"></p>
+        <div class="step-code">
+          <span style="color:var(--text3)" data-i="st2_ex_l"></span><br>
+          <span style="color:var(--lime3)">@article{Smith2023,</span><br>
+          <span style="color:var(--text2)">  author = {Smith, John},</span><br>
+          <span style="color:var(--text2)">  title  = {Neural Networks in...},</span><br>
+          <span style="color:var(--emerald)">  doi    = {10.1000/xyz123}</span><br>
+          <span style="color:var(--lime3)">}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-row">
+      <div class="step-num-col">
+        <div class="step-circle">03</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-tag" data-i="st3_tag"></div>
+        <h3 data-i="st3_h"></h3>
+        <p data-i="st3_p"></p>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-row">
+      <div class="step-num-col">
+        <div class="step-circle" style="background:rgba(163,230,53,.1);border-color:var(--lime);box-shadow:0 0 20px rgba(163,230,53,.2)">04</div>
+      </div>
+      <div class="step-content" style="padding-bottom:0">
+        <div class="step-tag" data-i="st4_tag"></div>
+        <h3 data-i="st4_h"></h3>
+        <p data-i="st4_p"></p>
+        <div class="step-code">
+          <span style="color:var(--text3)" data-i="st4_ex_l"></span><br>
+          <span style="color:var(--lime3)" data-i="st4_ex_v1"></span><span style="color:var(--emerald)" data-i="st4_ex_v2"></span><span style="color:var(--lime3)" data-i="st4_ex_v3"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPT -->
+<div class="sec reveal" id="prompt">
+  <div class="stag" data-i="s2_tag"></div>
+  <h2 class="sec-h" data-i="s2_h"></h2>
+  <p class="sec-sub" data-i="s2_sub"></p>
+  <div style="margin-top:40px">
+    <div class="code-block">
+      <div class="code-head">
+        <div class="mac-dots"><div class="mac-dot"></div><div class="mac-dot"></div><div class="mac-dot"></div></div>
+        <span class="code-type" data-i="prompt_type"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copy-lbl" data-i="copy_lbl"></span>
+        </button>
+      </div>
+      <div class="code-body" id="prompt-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="sec reveal" id="features">
+  <div class="stag" data-i="s3_tag"></div>
+  <h2 class="sec-h" data-i="s3_h"></h2>
+  <div class="bento">
+    <div class="bcard wide">
+      <div class="bglow" style="background:var(--lime)"></div>
+      <div class="bicon">🎨</div>
+      <h3 data-i="b1_h"></h3><p data-i="b1_p"></p>
+      <div class="btags">
+        <span class="btag">ГОСТ 7.0.5</span><span class="btag">APA 7th</span><span class="btag">MLA 9th</span>
+        <span class="btag">Vancouver</span><span class="btag">Chicago</span><span class="btag">IEEE</span>
+        <span class="btag" data-i="b1_more" style="color:var(--emerald);border-color:rgba(52,211,153,.2)"></span>
+      </div>
+    </div>
+    <div class="bcard">
+      <div class="bglow" style="background:var(--lime)"></div>
+      <div class="bicon">🔗</div>
+      <h3 data-i="b2_h"></h3><p data-i="b2_p"></p>
+    </div>
+    <div class="bcard">
+      <div class="bglow" style="background:var(--teal)"></div>
+      <div class="bicon">🔍</div>
+      <h3 data-i="b3_h"></h3><p data-i="b3_p"></p>
+    </div>
+    <div class="bcard">
+      <div class="bglow" style="background:var(--emerald)"></div>
+      <div class="bicon">📦</div>
+      <div class="big-metric">[5–8]</div>
+      <h3 data-i="b4_h"></h3><p data-i="b4_p"></p>
+    </div>
+    <div class="bcard">
+      <div class="bglow" style="background:var(--lime)"></div>
+      <div class="bicon">🆓</div>
+      <div class="big-metric" data-i="b5_num">FREE</div>
+      <h3 data-i="b5_h"></h3><p data-i="b5_p"></p>
+    </div>
+    <div class="bcard">
+      <div class="bglow" style="background:var(--sky)"></div>
+      <div class="bicon">🎓</div>
+      <h3 data-i="b6_h"></h3><p data-i="b6_p"></p>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-lbl" data-i="ticker_lbl"></div>
+  <div style="overflow:hidden"><div class="ticker-track" id="ticker"></div></div>
+</div>
+
+<!-- CTA -->
+<div class="cta-wrap reveal">
+  <div class="cta-box">
+    <div class="cta-free" data-i="cta_free_badge"></div>
+    <h2 data-i="cta_h"></h2>
+    <p data-i="cta_p"></p>
+    <a href="/app" class="btn-primary" data-i="cta_btn"></a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-in">
+    <div class="foot-logo">⚡ zotero_inject</div>
+    <div class="foot-copy" data-i="footer"></div>
+  </div>
+</footer>
+
+<script>
+const STYLES = ['ГОСТ 7.0.5-2008','APA 7th Edition','MLA 9th Edition','Vancouver','Chicago Author-Date','Harvard','IEEE','Nature','Science','Oxford','Turabian','AMA','CSE','ABNT','Elsevier','Springer','JSTOR','ACM','PLOS ONE','Cell','Lancet'];
+
+const I18N = {
+  ru: {
+    nav_what:'Что это', nav_how:'Как работает', nav_prompt:'Промпт', nav_free:'БЕСПЛАТНО', nav_cta:'Открыть',
+    badge_free:'БЕСПЛАТНО', badge_ai:'Работает с любым ИИ',
+    h1a:'ИИ написал — мы', h1b:'свяжем с Zotero.',
+    hero_sub:'Бесплатный инструмент: ИИ генерирует маркеры [1][2][3] и .bib файл — Zotero Inject превращает их в живые динамические ссылки прямо в вашем .docx. Любой стиль цитирования.',
+    cta_main:'Попробовать бесплатно →', cta_how:'Как это работает',
+    p1a:'Ваша работа + ИИ', p1b:'Загружаете в чат', p1t:'НАЧАЛО',
+    p2a:'Текст + [1][2][3]', p2t:'ИИ ПИШЕТ',
+    p3b:'Связывает маркеры', p3t:'ОБРАБОТКА',
+    p4a:'Живые ссылки Zotero', p4b:'Любой стиль', p4t:'РЕЗУЛЬТАТ',
+
+    s0_tag:'Что происходит', s0_h:'От статичных меток к живым ссылкам',
+    s0_sub:'ИИ оставляет в тексте числовые маркеры — это просто текст. Zotero Inject делает их полноценными полями Zotero, которые обновляются автоматически.',
+    ba_before_lbl:'ДО — после ИИ', ba_before_ctx:'# Текст из ИИ (статичный)',
+    ba_before_1:'...исследование [1] показало,',
+    ba_before_2:'что метод [2][3] эффективен [4-6]...',
+    ba_before_note:'⚠ Просто текст. Не связано с Zotero.',
+    ba_arrow:'Zotero Inject',
+    ba_after_lbl:'ПОСЛЕ — живые ссылки', ba_after_ctx:'# После обработки (.docx)',
+    ba_after_1:'...исследование (Smith, 2023)',
+    ba_after_2:'показало, что метод эффективен...',
+    ba_after_note:'✓ Поле Zotero. Меняет стиль одним кликом.',
+    why_text:'Динамическая ссылка — это не просто текст. Она хранит связь с записью в вашей библиотеке Zotero. Переставьте источники — нумерация обновится. Смените стиль — весь список перестроится автоматически. Именно для этого существует Zotero.',
+
+    s1_tag:'Пошагово', s1_h:'4 шага + 1 раз навсегда',
+    s1_sub:'Подготовка занимает несколько минут. Дальше — просто загружаете и скачиваете.',
+    pre_tag:'ОДИН РАЗ', pre_h:'Установите Better BibTeX для Zotero',
+    pre_p:'Бесплатный плагин для Zotero, который создаёт стабильные ключи цитирования вида Smith2023. Именно по этим ключам Zotero Inject находит ваши источники.',
+    pre_note:'Установить плагин нужно только один раз. Далее всё работает автоматически.',
+
+    st1_tag:'ШАГ 01', st1_h:'Загрузите работу в любой ИИ-чат',
+    st1_p:'Прикрепите свою статью, диплом или диссертацию. Попросите ИИ написать раздел «Введение» с ссылками в формате [1], [2], [3-5] и экспортировать список литературы в формате BibTeX (Better BibTeX). Используйте наш промпт-шаблон ниже.',
+    any_ai:'+ любой другой',
+
+    st2_tag:'ШАГ 02', st2_h:'ИИ генерирует текст + .bib файл',
+    st2_p:'ИИ пишет введение с маркерами [1][2][3] в тексте и создаёт .bib файл с метаданными источников. Ключи записей вида Smith2023 совпадают с ключами Better BibTeX в вашей библиотеке Zotero.',
+    st2_ex_l:'# Пример .bib записи от ИИ:',
+
+    st3_tag:'ШАГ 03', st3_h:'Экспортируйте коллекцию из Zotero',
+    st3_p:'В Zotero: правая кнопка на коллекции → «Экспортировать коллекцию» → формат «Zotero RDF» или сохраните как HTML. Этот файл содержит URI ваших источников — Zotero Inject использует его для точного сопоставления с .bib ключами от ИИ.',
+
+    st4_tag:'ШАГ 04 — РЕЗУЛЬТАТ', st4_h:'Загрузите в Zotero Inject — получите живой .docx',
+    st4_p:'Загружаете: .docx с текстом, .bib от ИИ, HTML-экспорт Zotero. Скачиваете: .docx с динамическими ссылками Zotero. Открываете в Word — ссылки живые. Меняете стиль прямо в Word.',
+    st4_ex_l:'# Результат в Word:',
+    st4_ex_v1:'...исследование ', st4_ex_v2:'(Smith, 2023; Jones, 2022)', st4_ex_v3:' подтверждает...',
+
+    s2_tag:'Промпт', s2_h:'Готовый промпт для ИИ',
+    s2_sub:'Скопируйте и вставьте в любой ИИ-чат вместе с вашей работой. Формат точно подходит для Zotero Inject.',
+    prompt_type:'ПРОМПТ ДЛЯ ЛЮБОГО ИИ-ЧАТА', copy_lbl:'Копировать', copy_ok:'Скопировано!',
+    prompt_text:`Ознакомься с моей научной работой, прикреплённой к этому чату.
+
+Напиши обширный раздел «Введение» (не менее 800 слов):
+— Актуальность темы исследования
+— Обзор существующей литературы с ссылками в тексте [1], [2], [3] ...
+— Цель и задачи работы
+
+ВАЖНО: Ссылки в тексте оформляй ТОЛЬКО как [1], [2], [3-5] и т.д.
+НЕ используй скобки со звёздочками, (Author, Year) или другие форматы.
+
+В конце предоставь список литературы в формате BibTeX (Better BibTeX для Zotero).
+Каждая запись должна содержать: author, title, year, journal/booktitle, doi (если есть).
+Формат ключа: AuthorYYYY (например: Smith2023, Иванов2022)`,
+
+    s3_tag:'Возможности', s3_h:'Всё включено — бесплатно',
+    b1_h:'9000+ стилей цитирования', b1_p:'Меняйте стиль в Word одним кликом — список литературы перестраивается мгновенно. Работает через стандартный движок Zotero.',
+    b1_more:'+ 9000 стилей',
+    b2_h:'Живые поля Zotero', b2_p:'Не текст, а настоящие поля Zotero в .docx. Переставьте источники — нумерация обновится сама.',
+    b3_h:'Проверка DOI (Crossref)', b3_p:'Автоматически проверяет и дополняет метаданные .bib файла через Crossref API перед обработкой.',
+    b4_h:'Автогруппировка ссылок', b4_p:'[5][6][7][8] автоматически сжимается в [5–8]. По ГОСТ и всем основным стандартам.',
+    b5_num:'FREE', b5_h:'Полностью бесплатно', b5_p:'Никакой подписки, никакой регистрации. Загружайте файлы — скачивайте результат.',
+    b6_h:'Для любых работ', b6_p:'Диплом, диссертация, статья, курсовая — один и тот же процесс.',
+
+    ticker_lbl:'Поддерживаемые стили цитирования',
+    cta_free_badge:'БЕСПЛАТНЫЙ ИНСТРУМЕНТ',
+    cta_h:'Введение с живыми ссылками за 10 минут.',
+    cta_p:'ИИ пишет черновик — Zotero Inject делает ссылки динамическими и связывает с Zotero.',
+    cta_btn:'Открыть инструмент →',
+    footer:'© 2026 Zotero Inject — open source, free forever',
+    meta_title:'Zotero Inject — Бесплатные живые цитаты из ИИ в Zotero',
+    meta_desc:'Бесплатный инструмент. ИИ пишет [1][2][3] — Zotero Inject делает ссылки живыми в вашем .docx. Любой стиль цитирования.',
+  },
+  en: {
+    nav_what:'What it does', nav_how:'How it works', nav_prompt:'Prompt', nav_free:'FREE', nav_cta:'Open App',
+    badge_free:'FREE TOOL', badge_ai:'Works with any AI',
+    h1a:'AI wrote it —', h1b:'we\'ll wire citations.',
+    hero_sub:'Free tool: AI generates markers [1][2][3] and a .bib file — Zotero Inject turns them into live dynamic Zotero citations directly in your .docx. Any citation style.',
+    cta_main:'Try for free →', cta_how:'See how it works',
+    p1a:'Your paper + AI', p1b:'Upload to chat', p1t:'START',
+    p2a:'Text + [1][2][3]', p2t:'AI WRITES',
+    p3b:'Links markers', p3t:'PROCESS',
+    p4a:'Live Zotero citations', p4b:'Any style', p4t:'RESULT',
+
+    s0_tag:'What happens', s0_h:'From static markers to live citations',
+    s0_sub:'AI leaves numeric markers in the text — they\'re just plain text. Zotero Inject turns them into real Zotero fields that update automatically.',
+    ba_before_lbl:'BEFORE — from AI', ba_before_ctx:'# Text from AI (static)',
+    ba_before_1:'...research [1] showed that',
+    ba_before_2:'method [2][3] is effective [4-6]...',
+    ba_before_note:'⚠ Just text. Not connected to Zotero.',
+    ba_arrow:'Zotero Inject',
+    ba_after_lbl:'AFTER — live citations', ba_after_ctx:'# After processing (.docx)',
+    ba_after_1:'...research (Smith, 2023)',
+    ba_after_2:'showed that method is effective...',
+    ba_after_note:'✓ Zotero field. Change style with one click.',
+    why_text:'A dynamic citation is not just text. It stores a link to a record in your Zotero library. Reorder sources — numbering updates. Change style — the entire bibliography rebuilds automatically. That is what Zotero is for.',
+
+    s1_tag:'Step by step', s1_h:'4 steps + 1 one-time setup',
+    s1_sub:'Setup takes a few minutes. After that — just upload and download.',
+    pre_tag:'ONE TIME ONLY', pre_h:'Install Better BibTeX for Zotero',
+    pre_p:'A free Zotero plugin that creates stable citation keys like Smith2023. Zotero Inject uses these keys to find your sources.',
+    pre_note:'Install the plugin once. Everything works automatically after that.',
+
+    st1_tag:'STEP 01', st1_h:'Upload your paper to any AI chat',
+    st1_p:'Attach your article, thesis, or dissertation. Ask the AI to write the Introduction section with citations in [1], [2], [3-5] format and export a BibTeX (Better BibTeX) bibliography. Use our prompt template below.',
+    any_ai:'+ any other',
+
+    st2_tag:'STEP 02', st2_h:'AI generates text + .bib file',
+    st2_p:'The AI writes the introduction with markers [1][2][3] in the text and creates a .bib file with source metadata. Entry keys like Smith2023 match the Better BibTeX keys in your Zotero library.',
+    st2_ex_l:'# Example .bib entry from AI:',
+
+    st3_tag:'STEP 03', st3_h:'Export your Zotero collection',
+    st3_p:'In Zotero: right-click on collection → "Export Collection" → Zotero RDF format or save as HTML. This file contains the URIs of your sources — Zotero Inject uses it to match with the .bib keys from the AI.',
+
+    st4_tag:'STEP 04 — RESULT', st4_h:'Upload to Zotero Inject — get a live .docx',
+    st4_p:'Upload: .docx with text, .bib from AI, Zotero HTML export. Download: .docx with dynamic Zotero citations. Open in Word — citations are live. Change style right in Word.',
+    st4_ex_l:'# Result in Word:',
+    st4_ex_v1:'...research ', st4_ex_v2:'(Smith, 2023; Jones, 2022)', st4_ex_v3:' confirms...',
+
+    s2_tag:'Prompt', s2_h:'Ready-to-use AI prompt',
+    s2_sub:'Copy and paste into any AI chat along with your paper. The format works perfectly with Zotero Inject.',
+    prompt_type:'PROMPT FOR ANY AI CHAT', copy_lbl:'Copy', copy_ok:'Copied!',
+    prompt_text:`Review my academic paper attached to this chat.
+
+Write a comprehensive Introduction section (at least 800 words):
+— Relevance and background of the research topic
+— Literature review with in-text citations [1], [2], [3] ...
+— Research goals and objectives
+
+IMPORTANT: Format in-text citations ONLY as [1], [2], [3-5] etc.
+Do NOT use (Author, Year), asterisks, footnotes, or other formats.
+
+At the end, provide a bibliography in BibTeX format (Better BibTeX for Zotero).
+Each entry must include: author, title, year, journal/booktitle, doi (if available).
+Key format: AuthorYYYY (e.g. Smith2023)`,
+
+    s3_tag:'Features', s3_h:'Everything included — free',
+    b1_h:'9000+ citation styles', b1_p:'Change style in Word with one click — bibliography rebuilds instantly. Powered by the standard Zotero engine.',
+    b1_more:'+ 9,000 styles',
+    b2_h:'Live Zotero fields', b2_p:'Not text — real Zotero fields in .docx. Reorder sources — numbering updates automatically.',
+    b3_h:'DOI validation (Crossref)', b3_p:'Automatically validates and enriches .bib metadata via Crossref API before processing.',
+    b4_h:'Citation auto-grouping', b4_p:'[5][6][7][8] automatically compresses to [5–8]. Compliant with GOST and all major standards.',
+    b5_num:'FREE', b5_h:'Completely free', b5_p:'No subscription, no registration. Upload files — download the result.',
+    b6_h:'For any academic work', b6_p:'Thesis, dissertation, journal article, coursework — same process.',
+
+    ticker_lbl:'Supported citation styles',
+    cta_free_badge:'FREE OPEN TOOL',
+    cta_h:'Introduction with live citations in 10 minutes.',
+    cta_p:'AI writes the draft — Zotero Inject makes citations dynamic and links them to Zotero.',
+    cta_btn:'Open the tool →',
+    footer:'© 2026 Zotero Inject — open source, free forever',
+    meta_title:'Zotero Inject — Free Live Citations from AI to Zotero',
+    meta_desc:'Free tool. AI writes [1][2][3] — Zotero Inject turns them into live Zotero citations in your .docx. Any citation style.',
+  }
+};
+
+let lang = localStorage.getItem('lang') || new URLSearchParams(location.search).get('lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en');
+
+// ── Language crossfade ───────────────────────────────────────────
+let _transitioning = false;
+
+function setLang(l, triggerEl) {
+  if (_transitioning) return;
+  _transitioning = true;
+  lang = l; localStorage.setItem('lang', l);
+
+  document.querySelectorAll('.lang-btn').forEach((b, i) =>
+    b.classList.toggle('active', (i === 0 && l === 'ru') || (i === 1 && l === 'en')));
+
+  const d = I18N[l];
+  const EXIT = 160;
+  const ENTER = 420;
+  const EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)';
+
+  const els = [...document.querySelectorAll('[data-i]')]
+    .filter(el => d[el.dataset.i] !== undefined);
+
+  // Exit: fade up
+  els.forEach(el => {
+    el.style.transition = `opacity ${EXIT}ms ease-in, transform ${EXIT}ms ease-in`;
+    el.style.opacity    = '0';
+    el.style.transform  = 'translateY(-6px)';
+  });
+
+  setTimeout(() => {
+    // Swap text + reset to "from" position below
+    els.forEach(el => {
+      el.textContent      = d[el.dataset.i];
+      el.style.transition = 'none';
+      el.style.transform  = 'translateY(10px)';
+    });
+    document.getElementById('prompt-body').textContent = d.prompt_text;
+    document.getElementById('copy-lbl').textContent    = d.copy_lbl;
+    document.getElementById('meta-title').textContent  = d.meta_title;
+    document.getElementById('meta-desc').setAttribute('content', d.meta_desc);
+
+    // Enter: fade down into place
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      els.forEach(el => {
+        el.style.transition = `opacity ${ENTER}ms ${EXPO}, transform ${ENTER}ms ${EXPO}`;
+        el.style.opacity    = '1';
+        el.style.transform  = 'translateY(0)';
+      });
+      setTimeout(() => {
+        els.forEach(el => { el.style.transition = el.style.transform = el.style.opacity = ''; });
+        _transitioning = false;
+      }, ENTER + 50);
+    }));
+  }, EXIT + 20);
+}
+
+function copyPrompt() {
+  navigator.clipboard.writeText(I18N[lang].prompt_text).then(() => {
+    const btn = document.getElementById('copy-btn'), lbl = document.getElementById('copy-lbl');
+    btn.classList.add('ok'); lbl.textContent = I18N[lang].copy_ok;
+    setTimeout(() => { btn.classList.remove('ok'); lbl.textContent = I18N[lang].copy_lbl; }, 2200);
+  });
+}
+
+(function() {
+  const s = [...STYLES,...STYLES];
+  document.getElementById('ticker').innerHTML = s.map(x=>`<div class="titem"><div class="tdot"></div>${x}</div>`).join('');
+})();
+
+window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', scrollY > 60), {passive:true});
+
+const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){e.target.classList.add('vis');ro.unobserve(e.target);} }), {threshold:.08});
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  document.getElementById(a.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'});
+  e.preventDefault();
+}));
+
+setLang(lang);
+</script>
+</body>
+</html>

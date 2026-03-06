@@ -29,6 +29,11 @@ DOI_PATTERN = re.compile(r"10\.\d{4,9}/\S+", re.IGNORECASE)
 BIBCHECK_PATTERN = re.compile(r"\[\s*BIBCHECK\s*:\s*([^\]]*)\]", re.IGNORECASE)
 
 
+def _emit_event(data: dict) -> None:
+    """Print a newline-delimited JSON event to stdout for --json-events mode."""
+    print(json.dumps(data, ensure_ascii=False), flush=True)
+
+
 @dataclass
 class BibEntry:
     entry_type: str
@@ -679,6 +684,7 @@ def process_entries(
     doi_title_threshold: float,
     overwrite: bool,
     include_abstract: bool,
+    json_events: bool = False,
 ) -> tuple[dict, dict[str, set[str]]]:
     stats = {
         "processed": 0,
@@ -699,10 +705,21 @@ def process_entries(
     issues_by_key: dict[str, set[str]] = {e.key: set() for e in eligible}
     total = len(eligible)
 
+    if json_events:
+        _emit_event({"type": "start", "total": total})
+
     for idx, entry in enumerate(eligible, start=1):
         stats["processed"] += 1
         if progress:
             print(f"[{idx}/{total}] {entry.key}", flush=True)
+        if json_events:
+            _emit_event({
+                "type": "entry_start",
+                "idx": idx,
+                "total": total,
+                "key": entry.key,
+                "title": strip_outer_braces(entry.fields.get("title", ""))[:120],
+            })
 
         issues = issues_by_key.setdefault(entry.key, set())
         original_doi = normalize_doi(entry.fields.get("doi", ""))
@@ -760,6 +777,14 @@ def process_entries(
         if not work:
             stats["unresolved"] += 1
             issues.add("crossref_unresolved")
+            if json_events:
+                _emit_event({
+                    "type": "entry_done",
+                    "idx": idx,
+                    "key": entry.key,
+                    "status": "error",
+                    "issues": sorted(issues),
+                })
             if sleep_seconds > 0:
                 time.sleep(sleep_seconds)
             continue
@@ -807,6 +832,20 @@ def process_entries(
         if fields_changed > 0:
             stats["entries_changed"] += 1
             stats["fields_changed"] += fields_changed
+
+        if json_events:
+            _entry_status = (
+                "error" if {"crossref_unresolved", "doi_not_found", "doi_invalid_format"} & issues
+                else "warn" if issues
+                else "ok"
+            )
+            _emit_event({
+                "type": "entry_done",
+                "idx": idx,
+                "key": entry.key,
+                "status": _entry_status,
+                "issues": sorted(issues),
+            })
 
         if sleep_seconds > 0:
             time.sleep(sleep_seconds)
@@ -990,6 +1029,11 @@ def main() -> int:
         help="Fetch and write abstract field from Crossref (if available)",
     )
     parser.add_argument("--mailto", default="", help="Email for Crossref etiquette (recommended)")
+    parser.add_argument(
+        "--json-events",
+        action="store_true",
+        help="Emit newline-delimited JSON events to stdout for real-time UI streaming",
+    )
     args = parser.parse_args()
 
     if not args.bibfile.exists():
@@ -1015,10 +1059,11 @@ def main() -> int:
         sleep_seconds=max(args.sleep, 0.0),
         retries=max(args.retries, 0),
         timeout=max(args.timeout, 1.0),
-        progress=not args.no_progress,
+        progress=not args.no_progress and not args.json_events,
         doi_title_threshold=min(max(args.doi_title_threshold, 0.0), 1.0),
         overwrite=args.overwrite,
         include_abstract=args.include_abstract,
+        json_events=args.json_events,
     )
 
     dedup_stats = resolve_duplicate_dois(
@@ -1058,6 +1103,30 @@ def main() -> int:
         print(f"[INFO] Backup created: {backup_path}")
 
     out_path.write_text(output, encoding="utf-8")
+
+    if args.json_events:
+        eligible_final = [e for e in entries if e.entry_type in allowed_types]
+        final_entries = []
+        for entry in eligible_final:
+            issues = issues_by_key.get(entry.key, set())
+            _st = (
+                "error" if {"crossref_unresolved", "doi_not_found", "doi_invalid_format"} & issues
+                else "warn" if issues
+                else "ok"
+            )
+            final_entries.append({
+                "key": entry.key,
+                "entry_type": entry.entry_type,
+                "status": _st,
+                "issues": sorted(issues),
+                "fields": dict(entry.fields),
+            })
+        _emit_event({
+            "type": "done",
+            "stats": {k: str(v) for k, v in stats.items()},
+            "entries": final_entries,
+        })
+        return 0
 
     print("[DONE] Crossref enrichment finished.")
     print(f"  Processed entries: {stats['processed']}")

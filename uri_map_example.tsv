@@ -1,0 +1,13 @@
+# Вариант 1: по номеру ссылки
+1	zu:0:AAAA1111
+2	zu:0:BBBB2222
+3	zu:0:CCCC3333
+
+# Вариант 2: по citation key
+# padture2016advanced	zu:0:AAAA1111
+# lakhdar2021additive	zu:0:BBBB2222
+
+# Вариант 3: только URI построчно (будут применены по порядку: 1,2,3...)
+# zu:0:AAAA1111
+# zu:0:BBBB2222
+# zu:0:CCCC3333
