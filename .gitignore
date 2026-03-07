@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+app/frontend/node_modules/
+
+# Build output (Railway builds fresh from Dockerfile)
+app/frontend/dist/
+
+# Runtime / temp
+app/backend/work/
+.env
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
