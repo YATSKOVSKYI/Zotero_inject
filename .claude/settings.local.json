@@ -12,7 +12,8 @@
       "Bash(node_modules/.bin/tsc:*)",
       "Bash(node_modules/.bin/vite build:*)",
       "Bash(python:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(ls:*)"
     ]
   }
 }

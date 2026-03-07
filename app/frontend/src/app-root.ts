@@ -85,9 +85,9 @@ export class AppRoot extends LitElement {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: #0d0f14;
+      background: #030404;
       font-family: 'Inter', system-ui, sans-serif;
-      color: #eef0f6;
+      color: #edf7ed;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -98,28 +98,28 @@ export class AppRoot extends LitElement {
       gap: 12px;
       padding: 0 32px;
       height: 58px;
-      background: #13161f;
-      border-bottom: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border-bottom: 1px solid #1c2a2a;
       flex-shrink: 0;
     }
     .logo-dot {
       width: 28px; height: 28px;
       border-radius: 8px;
-      background: linear-gradient(135deg, #e5484d, #b5252a);
+      background: linear-gradient(135deg, #a3e635, #84cc16);
       display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700; color: #fff;
-      box-shadow: 0 0 16px rgba(229,72,77,0.35);
+      font-size: 14px; font-weight: 700; color: #091200;
+      box-shadow: 0 0 16px rgba(163,230,53,0.35);
     }
-    .logo-name { font-size: 15px; font-weight: 700; color: #eef0f6; }
-    .logo-tag  { font-size: 11px; color: #5c5f72; margin-left: 6px; }
+    .logo-name { font-size: 15px; font-weight: 700; color: #edf7ed; }
+    .logo-tag  { font-size: 11px; color: #3a4d42; margin-left: 6px; }
     .header-spacer { flex: 1; }
     .header-badge {
       font-size: 11px; font-weight: 500;
-      background: #1a1d2a;
-      border: 1px solid #2a2d3e;
+      background: #101414;
+      border: 1px solid #1c2a2a;
       border-radius: 6px;
       padding: 4px 10px;
-      color: #9396a8;
+      color: #748f80;
     }
 
     /* ── Stepper ── */
@@ -129,8 +129,8 @@ export class AppRoot extends LitElement {
       justify-content: center;
       gap: 0;
       padding: 20px 32px;
-      background: #13161f;
-      border-bottom: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border-bottom: 1px solid #1c2a2a;
     }
     .step-pill {
       display: flex; align-items: center; gap: 8px;
@@ -139,8 +139,8 @@ export class AppRoot extends LitElement {
       transition: all 0.2s;
       cursor: default;
     }
-    .step-pill.active  { background: rgba(229,72,77,0.15); }
-    .step-pill.done    { background: rgba(34,197,94,0.1); }
+    .step-pill.active  { background: rgba(163,230,53,0.15); }
+    .step-pill.done    { background: rgba(52,211,153,0.1); }
     .step-dot {
       width: 24px; height: 24px;
       border-radius: 50%;
@@ -148,15 +148,15 @@ export class AppRoot extends LitElement {
       font-size: 11px; font-weight: 700;
       flex-shrink: 0;
     }
-    .step-dot.active  { background: #e5484d; color: #fff; box-shadow: 0 0 12px rgba(229,72,77,0.4); }
-    .step-dot.done    { background: #22c55e; color: #fff; }
-    .step-dot.pending { background: #1a1d2a; border: 1px solid #2a2d3e; color: #5c5f72; }
+    .step-dot.active  { background: #a3e635; color: #091200; box-shadow: 0 0 12px rgba(163,230,53,0.4); }
+    .step-dot.done    { background: #34d399; color: #fff; }
+    .step-dot.pending { background: #101414; border: 1px solid #1c2a2a; color: #3a4d42; }
     .step-name { font-size: 12px; font-weight: 600; transition: color 0.2s; }
-    .step-name.active  { color: #e5484d; }
-    .step-name.done    { color: #22c55e; }
-    .step-name.pending { color: #5c5f72; }
-    .step-connector { width: 40px; height: 1px; background: #2a2d3e; flex-shrink: 0; }
-    .step-connector.done { background: #22c55e; opacity: 0.4; }
+    .step-name.active  { color: #a3e635; }
+    .step-name.done    { color: #34d399; }
+    .step-name.pending { color: #3a4d42; }
+    .step-connector { width: 40px; height: 1px; background: #1c2a2a; flex-shrink: 0; }
+    .step-connector.done { background: #34d399; opacity: 0.4; }
 
     /* ── Main ── */
     main {
@@ -171,8 +171,8 @@ export class AppRoot extends LitElement {
 
     /* ── Cards ── */
     .card {
-      background: #13161f;
-      border: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border: 1px solid #1c2a2a;
       border-radius: 16px;
       padding: 28px;
       margin-bottom: 16px;
@@ -186,42 +186,42 @@ export class AppRoot extends LitElement {
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 20px; flex-shrink: 0;
-      background: #1a1d2a; border: 1px solid #2a2d3e;
+      background: #101414; border: 1px solid #1c2a2a;
     }
-    .card-icon.red    { background: rgba(229,72,77,0.15);  border-color: rgba(229,72,77,0.3); }
-    .card-icon.blue   { background: rgba(79,142,247,0.15); border-color: rgba(79,142,247,0.3); }
-    .card-icon.green  { background: rgba(34,197,94,0.15);  border-color: rgba(34,197,94,0.3); }
+    .card-icon.red    { background: rgba(163,230,53,0.15);  border-color: rgba(163,230,53,0.3); }
+    .card-icon.blue   { background: rgba(163,230,53,0.15); border-color: rgba(163,230,53,0.3); }
+    .card-icon.green  { background: rgba(52,211,153,0.15);  border-color: rgba(52,211,153,0.3); }
     .card-icon.purple { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.3); }
-    .card-title { font-size: 17px; font-weight: 700; color: #eef0f6; margin-bottom: 5px; }
-    .card-desc  { font-size: 13px; color: #9396a8; line-height: 1.65; }
+    .card-title { font-size: 17px; font-weight: 700; color: #edf7ed; margin-bottom: 5px; }
+    .card-desc  { font-size: 13px; color: #748f80; line-height: 1.65; }
 
     /* ── Instructions ── */
     .instr-list { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
     .instr-item {
       display: flex; gap: 12px; align-items: flex-start;
       padding: 12px 14px;
-      background: #1a1d2a; border: 1px solid #2a2d3e; border-radius: 10px;
+      background: #101414; border: 1px solid #1c2a2a; border-radius: 10px;
     }
     .instr-num {
       width: 22px; height: 22px; border-radius: 50%;
-      background: #222536; border: 1px solid #333650;
-      font-size: 11px; font-weight: 700; color: #9396a8;
+      background: #131818; border: 1px solid #243535;
+      font-size: 11px; font-weight: 700; color: #748f80;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; margin-top: 1px;
     }
-    .instr-body { font-size: 13px; color: #c0c3d6; line-height: 1.6; }
-    .instr-body strong { color: #eef0f6; font-weight: 600; }
+    .instr-body { font-size: 13px; color: #9db8a6; line-height: 1.6; }
+    .instr-body strong { color: #edf7ed; font-weight: 600; }
     .instr-body code {
-      background: #222536; border: 1px solid #333650; border-radius: 4px;
+      background: #131818; border: 1px solid #243535; border-radius: 4px;
       padding: 1px 6px; font-size: 11px;
-      font-family: 'Consolas', monospace; color: #4f8ef7;
+      font-family: 'JetBrains Mono', 'Consolas', monospace; color: #a3e635;
     }
 
     /* ── Section label ── */
     .section-label {
       font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .08em;
-      color: #5c5f72; margin-bottom: 10px;
+      color: #3a4d42; margin-bottom: 10px;
     }
 
     /* ── File grids ── */
@@ -230,26 +230,26 @@ export class AppRoot extends LitElement {
 
     /* ── Input ── */
     .input-wrap { margin-top: 16px; }
-    .input-label { font-size: 12px; color: #5c5f72; margin-bottom: 6px; display: block; }
+    .input-label { font-size: 12px; color: #3a4d42; margin-bottom: 6px; display: block; }
     .text-input {
       width: 100%; padding: 9px 14px;
-      background: #1a1d2a; border: 1px solid #2a2d3e; border-radius: 8px;
-      color: #eef0f6; font-size: 13px; font-family: inherit;
+      background: #101414; border: 1px solid #1c2a2a; border-radius: 8px;
+      color: #edf7ed; font-size: 13px; font-family: inherit;
       outline: none; transition: border-color 0.2s;
     }
-    .text-input:focus { border-color: #4f8ef7; }
-    .text-input::placeholder { color: #5c5f72; }
+    .text-input:focus { border-color: #a3e635; }
+    .text-input::placeholder { color: #3a4d42; }
 
     /* ── Divider ── */
     .or-divider {
       display: flex; align-items: center; gap: 12px; margin: 18px 0;
     }
     .or-divider::before, .or-divider::after {
-      content: ''; flex: 1; height: 1px; background: #2a2d3e;
+      content: ''; flex: 1; height: 1px; background: #1c2a2a;
     }
     .or-divider span {
       font-size: 11px; font-weight: 600;
-      color: #5c5f72; text-transform: uppercase; letter-spacing: .06em;
+      color: #3a4d42; text-transform: uppercase; letter-spacing: .06em;
     }
 
     /* ── Buttons ── */
@@ -265,14 +265,14 @@ export class AppRoot extends LitElement {
     .btn:active  { transform: scale(0.97); }
     .btn:disabled { opacity: 0.35; cursor: not-allowed; filter: none; transform: none; }
     .btn-ghost {
-      background: #1a1d2a; border: 1px solid #2a2d3e; color: #9396a8;
+      background: #101414; border: 1px solid #1c2a2a; color: #748f80;
     }
-    .btn-ghost:hover { border-color: #333650; color: #eef0f6; }
-    .btn-red   { background: linear-gradient(135deg,#e5484d,#c5282d); color:#fff; box-shadow:0 0 16px rgba(229,72,77,0.25); }
-    .btn-blue  { background: linear-gradient(135deg,#4f8ef7,#2563eb); color:#fff; box-shadow:0 0 16px rgba(79,142,247,0.25); }
-    .btn-green { background: linear-gradient(135deg,#22c55e,#16a34a); color:#fff; box-shadow:0 0 16px rgba(34,197,94,0.2); }
-    .btn-next  { background: #1a1d2a; border: 1px solid #4f8ef7; color: #4f8ef7; }
-    .btn-next:hover { background: rgba(79,142,247,0.15); }
+    .btn-ghost:hover { border-color: #243535; color: #edf7ed; }
+    .btn-red   { background: linear-gradient(135deg,#a3e635,#84cc16); color:#091200; box-shadow:0 0 16px rgba(163,230,53,0.25); }
+    .btn-blue  { background: linear-gradient(135deg,#a3e635,#84cc16); color:#091200; box-shadow:0 0 16px rgba(163,230,53,0.25); }
+    .btn-green { background: linear-gradient(135deg,#34d399,#10b981); color:#002018; box-shadow:0 0 16px rgba(52,211,153,0.2); }
+    .btn-next  { background: #101414; border: 1px solid #a3e635; color: #a3e635; }
+    .btn-next:hover { background: rgba(163,230,53,0.15); }
 
     /* ── Alert ── */
     .alert {
@@ -281,7 +281,7 @@ export class AppRoot extends LitElement {
       font-size: 13px; margin-top: 14px; border: 1px solid;
     }
     .alert.warn { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); color: #f59e0b; }
-    .alert.ok   { background: rgba(34,197,94,0.08);  border-color: rgba(34,197,94,0.2);   color: #22c55e; }
+    .alert.ok   { background: rgba(52,211,153,0.08);  border-color: rgba(52,211,153,0.2);   color: #34d399; }
 
     /* ── Spinner ── */
     .spinner {
@@ -300,12 +300,12 @@ export class AppRoot extends LitElement {
     .log-wrap { margin-top: 16px; }
     .log-label {
       font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .08em; color: #5c5f72; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: .08em; color: #3a4d42; margin-bottom: 6px;
     }
     .log-box {
-      background: #0d0f14; border: 1px solid #2a2d3e; border-radius: 8px;
-      padding: 12px 14px; font-family: 'Consolas', monospace;
-      font-size: 11.5px; color: #9396a8;
+      background: #030404; border: 1px solid #1c2a2a; border-radius: 8px;
+      padding: 12px 14px; font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 11.5px; color: #748f80;
       white-space: pre-wrap; max-height: 150px; overflow-y: auto; line-height: 1.65;
     }
 
@@ -313,16 +313,16 @@ export class AppRoot extends LitElement {
     .finish-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
     .finish-item {
       display: flex; gap: 14px; align-items: center;
-      padding: 14px 18px; background: #1a1d2a; border: 1px solid #2a2d3e; border-radius: 12px;
+      padding: 14px 18px; background: #101414; border: 1px solid #1c2a2a; border-radius: 12px;
     }
     .finish-icon {
       width: 38px; height: 38px; border-radius: 10px;
-      background: #222536; border: 1px solid #333650;
+      background: #131818; border: 1px solid #243535;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; flex-shrink: 0;
     }
-    .finish-text { font-size: 13px; color: #c0c3d6; line-height: 1.55; }
-    .finish-text strong { color: #eef0f6; font-weight: 600; }
+    .finish-text { font-size: 13px; color: #9db8a6; line-height: 1.55; }
+    .finish-text strong { color: #edf7ed; font-weight: 600; }
 
     /* ═══════════════════════════════════════════════════
        STEP 1 — FORMAT HINT & BIB CARD
@@ -332,50 +332,50 @@ export class AppRoot extends LitElement {
       margin: 20px 0;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #2a2d3e;
+      border: 1px solid #1c2a2a;
     }
     .format-hint-header {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 14px;
-      background: #1a1d2a;
-      border-bottom: 1px solid #2a2d3e;
-      font-size: 11px; font-weight: 700; color: #5c5f72;
+      background: #101414;
+      border-bottom: 1px solid #1c2a2a;
+      font-size: 11px; font-weight: 700; color: #3a4d42;
       text-transform: uppercase; letter-spacing: .07em;
     }
     .format-hint-header .dot {
-      width: 8px; height: 8px; border-radius: 50%; background: #e5484d; flex-shrink: 0;
+      width: 8px; height: 8px; border-radius: 50%; background: #a3e635; flex-shrink: 0;
     }
     .code-block {
-      background: #0d0f14;
+      background: #030404;
       padding: 14px 16px;
-      font-family: 'Consolas', monospace;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
       font-size: 12px;
       line-height: 1.8;
-      color: #9396a8;
+      color: #748f80;
     }
-    .cc { color: #5c5f72; }
-    .ck { color: #e5484d; font-weight: 600; }
-    .cv { color: #4f8ef7; }
-    .cs { color: #22c55e; }
+    .cc { color: #3a4d42; }
+    .ck { color: #a3e635; font-weight: 600; }
+    .cv { color: #2dd4bf; }
+    .cs { color: #34d399; }
 
     .bib-file-info {
       display: flex; align-items: center; gap: 12px;
       padding: 12px 16px; border-radius: 10px; margin-top: 12px;
-      background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.2);
+      background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2);
     }
     .bfi-icon {
       width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3);
       display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
-    .bfi-name { font-size: 13px; font-weight: 600; color: #eef0f6; }
-    .bfi-sub  { font-size: 11px; color: rgba(34,197,94,0.7); margin-top: 2px; }
+    .bfi-name { font-size: 13px; font-weight: 600; color: #edf7ed; }
+    .bfi-sub  { font-size: 11px; color: rgba(52,211,153,0.7); margin-top: 2px; }
 
     .optional-tag {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 2px 8px; border-radius: 100px;
       font-size: 10px; font-weight: 700;
-      background: #1a1d2a; border: 1px solid #2a2d3e; color: #5c5f72;
+      background: #101414; border: 1px solid #1c2a2a; color: #3a4d42;
       text-transform: uppercase; letter-spacing: .05em; margin-left: 8px;
     }
 
@@ -384,22 +384,22 @@ export class AppRoot extends LitElement {
     }
     .action-card {
       display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
-      padding: 16px 18px; border-radius: 12px; border: 1px solid #2a2d3e;
-      background: #1a1d2a; cursor: pointer; transition: all 0.18s;
+      padding: 16px 18px; border-radius: 12px; border: 1px solid #1c2a2a;
+      background: #101414; cursor: pointer; transition: all 0.18s;
       text-decoration: none; font-family: inherit;
     }
-    .action-card:hover { border-color: #333650; background: #222536; }
+    .action-card:hover { border-color: #243535; background: #131818; }
     .action-card.primary {
-      border-color: rgba(79,142,247,0.35);
-      background: rgba(79,142,247,0.07);
+      border-color: rgba(163,230,53,0.35);
+      background: rgba(163,230,53,0.07);
     }
-    .action-card.primary:hover { background: rgba(79,142,247,0.12); }
+    .action-card.primary:hover { background: rgba(163,230,53,0.12); }
     .action-card:disabled { opacity: 0.35; pointer-events: none; }
     .ac-icon { font-size: 22px; margin-bottom: 2px; }
-    .ac-title { font-size: 13px; font-weight: 700; color: #eef0f6; }
-    .ac-primary { color: #4f8ef7; }
-    .ac-sub { font-size: 11px; color: #5c5f72; line-height: 1.45; }
-    .action-card.primary .ac-sub { color: #9396a8; }
+    .ac-title { font-size: 13px; font-weight: 700; color: #edf7ed; }
+    .ac-primary { color: #a3e635; }
+    .ac-sub { font-size: 11px; color: #3a4d42; line-height: 1.45; }
+    .action-card.primary .ac-sub { color: #748f80; }
 
     /* ═══════════════════════════════════════════════════
        STEP 3 — PREREQUISITES + TRANSFORM
@@ -412,12 +412,12 @@ export class AppRoot extends LitElement {
     .prereq-item {
       display: flex; align-items: center; gap: 12px;
       padding: 14px 16px; border-radius: 12px;
-      border: 1px solid #2a2d3e; background: #1a1d2a;
+      border: 1px solid #1c2a2a; background: #101414;
       transition: all 0.2s;
     }
     .prereq-item.ok {
-      border-color: rgba(34,197,94,0.3);
-      background: rgba(34,197,94,0.06);
+      border-color: rgba(52,211,153,0.3);
+      background: rgba(52,211,153,0.06);
     }
     .prereq-item.missing {
       border-color: rgba(245,158,11,0.3);
@@ -427,63 +427,63 @@ export class AppRoot extends LitElement {
       width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       font-size: 17px; font-weight: 700;
-      background: #222536; border: 1px solid #2a2d3e;
+      background: #131818; border: 1px solid #1c2a2a;
     }
     .prereq-item.ok .prereq-ico {
-      background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3);
-      color: #22c55e;
+      background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3);
+      color: #34d399;
     }
     .prereq-item.missing .prereq-ico {
       background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25);
       color: #f59e0b;
     }
-    .prereq-title { font-size: 12px; font-weight: 700; color: #eef0f6; }
-    .prereq-sub   { font-size: 10px; color: #5c5f72; margin-top: 2px; }
-    .prereq-item.ok .prereq-sub { color: rgba(34,197,94,0.6); }
+    .prereq-title { font-size: 12px; font-weight: 700; color: #edf7ed; }
+    .prereq-sub   { font-size: 10px; color: #3a4d42; margin-top: 2px; }
+    .prereq-item.ok .prereq-sub { color: rgba(52,211,153,0.6); }
     .prereq-item.missing .prereq-sub { color: #f59e0b; }
 
     .transform-vis {
       display: grid; grid-template-columns: 1fr 48px 1fr; align-items: center;
       gap: 0; margin: 20px 0; border-radius: 12px; overflow: hidden;
-      border: 1px solid #2a2d3e;
+      border: 1px solid #1c2a2a;
     }
     .tv-side {
-      padding: 16px; background: #1a1d2a;
+      padding: 16px; background: #101414;
     }
-    .tv-side.after { background: rgba(79,142,247,0.05); }
-    .tv-label { font-size: 10px; font-weight: 700; color: #5c5f72; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
-    .tv-side.after .tv-label { color: rgba(79,142,247,0.7); }
+    .tv-side.after { background: rgba(163,230,53,0.05); }
+    .tv-label { font-size: 10px; font-weight: 700; color: #3a4d42; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+    .tv-side.after .tv-label { color: rgba(163,230,53,0.7); }
     .tv-doc {
-      background: #0d0f14; border: 1px solid #2a2d3e; border-radius: 8px;
-      padding: 10px 12px; font-size: 11.5px; color: #9396a8; line-height: 1.8;
-      font-family: 'Consolas', monospace;
+      background: #030404; border: 1px solid #1c2a2a; border-radius: 8px;
+      padding: 10px 12px; font-size: 11.5px; color: #748f80; line-height: 1.8;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
     }
-    .tv-cite { color: #e5484d; font-weight: 700; }
-    .tv-cite-z { color: #4f8ef7; font-weight: 600; font-size: 10px; }
+    .tv-cite { color: #a3e635; font-weight: 700; }
+    .tv-cite-z { color: #34d399; font-weight: 600; font-size: 10px; }
     .tv-arrow-col {
-      background: #13161f; display: flex; align-items: center; justify-content: center;
+      background: #0b0e0e; display: flex; align-items: center; justify-content: center;
       align-self: stretch;
-      border-left: 1px solid #2a2d3e; border-right: 1px solid #2a2d3e;
+      border-left: 1px solid #1c2a2a; border-right: 1px solid #1c2a2a;
     }
-    .tv-arrow-svg { width: 20px; color: #4f8ef7; opacity: 0.6; }
+    .tv-arrow-svg { width: 20px; color: #34d399; opacity: 0.6; }
 
     .inject-result {
       display: flex; align-items: center; gap: 16px;
       padding: 18px 20px; border-radius: 14px; margin-top: 16px;
-      background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.25);
+      background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.25);
     }
     .ir-icon {
       width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
-      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3);
       display: flex; align-items: center; justify-content: center; font-size: 24px;
     }
     .ir-body { flex: 1; }
-    .ir-title { font-size: 14px; font-weight: 700; color: #22c55e; margin-bottom: 4px; }
-    .ir-sub   { font-size: 12px; color: rgba(34,197,94,0.65); }
-    .ir-stats { display: flex; gap: 20px; padding-left: 16px; border-left: 1px solid rgba(34,197,94,0.2); }
+    .ir-title { font-size: 14px; font-weight: 700; color: #34d399; margin-bottom: 4px; }
+    .ir-sub   { font-size: 12px; color: rgba(52,211,153,0.65); }
+    .ir-stats { display: flex; gap: 20px; padding-left: 16px; border-left: 1px solid rgba(52,211,153,0.2); }
     .ir-stat { display: flex; flex-direction: column; align-items: center; }
-    .ir-stat-num { font-size: 28px; font-weight: 800; color: #22c55e; font-variant-numeric: tabular-nums; line-height: 1; }
-    .ir-stat-label { font-size: 9px; font-weight: 600; color: rgba(34,197,94,0.5); text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; text-align: center; }
+    .ir-stat-num { font-size: 28px; font-weight: 800; color: #34d399; font-variant-numeric: tabular-nums; line-height: 1; }
+    .ir-stat-label { font-size: 9px; font-weight: 600; color: rgba(52,211,153,0.5); text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; text-align: center; }
 
     /* ═══════════════════════════════════════════════════
        STEP 4 — SUCCESS
@@ -492,8 +492,8 @@ export class AppRoot extends LitElement {
     .success-hero {
       text-align: center;
       padding: 36px 24px 28px;
-      background: #13161f;
-      border: 1px solid rgba(34,197,94,0.2);
+      background: #0b0e0e;
+      border: 1px solid rgba(52,211,153,0.2);
       border-radius: 20px;
       margin-bottom: 16px;
       position: relative;
@@ -502,26 +502,26 @@ export class AppRoot extends LitElement {
     .success-hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.08) 0%, transparent 65%);
+      background: radial-gradient(ellipse at 50% 0%, rgba(52,211,153,0.08) 0%, transparent 65%);
       pointer-events: none;
     }
     .sh-ring {
       width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px;
-      background: rgba(34,197,94,0.12);
-      border: 2px solid rgba(34,197,94,0.3);
+      background: rgba(52,211,153,0.12);
+      border: 2px solid rgba(52,211,153,0.3);
       display: flex; align-items: center; justify-content: center;
       font-size: 38px;
-      box-shadow: 0 0 40px rgba(34,197,94,0.15);
+      box-shadow: 0 0 40px rgba(52,211,153,0.15);
     }
-    .sh-title { font-size: 24px; font-weight: 800; color: #eef0f6; margin-bottom: 8px; }
-    .sh-sub   { font-size: 14px; color: #9396a8; }
+    .sh-title { font-size: 24px; font-weight: 800; color: #edf7ed; margin-bottom: 8px; }
+    .sh-sub   { font-size: 14px; color: #748f80; }
     .sh-stats {
       display: flex; justify-content: center; gap: 24px; margin-top: 20px;
-      padding-top: 20px; border-top: 1px solid #2a2d3e;
+      padding-top: 20px; border-top: 1px solid #1c2a2a;
     }
     .sh-stat { text-align: center; }
-    .sh-stat-n { font-size: 26px; font-weight: 800; color: #22c55e; font-variant-numeric: tabular-nums; line-height: 1; }
-    .sh-stat-l { font-size: 10px; font-weight: 600; color: #5c5f72; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+    .sh-stat-n { font-size: 26px; font-weight: 800; color: #34d399; font-variant-numeric: tabular-nums; line-height: 1; }
+    .sh-stat-l { font-size: 10px; font-weight: 600; color: #3a4d42; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
 
     .download-cta {
       display: flex; flex-direction: column; align-items: stretch;
@@ -532,10 +532,10 @@ export class AppRoot extends LitElement {
       padding: 16px 24px; border-radius: 14px; border: none; cursor: pointer;
       font-size: 15px; font-weight: 700; font-family: inherit;
       text-decoration: none; transition: all 0.18s;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff; box-shadow: 0 0 30px rgba(34,197,94,0.25);
+      background: linear-gradient(135deg, #34d399, #10b981);
+      color: #002018; box-shadow: 0 0 30px rgba(52,211,153,0.25);
     }
-    .btn-download:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 40px rgba(34,197,94,0.35); }
+    .btn-download:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 40px rgba(52,211,153,0.35); }
     .btn-download:active { transform: scale(0.98); }
     .btn-dl-icon { font-size: 20px; }
     .btn-dl-text { display: flex; flex-direction: column; align-items: flex-start; }
@@ -543,42 +543,42 @@ export class AppRoot extends LitElement {
     .btn-dl-sub  { font-size: 11px; font-weight: 500; opacity: 0.75; }
 
     .word-steps {
-      background: #13161f; border: 1px solid #2a2d3e; border-radius: 16px;
+      background: #0b0e0e; border: 1px solid #1c2a2a; border-radius: 16px;
       overflow: hidden; margin-bottom: 16px;
     }
     .ws-header {
-      padding: 14px 20px; border-bottom: 1px solid #2a2d3e;
-      font-size: 11px; font-weight: 700; color: #5c5f72;
+      padding: 14px 20px; border-bottom: 1px solid #1c2a2a;
+      font-size: 11px; font-weight: 700; color: #3a4d42;
       text-transform: uppercase; letter-spacing: .08em;
     }
     .ws-step {
       display: flex; align-items: center; gap: 16px;
-      padding: 16px 20px; border-bottom: 1px solid #1a1d2a;
+      padding: 16px 20px; border-bottom: 1px solid #101414;
       transition: background 0.15s;
     }
     .ws-step:last-child { border-bottom: none; }
-    .ws-step:hover { background: #1a1d2a; }
+    .ws-step:hover { background: #101414; }
     .ws-num {
       width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-      background: #1a1d2a; border: 1px solid #2a2d3e;
+      background: #101414; border: 1px solid #1c2a2a;
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 800; color: #5c5f72;
+      font-size: 13px; font-weight: 800; color: #3a4d42;
     }
     .ws-icon-wrap {
       width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-      background: #1a1d2a; border: 1px solid #2a2d3e;
+      background: #101414; border: 1px solid #1c2a2a;
       display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
     .ws-body { flex: 1; }
-    .ws-title { font-size: 13px; font-weight: 700; color: #eef0f6; margin-bottom: 3px; }
-    .ws-sub   { font-size: 11px; color: #5c5f72; line-height: 1.5; }
-    .ws-sub strong { color: #9396a8; font-weight: 600; }
+    .ws-title { font-size: 13px; font-weight: 700; color: #edf7ed; margin-bottom: 3px; }
+    .ws-sub   { font-size: 11px; color: #3a4d42; line-height: 1.5; }
+    .ws-sub strong { color: #748f80; font-weight: 600; }
     .ws-badge {
       padding: 3px 10px; border-radius: 100px;
       font-size: 10px; font-weight: 700; flex-shrink: 0;
     }
-    .ws-badge.blue { background: rgba(79,142,247,0.12); color: #4f8ef7; }
-    .ws-badge.green { background: rgba(34,197,94,0.12); color: #22c55e; }
+    .ws-badge.blue { background: rgba(163,230,53,0.12); color: #a3e635; }
+    .ws-badge.green { background: rgba(52,211,153,0.12); color: #34d399; }
 
     /* ═══════════════════════════════════════════════════
        STEP 2 — PIPELINE
@@ -596,22 +596,22 @@ export class AppRoot extends LitElement {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
       padding: 16px 10px;
       border-radius: 14px;
-      border: 1px solid #2a2d3e;
-      background: #1a1d2a;
+      border: 1px solid #1c2a2a;
+      background: #101414;
       text-align: center;
       transition: all 0.3s ease;
       position: relative;
     }
     .ps.ps-info   { opacity: 0.55; }
     .ps.ps-active {
-      border-color: rgba(79,142,247,0.45);
-      background: rgba(79,142,247,0.07);
-      box-shadow: 0 0 24px rgba(79,142,247,0.12), 0 0 0 1px rgba(79,142,247,0.15) inset;
+      border-color: rgba(163,230,53,0.45);
+      background: rgba(163,230,53,0.07);
+      box-shadow: 0 0 24px rgba(163,230,53,0.12), 0 0 0 1px rgba(163,230,53,0.15) inset;
       opacity: 1;
     }
     .ps.ps-done {
-      border-color: rgba(34,197,94,0.35);
-      background: rgba(34,197,94,0.06);
+      border-color: rgba(52,211,153,0.35);
+      background: rgba(52,211,153,0.06);
       opacity: 1;
     }
     .ps.ps-muted { opacity: 0.3; }
@@ -619,7 +619,7 @@ export class AppRoot extends LitElement {
     .ps-badge {
       position: absolute; top: -8px; right: -8px;
       width: 18px; height: 18px; border-radius: 50%;
-      background: #22c55e; border: 2px solid #0d0f14;
+      background: #34d399; border: 2px solid #030404;
       display: flex; align-items: center; justify-content: center;
       font-size: 9px; font-weight: 700; color: #fff;
     }
@@ -628,31 +628,31 @@ export class AppRoot extends LitElement {
       width: 44px; height: 44px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 20px;
-      background: #222536; border: 1px solid #2a2d3e;
+      background: #131818; border: 1px solid #1c2a2a;
       transition: all 0.3s;
     }
     .ps.ps-active .ps-icon {
-      background: rgba(79,142,247,0.15);
-      border-color: rgba(79,142,247,0.35);
+      background: rgba(163,230,53,0.15);
+      border-color: rgba(163,230,53,0.35);
     }
     .ps.ps-done .ps-icon {
-      background: rgba(34,197,94,0.15);
-      border-color: rgba(34,197,94,0.35);
+      background: rgba(52,211,153,0.15);
+      border-color: rgba(52,211,153,0.35);
     }
 
     .ps-title {
-      font-size: 11.5px; font-weight: 700; color: #eef0f6; line-height: 1.3;
+      font-size: 11.5px; font-weight: 700; color: #edf7ed; line-height: 1.3;
     }
-    .ps.ps-info .ps-title  { color: #9396a8; }
-    .ps.ps-muted .ps-title { color: #5c5f72; }
-    .ps.ps-active .ps-title { color: #eef0f6; }
-    .ps.ps-done .ps-title  { color: #22c55e; }
+    .ps.ps-info .ps-title  { color: #748f80; }
+    .ps.ps-muted .ps-title { color: #3a4d42; }
+    .ps.ps-active .ps-title { color: #edf7ed; }
+    .ps.ps-done .ps-title  { color: #34d399; }
 
     .ps-sub {
-      font-size: 10px; color: #5c5f72; line-height: 1.45; max-width: 90px;
+      font-size: 10px; color: #3a4d42; line-height: 1.45; max-width: 90px;
     }
-    .ps.ps-active .ps-sub { color: #9396a8; }
-    .ps.ps-done .ps-sub   { color: rgba(34,197,94,0.6); }
+    .ps.ps-active .ps-sub { color: #748f80; }
+    .ps.ps-done .ps-sub   { color: rgba(52,211,153,0.6); }
 
     /* Pipeline arrow */
     .pa {
@@ -660,40 +660,40 @@ export class AppRoot extends LitElement {
     }
     .pa svg {
       width: 22px; height: 14px;
-      color: #2a2d3e;
+      color: #1c2a2a;
       transition: color 0.3s;
       overflow: visible;
     }
-    .pa.pa-done svg { color: rgba(34,197,94,0.5); }
-    .pa.pa-active svg { color: rgba(79,142,247,0.5); }
+    .pa.pa-done svg { color: rgba(52,211,153,0.5); }
+    .pa.pa-active svg { color: rgba(163,230,53,0.5); }
 
     /* Parse result panel */
     .parse-result {
       display: flex; align-items: center; gap: 16px;
       padding: 18px 20px;
-      background: rgba(34,197,94,0.07);
-      border: 1px solid rgba(34,197,94,0.25);
+      background: rgba(52,211,153,0.07);
+      border: 1px solid rgba(52,211,153,0.25);
       border-radius: 14px;
       margin-top: 16px;
     }
     .parse-result-ico {
       width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
-      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3);
       display: flex; align-items: center; justify-content: center;
       font-size: 24px;
     }
     .parse-result-body { flex: 1; }
-    .parse-result-title { font-size: 14px; font-weight: 700; color: #22c55e; margin-bottom: 3px; }
-    .parse-result-sub   { font-size: 12px; color: rgba(34,197,94,0.65); }
+    .parse-result-title { font-size: 14px; font-weight: 700; color: #34d399; margin-bottom: 3px; }
+    .parse-result-sub   { font-size: 12px; color: rgba(52,211,153,0.65); }
     .parse-count {
       display: flex; flex-direction: column; align-items: center;
-      padding: 0 16px; border-left: 1px solid rgba(34,197,94,0.2);
+      padding: 0 16px; border-left: 1px solid rgba(52,211,153,0.2);
     }
     .parse-count-num {
-      font-size: 34px; font-weight: 800; color: #22c55e;
+      font-size: 34px; font-weight: 800; color: #34d399;
       font-variant-numeric: tabular-nums; line-height: 1;
     }
-    .parse-count-label { font-size: 10px; font-weight: 600; color: rgba(34,197,94,0.5); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+    .parse-count-label { font-size: 10px; font-weight: 600; color: rgba(52,211,153,0.5); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
 
     .parse-warning {
       display: flex; align-items: flex-start; gap: 10px;
@@ -710,15 +710,15 @@ export class AppRoot extends LitElement {
     .upload-col { display: flex; flex-direction: column; gap: 8px; }
     .upload-col-label {
       font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .08em; color: #5c5f72; text-align: center; margin-bottom: 4px;
+      letter-spacing: .08em; color: #3a4d42; text-align: center; margin-bottom: 4px;
     }
     .upload-divider {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 8px; padding: 0 18px;
     }
-    .upload-divider-line { flex: 1; width: 1px; background: #2a2d3e; }
+    .upload-divider-line { flex: 1; width: 1px; background: #1c2a2a; }
     .upload-divider-text {
-      font-size: 10px; font-weight: 700; color: #5c5f72;
+      font-size: 10px; font-weight: 700; color: #3a4d42;
       text-transform: uppercase; letter-spacing: .06em;
     }
 
@@ -727,8 +727,8 @@ export class AppRoot extends LitElement {
        ═══════════════════════════════════════════════════ */
 
     .progress-wrap {
-      background: #13161f;
-      border: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border: 1px solid #1c2a2a;
       border-radius: 16px;
       overflow: hidden;
     }
@@ -737,19 +737,19 @@ export class AppRoot extends LitElement {
     .progress-header {
       display: flex; align-items: center; gap: 14px;
       padding: 20px 24px 16px;
-      border-bottom: 1px solid #2a2d3e;
+      border-bottom: 1px solid #1c2a2a;
     }
     .progress-icon {
       width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
-      background: rgba(79,142,247,0.12); border: 1px solid rgba(79,142,247,0.25);
+      background: rgba(163,230,53,0.12); border: 1px solid rgba(163,230,53,0.25);
       display: flex; align-items: center; justify-content: center;
     }
     .progress-title {
-      flex: 1; font-size: 15px; font-weight: 700; color: #eef0f6;
+      flex: 1; font-size: 15px; font-weight: 700; color: #edf7ed;
     }
     .progress-fraction {
-      font-size: 13px; font-weight: 600; color: #4f8ef7;
-      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.2);
+      font-size: 13px; font-weight: 600; color: #a3e635;
+      background: rgba(163,230,53,0.1); border: 1px solid rgba(163,230,53,0.2);
       border-radius: 8px; padding: 4px 12px;
       font-variant-numeric: tabular-nums;
     }
@@ -759,11 +759,11 @@ export class AppRoot extends LitElement {
       padding: 0 24px 4px;
     }
     .progress-track {
-      height: 3px; background: #1a1d2a; border-radius: 2px; overflow: hidden;
+      height: 3px; background: #101414; border-radius: 2px; overflow: hidden;
     }
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #4f8ef7, #7fb3ff);
+      background: linear-gradient(90deg, #a3e635, #c7f279);
       border-radius: 2px;
       transition: width 0.4s ease;
     }
@@ -773,10 +773,10 @@ export class AppRoot extends LitElement {
       max-height: 420px;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: #2a2d3e transparent;
+      scrollbar-color: #1c2a2a transparent;
     }
     .entry-list::-webkit-scrollbar { width: 5px; }
-    .entry-list::-webkit-scrollbar-thumb { background: #2a2d3e; border-radius: 3px; }
+    .entry-list::-webkit-scrollbar-thumb { background: #1c2a2a; border-radius: 3px; }
 
     /* Individual entry row */
     .entry-row {
@@ -785,30 +785,30 @@ export class AppRoot extends LitElement {
       align-items: center;
       gap: 10px;
       padding: 9px 24px;
-      border-bottom: 1px solid #0d0f14;
+      border-bottom: 1px solid #030404;
       transition: background 0.15s;
       min-height: 44px;
     }
     .entry-row:last-child { border-bottom: none; }
-    .entry-row.checking { background: rgba(79,142,247,0.06); }
+    .entry-row.checking { background: rgba(163,230,53,0.06); }
     .entry-row.ok       { background: transparent; }
     .entry-row.warn     { background: rgba(245,158,11,0.04); }
-    .entry-row.error    { background: rgba(229,72,77,0.04); }
+    .entry-row.error    { background: rgba(163,230,53,0.04); }
     .entry-row.pending  { background: transparent; opacity: 0.45; }
 
     .entry-idx {
       font-size: 11px; font-weight: 700;
-      color: #5c5f72; text-align: right;
+      color: #3a4d42; text-align: right;
       font-variant-numeric: tabular-nums;
     }
     .entry-key {
-      font-size: 11.5px; font-weight: 600; color: #9396a8;
+      font-size: 11.5px; font-weight: 600; color: #748f80;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      font-family: 'Consolas', monospace;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
     }
-    .entry-row.checking .entry-key { color: #4f8ef7; }
+    .entry-row.checking .entry-key { color: #a3e635; }
     .entry-title {
-      font-size: 11.5px; color: #c0c3d6;
+      font-size: 11.5px; color: #9db8a6;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .entry-status {
@@ -816,11 +816,11 @@ export class AppRoot extends LitElement {
       font-size: 11px; font-weight: 600;
       justify-content: flex-end;
     }
-    .entry-status.checking { color: #4f8ef7; }
-    .entry-status.ok       { color: #22c55e; }
+    .entry-status.checking { color: #a3e635; }
+    .entry-status.ok       { color: #34d399; }
     .entry-status.warn     { color: #f59e0b; }
-    .entry-status.error    { color: #e5484d; }
-    .entry-status.pending  { color: #5c5f72; }
+    .entry-status.error    { color: #a3e635; }
+    .entry-status.pending  { color: #3a4d42; }
 
     /* Status icon */
     .status-icon { font-size: 13px; flex-shrink: 0; }
@@ -837,40 +837,40 @@ export class AppRoot extends LitElement {
       margin-bottom: 20px;
     }
     .stat-cell {
-      background: #13161f;
-      border: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border: 1px solid #1c2a2a;
       border-radius: 12px;
       padding: 14px 16px;
       text-align: center;
     }
     .stat-val {
       font-size: 22px; font-weight: 800;
-      color: #eef0f6; line-height: 1;
+      color: #edf7ed; line-height: 1;
       margin-bottom: 5px;
       font-variant-numeric: tabular-nums;
     }
     .stat-val.warn  { color: #f59e0b; }
-    .stat-val.error { color: #e5484d; }
-    .stat-val.ok    { color: #22c55e; }
-    .stat-label { font-size: 10px; font-weight: 600; color: #5c5f72; text-transform: uppercase; letter-spacing: .06em; }
+    .stat-val.error { color: #a3e635; }
+    .stat-val.ok    { color: #34d399; }
+    .stat-label { font-size: 10px; font-weight: 600; color: #3a4d42; text-transform: uppercase; letter-spacing: .06em; }
 
     /* Table card */
     .table-card {
-      background: #13161f;
-      border: 1px solid #2a2d3e;
+      background: #0b0e0e;
+      border: 1px solid #1c2a2a;
       border-radius: 16px;
       overflow: hidden;
     }
     .table-toolbar {
       display: flex; align-items: center; gap: 10px;
       padding: 16px 20px;
-      border-bottom: 1px solid #2a2d3e;
+      border-bottom: 1px solid #1c2a2a;
     }
     .table-toolbar-title {
-      font-size: 13px; font-weight: 700; color: #eef0f6; flex: 1;
+      font-size: 13px; font-weight: 700; color: #edf7ed; flex: 1;
     }
     .table-hint {
-      font-size: 11px; color: #5c5f72;
+      font-size: 11px; color: #3a4d42;
     }
 
     .table-scroll {
@@ -878,10 +878,10 @@ export class AppRoot extends LitElement {
       overflow-y: auto;
       max-height: 520px;
       scrollbar-width: thin;
-      scrollbar-color: #2a2d3e transparent;
+      scrollbar-color: #1c2a2a transparent;
     }
     .table-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
-    .table-scroll::-webkit-scrollbar-thumb { background: #2a2d3e; border-radius: 3px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: #1c2a2a; border-radius: 3px; }
 
     table {
       width: 100%;
@@ -891,33 +891,33 @@ export class AppRoot extends LitElement {
     }
     thead { position: sticky; top: 0; z-index: 2; }
     th {
-      background: #0d0f14;
+      background: #030404;
       padding: 10px 14px;
       text-align: left;
       font-size: 10px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .07em;
-      color: #5c5f72;
-      border-bottom: 1px solid #2a2d3e;
+      color: #3a4d42;
+      border-bottom: 1px solid #1c2a2a;
       white-space: nowrap;
       user-select: none;
     }
     th:first-child { width: 44px; text-align: center; }
     td {
       padding: 0;
-      border-bottom: 1px solid #13161f;
+      border-bottom: 1px solid #0b0e0e;
       vertical-align: middle;
     }
     td:first-child { text-align: center; width: 44px; }
     tbody tr { transition: background 0.1s; }
-    tbody tr.row-ok    { background: #13161f; }
+    tbody tr.row-ok    { background: #0b0e0e; }
     tbody tr.row-warn  { background: rgba(245,158,11,0.03); }
-    tbody tr.row-error { background: rgba(229,72,77,0.03); }
-    tbody tr.row-ok:hover    { background: #1a1d2a; }
+    tbody tr.row-error { background: rgba(163,230,53,0.03); }
+    tbody tr.row-ok:hover    { background: #101414; }
     tbody tr.row-warn:hover  { background: rgba(245,158,11,0.07); }
-    tbody tr.row-error:hover { background: rgba(229,72,77,0.07); }
+    tbody tr.row-error:hover { background: rgba(163,230,53,0.07); }
 
     .td-num {
-      font-size: 11px; font-weight: 600; color: #5c5f72;
+      font-size: 11px; font-weight: 600; color: #3a4d42;
       font-variant-numeric: tabular-nums;
       padding: 10px 0;
     }
@@ -925,8 +925,8 @@ export class AppRoot extends LitElement {
       padding: 6px 14px;
     }
     .key-text {
-      font-size: 11px; font-weight: 600; font-family: 'Consolas', monospace;
-      color: #9396a8; white-space: nowrap;
+      font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', 'Consolas', monospace;
+      color: #748f80; white-space: nowrap;
       display: block; margin-bottom: 3px;
     }
 
@@ -938,19 +938,19 @@ export class AppRoot extends LitElement {
       text-transform: uppercase; letter-spacing: .04em;
       white-space: nowrap;
     }
-    .badge-ok    { background: rgba(34,197,94,0.12);  color: #22c55e; }
+    .badge-ok    { background: rgba(52,211,153,0.12);  color: #34d399; }
     .badge-warn  { background: rgba(245,158,11,0.12); color: #f59e0b; }
-    .badge-error { background: rgba(229,72,77,0.12);  color: #e5484d; }
+    .badge-error { background: rgba(163,230,53,0.12);  color: #a3e635; }
 
     /* Issue tags */
     .issue-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
     .issue-tag {
       display: inline-block; padding: 1px 5px; border-radius: 3px;
       font-size: 9px; font-weight: 600; letter-spacing: .02em;
-      background: #1a1d2a; color: #9396a8; border: 1px solid #2a2d3e;
+      background: #101414; color: #748f80; border: 1px solid #1c2a2a;
       white-space: nowrap;
     }
-    .issue-tag.error { background: rgba(229,72,77,0.08); color: #e5484d; border-color: rgba(229,72,77,0.2); }
+    .issue-tag.error { background: rgba(163,230,53,0.08); color: #a3e635; border-color: rgba(163,230,53,0.2); }
     .issue-tag.warn  { background: rgba(245,158,11,0.08); color: #f59e0b; border-color: rgba(245,158,11,0.2); }
 
     /* Editable cells */
@@ -959,7 +959,7 @@ export class AppRoot extends LitElement {
       height: 100%;
     }
     .cell-text {
-      font-size: 12px; color: #c0c3d6;
+      font-size: 12px; color: #9db8a6;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       max-width: 220px;
       padding: 4px 6px;
@@ -969,22 +969,22 @@ export class AppRoot extends LitElement {
       transition: border-color 0.15s, background 0.15s;
     }
     .cell-text:hover {
-      border-color: #2a2d3e;
-      background: #1a1d2a;
+      border-color: #1c2a2a;
+      background: #101414;
     }
-    .cell-text.empty { color: #5c5f72; font-style: italic; }
+    .cell-text.empty { color: #3a4d42; font-style: italic; }
     .cell-text.edited {
-      color: #4f8ef7;
-      border-color: rgba(79,142,247,0.25);
-      background: rgba(79,142,247,0.05);
+      color: #a3e635;
+      border-color: rgba(163,230,53,0.25);
+      background: rgba(163,230,53,0.05);
     }
     .cell-input {
       width: 100%; min-width: 120px;
-      background: #222536; border: 1px solid #4f8ef7;
-      border-radius: 5px; color: #eef0f6;
+      background: #131818; border: 1px solid #a3e635;
+      border-radius: 5px; color: #edf7ed;
       font-size: 12px; font-family: inherit;
       padding: 4px 8px; outline: none;
-      box-shadow: 0 0 0 2px rgba(79,142,247,0.15);
+      box-shadow: 0 0 0 2px rgba(163,230,53,0.15);
     }
     /* DOI column */
     .col-doi  { min-width: 180px; }
@@ -995,11 +995,11 @@ export class AppRoot extends LitElement {
     .table-footer {
       display: flex; align-items: center; gap: 10px;
       padding: 14px 20px;
-      border-top: 1px solid #2a2d3e;
-      background: #0d0f14;
+      border-top: 1px solid #1c2a2a;
+      background: #030404;
     }
     .changed-hint {
-      font-size: 11px; color: #4f8ef7; flex: 1;
+      font-size: 11px; color: #a3e635; flex: 1;
     }
 
     /* Results top actions */
@@ -1009,7 +1009,7 @@ export class AppRoot extends LitElement {
       margin-bottom: 20px;
     }
     .results-title {
-      font-size: 17px; font-weight: 700; color: #eef0f6;
+      font-size: 17px; font-weight: 700; color: #edf7ed;
       flex: 1;
     }
   `
@@ -1094,7 +1094,12 @@ export class AppRoot extends LitElement {
         const i = this._entries.findIndex(e => e.key === ev.key)
         if (i >= 0) {
           const updated = [...this._entries]
-          updated[i] = { ...updated[i], status: ev.status, issues: ev.issues }
+          updated[i] = {
+            ...updated[i],
+            status: ev.status,
+            issues: ev.issues,
+            ...(ev.fields ? { fields: ev.fields } : {}),
+          }
           this._entries = updated
         }
         this._checkedCount = ev.idx
@@ -1349,7 +1354,7 @@ export class AppRoot extends LitElement {
       <div class="progress-wrap">
         <div class="progress-header">
           <div class="progress-icon">
-            <span class="spinner" style="color:#4f8ef7"></span>
+            <span class="spinner" style="color:#a3e635"></span>
           </div>
           <div class="progress-title">Проверка источников через Crossref...</div>
           <div class="progress-fraction">${this._checkedCount}&thinsp;/&thinsp;${this._totalEntries || '?'}</div>
@@ -1522,7 +1527,7 @@ export class AppRoot extends LitElement {
           <div>
             <div class="card-title">Загрузи файл библиографии</div>
             <div class="card-desc">
-              BibTeX-файл <strong style="color:#eef0f6">(.bib)</strong> со списком источников.
+              BibTeX-файл <strong style="color:#edf7ed">(.bib)</strong> со списком источников.
               Убедись, что перед каждой записью стоит номерной комментарий — смотри пример ниже.
             </div>
           </div>
@@ -1570,7 +1575,7 @@ export class AppRoot extends LitElement {
           </label>
           <input class="text-input" type="email" placeholder="you@university.edu"
             @input=${(e: Event) => this._mailto = (e.target as HTMLInputElement).value} />
-          <div style="font-size:11px;color:#5c5f72;margin-top:5px">
+          <div style="font-size:11px;color:#3a4d42;margin-top:5px">
             Ускоряет и стабилизирует запросы к Crossref (полезно при большом списке)
           </div>
         </div>
@@ -1583,7 +1588,7 @@ export class AppRoot extends LitElement {
             @click=${this._runValidate}>
             <div class="ac-icon">🔍</div>
             <div class="ac-title ac-primary">
-              ${isProc ? html`<span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;color:#4f8ef7"></span>` : nothing}
+              ${isProc ? html`<span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;color:#a3e635"></span>` : nothing}
               ${isProc ? 'Проверяю...' : 'Проверить DOI через Crossref'}
             </div>
             <div class="ac-sub">Найдёт недостающие DOI, исправит метаданные. Займёт ~1 мин на 50 источников.</div>
@@ -1628,8 +1633,9 @@ export class AppRoot extends LitElement {
           <div>
             <div class="card-title">URI карта источников</div>
             <div class="card-desc">
-              Привязывает номера ссылок <strong style="color:#eef0f6">[1], [2]…</strong>
-              к внутренним идентификаторам Zotero. Следуй шагам ниже — это занимает меньше минуты.
+              Привязывает маркеры <strong style="color:#edf7ed">[1], [2]…</strong>
+              к реальным записям в твоей библиотеке Zotero — чтобы каждый ADDIN-field в документе
+              указывал именно на твой источник. Следуй шагам ниже — занимает меньше минуты.
             </div>
           </div>
         </div>
@@ -1664,7 +1670,7 @@ export class AppRoot extends LitElement {
           <div class="ps ${s4}">
             ${isDone ? html`<div class="ps-badge">✓</div>` : nothing}
             <div class="ps-icon">
-              ${isProc ? html`<span class="spinner" style="color:#4f8ef7;width:20px;height:20px;border-width:2.5px"></span>`
+              ${isProc ? html`<span class="spinner" style="color:#a3e635;width:20px;height:20px;border-width:2.5px"></span>`
                        : isDone ? '✅' : '⚙'}
             </div>
             <div class="ps-title">${isDone ? 'URI карта готова' : isProc ? 'Создаю карту…' : 'Создай URI карту'}</div>
@@ -1794,11 +1800,12 @@ export class AppRoot extends LitElement {
         <div class="card-header">
           <div class="card-icon purple">⚡</div>
           <div>
-            <div class="card-title">Заменить ссылки в документе</div>
+            <div class="card-title">Вшить живые поля Zotero в документ</div>
             <div class="card-desc">
-              Загрузи Word-файл с числовыми ссылками — скрипт заменит
-              <strong style="color:#eef0f6">[1], [5][6][7]</strong> на нативные поля Zotero,
-              после чего плагин автоматически отформатирует список литературы.
+              Загрузи Word-файл — скрипт заменит
+              <strong style="color:#edf7ed">[1], [5][6][7]</strong> на живые поля Zotero.
+              После этого в Word: одна кнопка «Add Bibliography» — список литературы готов
+              и сам обновляется при любых правках.
             </div>
           </div>
         </div>
@@ -1845,12 +1852,12 @@ export class AppRoot extends LitElement {
           </div>
           <div class="tv-arrow-col">${arrowSvg}</div>
           <div class="tv-side after">
-            <div class="tv-label">После обработки</div>
+            <div class="tv-label">После обработки — поля Zotero</div>
             <div class="tv-doc">
               ...результаты показали<br>
               значительный эффект
-              <span class="tv-cite-z">ZOTERO [1]</span>,<br>
-              <span class="tv-cite-z">ZOTERO [5–8]</span><br>
+              <span class="tv-cite-z">⦿ ADDIN Zotero [1]</span>,<br>
+              <span class="tv-cite-z">⦿ ADDIN Zotero [5–8]</span><br>
               на прочность керамики...
             </div>
           </div>
@@ -1872,7 +1879,7 @@ export class AppRoot extends LitElement {
             <div class="ir-icon">✅</div>
             <div class="ir-body">
               <div class="ir-title">Документ успешно обработан!</div>
-              <div class="ir-sub">Поля Zotero вставлены · скачай и открой в Word</div>
+              <div class="ir-sub">ADDIN-поля Zotero вшиты · скачай → открой Word → нажми «Add/Edit Bibliography»</div>
             </div>
             <div class="ir-stats">
               <div class="ir-stat">
@@ -1926,8 +1933,8 @@ export class AppRoot extends LitElement {
       <!-- Success hero -->
       <div class="success-hero">
         <div class="sh-ring">🎉</div>
-        <div class="sh-title">Всё готово!</div>
-        <div class="sh-sub">Документ с нативными полями Zotero создан и готов к скачиванию</div>
+        <div class="sh-title">Готово — осталось одно нажатие.</div>
+        <div class="sh-sub">Скачай файл, открой в Word с плагином Zotero,<br>нажми «Add/Edit Bibliography» — список литературы появится сам.<br>Меняй стиль, удаляй ссылки — библиография обновится автоматически.</div>
         ${this._injectReplaced || this._injectGroups ? html`
           <div class="sh-stats">
             <div class="sh-stat">
@@ -1957,24 +1964,24 @@ export class AppRoot extends LitElement {
 
       <!-- Steps in Word -->
       <div class="word-steps">
-        <div class="ws-header">Что делать дальше — 3 простых шага в Word</div>
+        <div class="ws-header">Что делать дальше — в Word с плагином Zotero</div>
 
         <div class="ws-step">
           <div class="ws-num">1</div>
           <div class="ws-icon-wrap">📂</div>
           <div class="ws-body">
             <div class="ws-title">Открой скачанный файл в Microsoft Word</div>
-            <div class="ws-sub">Двойной клик по <strong>output_zotero.docx</strong></div>
+            <div class="ws-sub">Двойной клик по <strong>output_zotero.docx</strong> — ссылки в тексте уже выглядят как живые поля Zotero</div>
           </div>
           <span class="ws-badge blue">Word</span>
         </div>
 
         <div class="ws-step">
           <div class="ws-num">2</div>
-          <div class="ws-icon-wrap">🔄</div>
+          <div class="ws-icon-wrap">📋</div>
           <div class="ws-body">
-            <div class="ws-title">Нажми Refresh в панели Zotero</div>
-            <div class="ws-sub">Zotero → <strong>Refresh</strong> (или кнопка обновления в панели инструментов)</div>
+            <div class="ws-title">Нажми «Add/Edit Bibliography» — список литературы готов</div>
+            <div class="ws-sub">Zotero панель → <strong>Add/Edit Bibliography</strong> → список источников появляется автоматически и привязан к ссылкам в тексте</div>
           </div>
           <span class="ws-badge blue">Zotero</span>
         </div>
@@ -1983,18 +1990,20 @@ export class AppRoot extends LitElement {
           <div class="ws-num">3</div>
           <div class="ws-icon-wrap">🎨</div>
           <div class="ws-body">
-            <div class="ws-title">Выбери стиль цитирования</div>
-            <div class="ws-sub">Например <strong>Ceramic International</strong>, IEEE, APA и др.</div>
+            <div class="ws-title">Меняй стиль — всё обновится само</div>
+            <div class="ws-sub">Zotero → Document Preferences → выбери стиль (<strong>ГОСТ, APA, IEEE, Vancouver...</strong>) — ссылки и список литературы переформатируются мгновенно. Удаляешь цитату — она пропадает из библиографии.</div>
           </div>
           <span class="ws-badge green">Готово</span>
         </div>
       </div>
 
       <!-- Tip -->
-      <div style="padding:12px 16px;background:#1a1d2a;border:1px solid #2a2d3e;border-radius:12px;font-size:12px;color:#9396a8;line-height:1.6;margin-bottom:16px">
-        <strong style="color:#eef0f6">💡 Подсказка:</strong>
-        После Refresh группы вида <strong style="color:#eef0f6">[5][6][7][8]</strong> автоматически
-        сожмутся в <strong style="color:#22c55e">[5–8]</strong> согласно выбранному стилю.
+      <div style="padding:14px 18px;background:#101414;border:1px solid #1c2a2a;border-radius:12px;font-size:12px;color:#748f80;line-height:1.7;margin-bottom:16px">
+        <strong style="color:#edf7ed">💡 Как это работает:</strong>
+        В документ вшиты те же ADDIN-поля, что плагин Zotero создаёт при ручной вставке ссылок.
+        Word их «знает» и передаёт управление Zotero: библиография управляется динамически.
+        Группы <strong style="color:#edf7ed">[5][6][7][8]</strong> автоматически сожмутся в
+        <strong style="color:#34d399">[5–8]</strong> согласно выбранному стилю.
       </div>
 
       <div class="btn-row">

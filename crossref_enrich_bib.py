@@ -13,8 +13,10 @@ import html
 import json
 import re
 import sys
+import threading
 import time
 from collections import OrderedDict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from html.parser import HTMLParser
@@ -29,9 +31,12 @@ DOI_PATTERN = re.compile(r"10\.\d{4,9}/\S+", re.IGNORECASE)
 BIBCHECK_PATTERN = re.compile(r"\[\s*BIBCHECK\s*:\s*([^\]]*)\]", re.IGNORECASE)
 
 
+_emit_lock = threading.Lock()
+
 def _emit_event(data: dict) -> None:
-    """Print a newline-delimited JSON event to stdout for --json-events mode."""
-    print(json.dumps(data, ensure_ascii=False), flush=True)
+    """Print a newline-delimited JSON event to stdout for --json-events mode (thread-safe)."""
+    with _emit_lock:
+        print(json.dumps(data, ensure_ascii=False), flush=True)
 
 
 @dataclass
@@ -671,6 +676,182 @@ def enrich_entry_from_crossref(entry: BibEntry, work: dict, overwrite: bool, inc
     return changed
 
 
+def _process_one_entry(
+    idx: int,
+    total: int,
+    entry: BibEntry,
+    user_agent: str,
+    mailto: str,
+    rows: int,
+    sleep_seconds: float,
+    retries: int,
+    timeout: float,
+    doi_title_threshold: float,
+    overwrite: bool,
+    include_abstract: bool,
+    json_events: bool,
+    progress: bool,
+) -> tuple[dict, set[str]]:
+    """Process a single BibTeX entry against Crossref. Returns (stat_deltas, issues)."""
+    stat_delta = {
+        "processed": 1,
+        "doi_valid": 0,
+        "doi_added": 0,
+        "doi_corrected": 0,
+        "doi_title_mismatch": 0,
+        "unresolved": 0,
+        "metadata_mismatch_seen": 0,
+        "metadata_mismatch_unfixed": 0,
+        "abstract_added": 0,
+        "entries_changed": 0,
+        "fields_changed": 0,
+    }
+    issues: set[str] = set()
+
+    if progress:
+        print(f"[{idx}/{total}] {entry.key}", flush=True)
+    if json_events:
+        _emit_event({
+            "type": "entry_start",
+            "idx": idx,
+            "total": total,
+            "key": entry.key,
+            "title": strip_outer_braces(entry.fields.get("title", ""))[:120],
+        })
+
+    original_doi = normalize_doi(entry.fields.get("doi", ""))
+    raw_doi = entry.fields.get("doi", "").strip()
+    if raw_doi and not original_doi:
+        issues.add("doi_invalid_format")
+
+    work = None
+    doi_from_crossref = None
+
+    if original_doi:
+        try:
+            work = crossref_get_work_by_doi(
+                original_doi,
+                user_agent=user_agent,
+                mailto=mailto,
+                retries=retries,
+                timeout=timeout,
+            )
+        except Exception as exc:
+            print(f"[WARN] {entry.key}: DOI check failed ({exc})", file=sys.stderr)
+            issues.add("crossref_error")
+        if work:
+            sim = title_similarity(entry, work)
+            if sim is not None and sim < doi_title_threshold:
+                stat_delta["doi_title_mismatch"] += 1
+                issues.add("doi_title_mismatch")
+                print(
+                    f"[WARN] {entry.key}: DOI/title mismatch (sim={sim:.2f}, doi={original_doi})",
+                    file=sys.stderr,
+                )
+                work = None
+            else:
+                stat_delta["doi_valid"] += 1
+                doi_from_crossref = normalize_doi(work.get("DOI", "")) or original_doi
+        else:
+            issues.add("doi_not_found")
+
+    if not work:
+        try:
+            work = crossref_search(
+                entry,
+                user_agent=user_agent,
+                mailto=mailto,
+                rows=rows,
+                retries=retries,
+                timeout=timeout,
+            )
+        except Exception as exc:
+            print(f"[WARN] {entry.key}: Crossref search failed ({exc})", file=sys.stderr)
+            issues.add("crossref_error")
+        if work:
+            doi_from_crossref = normalize_doi(work.get("DOI", ""))
+
+    if not work:
+        stat_delta["unresolved"] += 1
+        issues.add("crossref_unresolved")
+        if json_events:
+            _emit_event({
+                "type": "entry_done",
+                "idx": idx,
+                "key": entry.key,
+                "status": "error",
+                "issues": sorted(issues),
+                "fields": dict(entry.fields),
+            })
+        if sleep_seconds > 0:
+            time.sleep(sleep_seconds)
+        return stat_delta, issues
+
+    if include_abstract:
+        doi_for_abs = normalize_doi(work.get("DOI", "")) or original_doi or normalize_doi(entry.fields.get("doi", ""))
+        work = add_fallback_abstract_to_work(
+            work=work,
+            doi=doi_for_abs or "",
+            user_agent=user_agent,
+            retries=retries,
+            timeout=timeout,
+        )
+
+    before_doi = normalize_doi(entry.fields.get("doi", ""))
+    before_has_abstract = bool(strip_outer_braces(entry.fields.get("abstract", "")).strip())
+    api_values = crossref_field_values(entry, work, include_abstract=include_abstract)
+    pre_mismatches = find_mismatch_fields(entry, api_values)
+    if pre_mismatches:
+        stat_delta["metadata_mismatch_seen"] += 1
+
+    fields_changed = enrich_entry_from_crossref(
+        entry,
+        work,
+        overwrite=overwrite,
+        include_abstract=include_abstract,
+    )
+    post_mismatches = find_mismatch_fields(entry, api_values)
+    if post_mismatches:
+        stat_delta["metadata_mismatch_unfixed"] += 1
+        issues.add("metadata_not_corrected")
+        for f in post_mismatches:
+            issues.add(f"mismatch_{f}")
+
+    after_doi = normalize_doi(entry.fields.get("doi", "")) or doi_from_crossref
+    after_has_abstract = bool(strip_outer_braces(entry.fields.get("abstract", "")).strip())
+
+    if after_doi and not before_doi:
+        stat_delta["doi_added"] += 1
+    elif before_doi and after_doi and before_doi.lower() != after_doi.lower():
+        stat_delta["doi_corrected"] += 1
+    if include_abstract and (not before_has_abstract and after_has_abstract):
+        stat_delta["abstract_added"] += 1
+
+    if fields_changed > 0:
+        stat_delta["entries_changed"] += 1
+        stat_delta["fields_changed"] += fields_changed
+
+    if json_events:
+        _entry_status = (
+            "error" if {"crossref_unresolved", "doi_not_found", "doi_invalid_format"} & issues
+            else "warn" if issues
+            else "ok"
+        )
+        _emit_event({
+            "type": "entry_done",
+            "idx": idx,
+            "key": entry.key,
+            "status": _entry_status,
+            "issues": sorted(issues),
+            "fields": dict(entry.fields),
+        })
+
+    if sleep_seconds > 0:
+        time.sleep(sleep_seconds)
+
+    return stat_delta, issues
+
+
 def process_entries(
     entries: list[BibEntry],
     allowed_types: set[str],
@@ -685,6 +866,7 @@ def process_entries(
     overwrite: bool,
     include_abstract: bool,
     json_events: bool = False,
+    workers: int = 1,
 ) -> tuple[dict, dict[str, set[str]]]:
     stats = {
         "processed": 0,
@@ -708,147 +890,40 @@ def process_entries(
     if json_events:
         _emit_event({"type": "start", "total": total})
 
-    for idx, entry in enumerate(eligible, start=1):
-        stats["processed"] += 1
-        if progress:
-            print(f"[{idx}/{total}] {entry.key}", flush=True)
-        if json_events:
-            _emit_event({
-                "type": "entry_start",
-                "idx": idx,
-                "total": total,
-                "key": entry.key,
-                "title": strip_outer_braces(entry.fields.get("title", ""))[:120],
-            })
+    entry_kwargs = dict(
+        user_agent=user_agent,
+        mailto=mailto,
+        rows=rows,
+        sleep_seconds=sleep_seconds,
+        retries=retries,
+        timeout=timeout,
+        doi_title_threshold=doi_title_threshold,
+        overwrite=overwrite,
+        include_abstract=include_abstract,
+        json_events=json_events,
+        progress=progress,
+    )
 
-        issues = issues_by_key.setdefault(entry.key, set())
-        original_doi = normalize_doi(entry.fields.get("doi", ""))
-        raw_doi = entry.fields.get("doi", "").strip()
-        if raw_doi and not original_doi:
-            issues.add("doi_invalid_format")
-
-        work = None
-        doi_from_crossref = None
-
-        if original_doi:
-            try:
-                work = crossref_get_work_by_doi(
-                    original_doi,
-                    user_agent=user_agent,
-                    mailto=mailto,
-                    retries=retries,
-                    timeout=timeout,
-                )
-            except Exception as exc:
-                print(f"[WARN] {entry.key}: DOI check failed ({exc})", file=sys.stderr)
-                issues.add("crossref_error")
-            if work:
-                sim = title_similarity(entry, work)
-                if sim is not None and sim < doi_title_threshold:
-                    stats["doi_title_mismatch"] += 1
-                    issues.add("doi_title_mismatch")
-                    print(
-                        f"[WARN] {entry.key}: DOI/title mismatch (sim={sim:.2f}, doi={original_doi})",
-                        file=sys.stderr,
-                    )
-                    work = None
-                else:
-                    stats["doi_valid"] += 1
-                    doi_from_crossref = normalize_doi(work.get("DOI", "")) or original_doi
-            else:
-                issues.add("doi_not_found")
-
-        if not work:
-            try:
-                work = crossref_search(
-                    entry,
-                    user_agent=user_agent,
-                    mailto=mailto,
-                    rows=rows,
-                    retries=retries,
-                    timeout=timeout,
-                )
-            except Exception as exc:
-                print(f"[WARN] {entry.key}: Crossref search failed ({exc})", file=sys.stderr)
-                issues.add("crossref_error")
-            if work:
-                doi_from_crossref = normalize_doi(work.get("DOI", ""))
-
-        if not work:
-            stats["unresolved"] += 1
-            issues.add("crossref_unresolved")
-            if json_events:
-                _emit_event({
-                    "type": "entry_done",
-                    "idx": idx,
-                    "key": entry.key,
-                    "status": "error",
-                    "issues": sorted(issues),
-                })
-            if sleep_seconds > 0:
-                time.sleep(sleep_seconds)
-            continue
-
-        if include_abstract:
-            doi_for_abs = normalize_doi(work.get("DOI", "")) or original_doi or normalize_doi(entry.fields.get("doi", ""))
-            work = add_fallback_abstract_to_work(
-                work=work,
-                doi=doi_for_abs or "",
-                user_agent=user_agent,
-                retries=retries,
-                timeout=timeout,
-            )
-
-        before_doi = normalize_doi(entry.fields.get("doi", ""))
-        before_has_abstract = bool(strip_outer_braces(entry.fields.get("abstract", "")).strip())
-        api_values = crossref_field_values(entry, work, include_abstract=include_abstract)
-        pre_mismatches = find_mismatch_fields(entry, api_values)
-        if pre_mismatches:
-            stats["metadata_mismatch_seen"] += 1
-
-        fields_changed = enrich_entry_from_crossref(
-            entry,
-            work,
-            overwrite=overwrite,
-            include_abstract=include_abstract,
-        )
-        post_mismatches = find_mismatch_fields(entry, api_values)
-        if post_mismatches:
-            stats["metadata_mismatch_unfixed"] += 1
-            issues.add("metadata_not_corrected")
-            for f in post_mismatches:
-                issues.add(f"mismatch_{f}")
-
-        after_doi = normalize_doi(entry.fields.get("doi", "")) or doi_from_crossref
-        after_has_abstract = bool(strip_outer_braces(entry.fields.get("abstract", "")).strip())
-
-        if after_doi and not before_doi:
-            stats["doi_added"] += 1
-        elif before_doi and after_doi and before_doi.lower() != after_doi.lower():
-            stats["doi_corrected"] += 1
-        if include_abstract and (not before_has_abstract and after_has_abstract):
-            stats["abstract_added"] += 1
-
-        if fields_changed > 0:
-            stats["entries_changed"] += 1
-            stats["fields_changed"] += fields_changed
-
-        if json_events:
-            _entry_status = (
-                "error" if {"crossref_unresolved", "doi_not_found", "doi_invalid_format"} & issues
-                else "warn" if issues
-                else "ok"
-            )
-            _emit_event({
-                "type": "entry_done",
-                "idx": idx,
-                "key": entry.key,
-                "status": _entry_status,
-                "issues": sorted(issues),
-            })
-
-        if sleep_seconds > 0:
-            time.sleep(sleep_seconds)
+    if workers > 1:
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(_process_one_entry, idx, total, entry, **entry_kwargs): entry
+                for idx, entry in enumerate(eligible, start=1)
+            }
+            for future in as_completed(futures):
+                entry = futures[future]
+                stat_delta, issues = future.result()
+                for k, v in stat_delta.items():
+                    if k in stats:
+                        stats[k] += v
+                issues_by_key[entry.key] = issues
+    else:
+        for idx, entry in enumerate(eligible, start=1):
+            stat_delta, issues = _process_one_entry(idx, total, entry, **entry_kwargs)
+            for k, v in stat_delta.items():
+                if k in stats:
+                    stats[k] += v
+            issues_by_key[entry.key] = issues
 
     return stats, issues_by_key
 
@@ -1028,6 +1103,7 @@ def main() -> int:
         action="store_true",
         help="Fetch and write abstract field from Crossref (if available)",
     )
+    parser.add_argument("--workers", type=int, default=1, help="Number of parallel worker threads for Crossref requests (default: 1)")
     parser.add_argument("--mailto", default="", help="Email for Crossref etiquette (recommended)")
     parser.add_argument(
         "--json-events",
@@ -1064,6 +1140,7 @@ def main() -> int:
         overwrite=args.overwrite,
         include_abstract=args.include_abstract,
         json_events=args.json_events,
+        workers=max(args.workers, 1),
     )
 
     dedup_stats = resolve_duplicate_dois(

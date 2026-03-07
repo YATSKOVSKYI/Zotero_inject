@@ -81,14 +81,26 @@ async def validate_stream(
                 str(job / "references.bib"),
                 "--out", str(job / "references_enriched.bib"),
                 "--mailto", mailto or "user@example.com",
+                "--types", "article,book,inproceedings,incollection,misc,phdthesis,mastersthesis,techreport,unpublished,proceedings,conference",
+                "--sleep", "0",
+                "--timeout", "6",
+                "--workers", "6",
                 "--json-events",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL,
+                limit=10 * 1024 * 1024,
             )
-            async for raw in proc.stdout:
-                line = raw.decode("utf-8", errors="replace").strip()
-                if line:
-                    yield f"data: {line}\n\n"
+            buf = b""
+            while True:
+                chunk = await proc.stdout.read(65536)
+                if not chunk:
+                    break
+                buf += chunk
+                while b"\n" in buf:
+                    raw_line, buf = buf.split(b"\n", 1)
+                    line = raw_line.decode("utf-8", errors="replace").strip()
+                    if line:
+                        yield f"data: {line}\n\n"
             await proc.wait()
             yield (
                 f"data: {json.dumps({'type': 'end', 'job_id': job_id, 'code': proc.returncode})}\n\n"

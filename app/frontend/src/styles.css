@@ -1,26 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #0d0f14;
-  --surface:      #13161f;
-  --surface-2:    #1a1d2a;
-  --surface-3:    #222536;
-  --border:       #2a2d3e;
-  --border-light: #333650;
-  --accent:       #e5484d;
-  --accent-dim:   rgba(229,72,77,0.12);
-  --accent-glow:  rgba(229,72,77,0.25);
-  --blue:         #4f8ef7;
-  --blue-dim:     rgba(79,142,247,0.12);
-  --success:      #22c55e;
-  --success-dim:  rgba(34,197,94,0.12);
+  --bg:           #030404;
+  --surface:      #0b0e0e;
+  --surface-2:    #101414;
+  --surface-3:    #131818;
+  --border:       #1c2a2a;
+  --border-light: #243535;
+  --accent:       #a3e635;
+  --accent-dim:   rgba(163,230,53,0.12);
+  --accent-glow:  rgba(163,230,53,0.25);
+  --blue:         #a3e635;
+  --blue-dim:     rgba(163,230,53,0.12);
+  --success:      #34d399;
+  --success-dim:  rgba(52,211,153,0.12);
   --warning:      #f59e0b;
   --warning-dim:  rgba(245,158,11,0.12);
-  --text:         #eef0f6;
-  --text-2:       #9396a8;
-  --text-3:       #5c5f72;
+  --text:         #edf7ed;
+  --text-2:       #748f80;
+  --text-3:       #3a4d42;
   --radius:       12px;
   --radius-sm:    8px;
 }
@@ -30,7 +30,10 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  animation: appFadeIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
 }
+
+@keyframes appFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
