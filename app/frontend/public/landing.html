@@ -55,7 +55,9 @@
       transition:all .3s;
     }
     nav.scrolled { border-color:rgba(163,230,53,.28); box-shadow:0 0 0 1px rgba(163,230,53,.05), 0 4px 60px rgba(163,230,53,.07); }
-    .nav-logo { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); letter-spacing:.5px; white-space:nowrap; }
+    .nav-logo { display:flex; align-items:center; gap:9px; text-decoration:none; }
+    .nav-logo-text { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); letter-spacing:.5px; white-space:nowrap; transition:color .2s; }
+    .nav-logo:hover .nav-logo-text { color:#d4f57a; }
     .nav-links { display:flex; gap:2px; list-style:none; }
     .nav-links a { display:block; padding:6px 13px; font-size:13px; font-weight:500; color:var(--text2); text-decoration:none; border-radius:100px; transition:all .2s; }
     .nav-links a:hover { color:var(--lime3); background:rgba(163,230,53,.06); }
@@ -450,10 +452,34 @@
     }
     .btt svg { display:block; }
 
+    /* ─── DONATE ─── */
+    .donate-wrap { padding:60px 20px; border-top:1px solid var(--border); background:radial-gradient(ellipse at 50% 0%,rgba(163,230,53,.05) 0%,transparent 60%); }
+    .donate-in { max-width:480px; margin:0 auto; text-align:center; }
+    .donate-eyebrow { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--lime); margin-bottom:10px; }
+    .donate-h { font-size:26px; font-weight:800; color:var(--text1); margin-bottom:8px; line-height:1.25; }
+    .donate-p { font-size:14px; color:var(--text2); margin-bottom:32px; line-height:1.6; }
+    .donate-card-l { display:flex; align-items:center; gap:32px; background:#080f08; border:1px solid rgba(163,230,53,.18); border-radius:20px; padding:28px; margin-bottom:16px; }
+    @media(max-width:520px){ .donate-card-l { flex-direction:column; } }
+    .donate-qr-box { flex-shrink:0; padding:10px; background:#060e06; border:1px solid rgba(163,230,53,.2); border-radius:14px; box-shadow:0 0 40px rgba(163,230,53,.12); }
+    .donate-qr-box canvas { display:block; border-radius:6px; }
+    .donate-info { flex:1; text-align:left; }
+    .donate-net-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--lime3); margin-bottom:10px; }
+    .donate-net-badge span { background:rgba(163,230,53,.12); border:1px solid rgba(163,230,53,.2); border-radius:4px; padding:2px 7px; }
+    .donate-info-title { font-size:15px; font-weight:700; color:var(--text1); margin-bottom:4px; }
+    .donate-info-sub { font-size:12px; color:var(--text3); margin-bottom:14px; line-height:1.5; }
+    .donate-addr-box { display:flex; align-items:center; gap:8px; background:#0d1a0d; border:1px solid rgba(163,230,53,.15); border-radius:10px; padding:9px 11px; }
+    .donate-addr-code { flex:1; font-family:var(--mono); font-size:10.5px; color:var(--lime); word-break:break-all; line-height:1.5; }
+    .donate-copy { flex-shrink:0; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.25); border-radius:6px; color:var(--lime); font-family:var(--mono); font-size:11px; font-weight:700; padding:4px 10px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .donate-copy:hover { background:rgba(163,230,53,.2); }
+    .donate-copy.ok { background:rgba(52,211,153,.15); border-color:rgba(52,211,153,.3); color:#34d399; }
+    .donate-warn { font-size:11px; color:var(--text3); margin-top:10px; line-height:1.5; }
+    .donate-warn strong { color:var(--text2); }
+
     /* ─── FOOTER ─── */
     footer { border-top:1px solid var(--border); padding:36px 20px; }
     .foot-in { max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
-    .foot-logo { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); }
+    .foot-logo { display:flex; align-items:center; gap:9px; }
+    .foot-logo-text { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--lime); }
     .foot-copy { font-size:12px; color:var(--text3); font-family:var(--mono); }
 
     /* ─── PAGE LOAD ─── */
@@ -498,7 +524,39 @@
 
 <!-- NAV -->
 <nav id="nav">
-  <div class="nav-logo">⚡ zotero_inject</div>
+  <a class="nav-logo" href="/">
+    <svg width="34" height="34" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;overflow:visible">
+      <rect width="36" height="36" rx="10" fill="#060e06"/>
+      <circle cx="18" cy="18" r="13.5" fill="none" stroke="#a3e635" stroke-width="0.7" stroke-dasharray="3.8 6.7" opacity="0.2">
+        <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="16s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="18" cy="18" r="7.5" fill="none" stroke="#a3e635" stroke-width="0.5" stroke-dasharray="2.5 6.2" opacity="0.15">
+        <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="-360 18 18" dur="10s" repeatCount="indefinite"/>
+      </circle>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="11s" repeatCount="indefinite"/>
+        <polygon points="31.5,18 11.25,29.69 11.25,6.31" fill="none" stroke="#a3e635" stroke-width="0.8" opacity="0.18" stroke-linejoin="round"/>
+        <circle cx="31.5" cy="18"     r="2.5" fill="#a3e635"/>
+        <circle cx="11.25" cy="29.69" r="2.5" fill="#a3e635"/>
+        <circle cx="11.25" cy="6.31"  r="2.5" fill="#a3e635"/>
+      </g>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="60 18 18" to="-300 18 18" dur="6.5s" repeatCount="indefinite"/>
+        <circle cx="21.75" cy="24.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+        <circle cx="10.5"  cy="18"   r="1.6" fill="#c8f564" opacity="0.85"/>
+        <circle cx="21.75" cy="11.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+      </g>
+      <circle cx="18" cy="18" r="3" fill="none" stroke="#a3e635" stroke-width="1.2" opacity="0">
+        <animate attributeName="r"       values="3;10;3"    dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="18" cy="18" r="3.4" fill="#a3e635">
+        <animate attributeName="r"    values="3;3.8;3"               dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="fill" values="#a3e635;#ddf77e;#a3e635" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+    <span class="nav-logo-text">zotero_inject</span>
+  </a>
   <ul class="nav-links">
     <li><a href="#what" data-i="nav_what">Что это</a></li>
     <li><a href="#how" data-i="nav_how">Как работает</a></li>
@@ -834,10 +892,69 @@
   </svg>
 </button>
 
+<!-- DONATE -->
+<div class="donate-wrap reveal">
+  <div class="donate-in">
+    <div class="donate-eyebrow" data-i="donate_eyebrow">поддержать проект</div>
+    <h2 class="donate-h" data-i="donate_h">Инструмент понравился?</h2>
+    <p class="donate-p" data-i="donate_p">Это бесплатный проект. Если он сэкономил тебе время — можно поддержать разработку.</p>
+    <div class="donate-card-l">
+      <div class="donate-qr-box">
+        <canvas id="donate-qr-canvas"></canvas>
+      </div>
+      <div class="donate-info">
+        <div class="donate-net-badge">
+          <svg width="12" height="12" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+          <span>USDT · TRC-20</span>
+        </div>
+        <div class="donate-info-title" data-i="donate_card_t">Криптовалюта USDT</div>
+        <div class="donate-info-sub" data-i="donate_card_s">Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.</div>
+        <div class="donate-addr-box">
+          <code class="donate-addr-code" id="donate-addr">TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3</code>
+          <button class="donate-copy" id="donate-copy-btn" onclick="copyDonateAddr(this)">Copy</button>
+        </div>
+        <div class="donate-warn" data-i="donate_warn"><strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="foot-in">
-    <div class="foot-logo">⚡ zotero_inject</div>
+    <div class="foot-logo">
+      <svg width="28" height="28" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;overflow:visible">
+        <rect width="36" height="36" rx="10" fill="#060e06"/>
+        <circle cx="18" cy="18" r="13.5" fill="none" stroke="#a3e635" stroke-width="0.7" stroke-dasharray="3.8 6.7" opacity="0.2">
+          <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="16s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="18" cy="18" r="7.5" fill="none" stroke="#a3e635" stroke-width="0.5" stroke-dasharray="2.5 6.2" opacity="0.15">
+          <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="-360 18 18" dur="10s" repeatCount="indefinite"/>
+        </circle>
+        <g>
+          <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="11s" repeatCount="indefinite"/>
+          <polygon points="31.5,18 11.25,29.69 11.25,6.31" fill="none" stroke="#a3e635" stroke-width="0.8" opacity="0.18" stroke-linejoin="round"/>
+          <circle cx="31.5" cy="18"     r="2.5" fill="#a3e635"/>
+          <circle cx="11.25" cy="29.69" r="2.5" fill="#a3e635"/>
+          <circle cx="11.25" cy="6.31"  r="2.5" fill="#a3e635"/>
+        </g>
+        <g>
+          <animateTransform attributeName="transform" type="rotate" from="60 18 18" to="-300 18 18" dur="6.5s" repeatCount="indefinite"/>
+          <circle cx="21.75" cy="24.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+          <circle cx="10.5"  cy="18"   r="1.6" fill="#c8f564" opacity="0.85"/>
+          <circle cx="21.75" cy="11.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+        </g>
+        <circle cx="18" cy="18" r="3" fill="none" stroke="#a3e635" stroke-width="1.2" opacity="0">
+          <animate attributeName="r"       values="3;10;3"    dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="18" cy="18" r="3.4" fill="#a3e635">
+          <animate attributeName="r"    values="3;3.8;3"               dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="fill" values="#a3e635;#ddf77e;#a3e635" dur="3s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+      <span class="foot-logo-text">zotero_inject</span>
+    </div>
     <div class="foot-copy" data-i="footer"></div>
   </div>
 </footer>
@@ -1079,6 +1196,75 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
 }));
 
 setLang(lang);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script>
+(function(){
+  const WALLET = 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3';
+  const canvas = document.getElementById('donate-qr-canvas');
+  if (canvas && window.QRCode) {
+    QRCode.toCanvas(canvas, WALLET, {
+      width: 160, margin: 2,
+      color: { dark: '#a3e635', light: '#060e06' },
+      errorCorrectionLevel: 'H'
+    });
+  }
+})();
+
+function copyDonateAddr(btn) {
+  navigator.clipboard.writeText('TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3').then(function() {
+    btn.textContent = '✓ OK';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+// i18n keys for donate section
+const donateI18n = {
+  ru: {
+    donate_eyebrow: 'поддержать проект',
+    donate_h: 'Инструмент понравился?',
+    donate_p: 'Это бесплатный open-source проект. Если он сэкономил тебе время на диплом или статью — поддержи разработку парой USDT.',
+    donate_card_t: 'Криптовалюта USDT',
+    donate_card_s: 'Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.',
+    donate_warn: '<strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.',
+  },
+  en: {
+    donate_eyebrow: 'support the project',
+    donate_h: 'Found this useful?',
+    donate_p: 'This is a free open-source tool. If it saved you time on your thesis or paper — consider supporting development with a small USDT donation.',
+    donate_card_t: 'USDT Cryptocurrency',
+    donate_card_s: 'TRON network (TRC-20). USDT only — other assets will be permanently lost.',
+    donate_warn: '<strong>Warning:</strong> send only TRON network assets to this address.',
+  }
+};
+
+const _origSetLang = window._setLangOrig || function(){};
+// Patch applyTranslations to handle donate keys too
+const _donateKeys = Object.keys(donateI18n.ru);
+document.querySelectorAll('[data-i]').forEach(function(el){
+  if (_donateKeys.includes(el.dataset.i)) {
+    const key = el.dataset.i;
+    const lang = localStorage.getItem('lang') || 'ru';
+    el.innerHTML = (donateI18n[lang] || donateI18n.ru)[key] || '';
+  }
+});
+// Also re-apply on lang change by observing localStorage
+(function patchLangButtons(){
+  document.querySelectorAll('.lang-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setTimeout(function(){
+        const lang = localStorage.getItem('lang') || 'ru';
+        document.querySelectorAll('[data-i]').forEach(function(el){
+          if (_donateKeys.includes(el.dataset.i)) {
+            el.innerHTML = (donateI18n[lang] || donateI18n.ru)[el.dataset.i] || '';
+          }
+        });
+      }, 50);
+    });
+  });
+})();
 </script>
 </body>
 </html>

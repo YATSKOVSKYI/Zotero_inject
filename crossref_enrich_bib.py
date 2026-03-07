@@ -36,7 +36,9 @@ _emit_lock = threading.Lock()
 def _emit_event(data: dict) -> None:
     """Print a newline-delimited JSON event to stdout for --json-events mode (thread-safe)."""
     with _emit_lock:
-        print(json.dumps(data, ensure_ascii=False), flush=True)
+        line = json.dumps(data, ensure_ascii=False) + "\n"
+        sys.stdout.buffer.write(line.encode("utf-8"))
+        sys.stdout.buffer.flush()
 
 
 @dataclass

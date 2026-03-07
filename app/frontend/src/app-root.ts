@@ -1,6 +1,9 @@
 import { LitElement, html, css, nothing, PropertyValues } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
+import QRCode from 'qrcode'
 import './components/file-drop'
+
+const DONATE_WALLET = 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3'
 
 type Status = 'idle' | 'processing' | 'done' | 'error'
 
@@ -211,7 +214,10 @@ export class AppRoot extends LitElement {
 
   @state() private _bibFile: File | null = null
   @state() private _bibJobId = ''
-  private _mailto = ''
+  @state() private _mailto = ''
+  @state() private _mailtoError = ''
+  @state() private _qrDataUrl = ''
+  @state() private _walletCopied = false
 
   @state() private _htmlFile: File | null = null
   @state() private _uriMapJobId = ''
@@ -278,15 +284,17 @@ export class AppRoot extends LitElement {
       border-bottom: 1px solid #1c2a2a;
       flex-shrink: 0;
     }
-    .logo-dot {
-      width: 28px; height: 28px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #a3e635, #84cc16);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700; color: #091200;
-      box-shadow: 0 0 16px rgba(163,230,53,0.35);
+    .logo-link {
+      display: flex; align-items: center; gap: 9px;
+      text-decoration: none; cursor: pointer;
+      border-radius: 10px;
+      padding: 4px 6px 4px 2px;
+      margin-left: -2px;
+      transition: background 0.2s;
     }
-    .logo-name { font-size: 15px; font-weight: 700; color: #edf7ed; }
+    .logo-link:hover { background: rgba(163,230,53,0.07); }
+    .logo-link:hover .logo-name { color: #a3e635; }
+    .logo-name { font-size: 15px; font-weight: 700; color: #edf7ed; transition: color 0.2s; }
     .logo-tag  { font-size: 11px; color: #3a4d42; margin-left: 6px; }
     .header-spacer { flex: 1; }
     .header-badge {
@@ -435,6 +443,11 @@ export class AppRoot extends LitElement {
     }
     .text-input:focus { border-color: #a3e635; }
     .text-input::placeholder { color: #3a4d42; }
+    .text-input.input-err  { border-color: #ef4444; }
+    .text-input.input-ok   { border-color: #34d399; }
+    .field-msg { font-size: 11px; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+    .field-msg.err  { color: #ef4444; }
+    .field-msg.ok   { color: #34d399; }
 
     /* ── Divider ── */
     .or-divider {
@@ -737,6 +750,71 @@ export class AppRoot extends LitElement {
     .btn-dl-text { display: flex; flex-direction: column; align-items: flex-start; }
     .btn-dl-main { font-size: 15px; font-weight: 700; }
     .btn-dl-sub  { font-size: 11px; font-weight: 500; opacity: 0.75; }
+
+    /* ── Donate card ─────────────────────────────────────────────────── */
+    .donate-card {
+      position: relative; overflow: hidden;
+      background: #080f08;
+      border: 1px solid rgba(163,230,53,0.18);
+      border-radius: 20px;
+      padding: 28px 24px 24px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .donate-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% -20%, rgba(163,230,53,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .donate-header {
+      display: flex; align-items: center; gap: 12px;
+      justify-content: center; margin-bottom: 20px;
+    }
+    .donate-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .12em;
+      color: #a3e635; text-transform: uppercase; margin-bottom: 2px;
+    }
+    .donate-title {
+      font-size: 17px; font-weight: 800; color: #edf7ed;
+    }
+    .donate-network {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: .1em;
+      color: #3a4d42; text-transform: uppercase; margin-top: 2px;
+    }
+    .donate-qr-wrap {
+      display: inline-block;
+      padding: 10px; border-radius: 14px;
+      background: #060e06;
+      border: 1px solid rgba(163,230,53,0.2);
+      box-shadow: 0 0 40px rgba(163,230,53,0.12);
+      margin-bottom: 18px;
+    }
+    .donate-qr { display: block; border-radius: 6px; width: 160px; height: 160px; }
+    .donate-addr-row {
+      display: flex; align-items: center; gap: 8px;
+      background: #0d1a0d; border: 1px solid rgba(163,230,53,0.15);
+      border-radius: 10px; padding: 9px 12px;
+      margin: 0 auto 14px; max-width: 360px;
+    }
+    .donate-addr-text {
+      flex: 1; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: #a3e635; word-break: break-all; text-align: left;
+      line-height: 1.5;
+    }
+    .donate-copy-btn {
+      flex-shrink: 0;
+      background: rgba(163,230,53,0.1); border: 1px solid rgba(163,230,53,0.25);
+      border-radius: 6px; color: #a3e635; font-size: 11px; font-weight: 700;
+      padding: 4px 10px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .donate-copy-btn:hover { background: rgba(163,230,53,0.2); }
+    .donate-copy-btn.copied { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3); color: #34d399; }
+    .donate-hint {
+      font-size: 11px; color: #3a4d42; line-height: 1.5;
+    }
+    .donate-hint strong { color: #748f80; }
 
     .word-steps {
       background: #0b0e0e; border: 1px solid #1c2a2a; border-radius: 16px;
@@ -1212,6 +1290,15 @@ export class AppRoot extends LitElement {
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
+  connectedCallback() {
+    super.connectedCallback()
+    QRCode.toDataURL(DONATE_WALLET, {
+      width: 200, margin: 2,
+      color: { dark: '#a3e635', light: '#060e06' },
+      errorCorrectionLevel: 'H',
+    }).then(url => { this._qrDataUrl = url })
+  }
+
   protected updated(changed: PropertyValues) {
     if (changed.has('_editingCell') && this._editingCell) {
       requestAnimationFrame(() => {
@@ -1249,6 +1336,30 @@ export class AppRoot extends LitElement {
 
   private _clean(val: string): string {
     return val.replace(/[{}]/g, '')
+  }
+
+  private async _copyWallet() {
+    await navigator.clipboard.writeText(DONATE_WALLET)
+    this._walletCopied = true
+    setTimeout(() => { this._walletCopied = false }, 2000)
+  }
+
+  private _onMailtoInput(e: Event) {
+    const input = e.target as HTMLInputElement
+    // Strip any character that can't appear in a valid email address
+    const sanitized = input.value
+      .replace(/[^a-zA-Z0-9._%+\-@]/g, '')
+      .slice(0, 254)
+    // Reflect sanitized value back into the input if it changed
+    if (sanitized !== input.value) input.value = sanitized
+    this._mailto = sanitized
+    if (!sanitized) {
+      this._mailtoError = ''
+    } else if (!/^[a-zA-Z0-9._%+\-]{1,64}@[a-zA-Z0-9.\-]{1,253}\.[a-zA-Z]{2,}$/.test(sanitized)) {
+      this._mailtoError = this._lang === 'ru' ? 'Неверный формат email' : 'Invalid email format'
+    } else {
+      this._mailtoError = ''
+    }
   }
 
   private _isEdited(entry: EntryState, field: string): boolean {
@@ -1302,13 +1413,13 @@ export class AppRoot extends LitElement {
           }
           this._entries = updated
         }
-        this._checkedCount = ev.idx
+        if (ev.idx >= 0) this._checkedCount = ev.idx
         break
       }
 
       case 'done':
         this._validationStats = ev.stats ?? {}
-        if (ev.entries?.length) {
+        if (Array.isArray(ev.entries)) {
           this._entries = (ev.entries as any[]).map((e, i) => ({
             key: e.key, entry_type: e.entry_type,
             status: e.status, issues: e.issues,
@@ -1322,6 +1433,7 @@ export class AppRoot extends LitElement {
         this._validationDone = true
         this.status = ev.code === 0 ? 'done' : 'error'
         this._currentKey = ''
+        if (ev.log) this.log = ev.log
         break
 
       case 'stream_error':
@@ -1341,7 +1453,8 @@ export class AppRoot extends LitElement {
 
     const form = new FormData()
     form.append('bib', this._bibFile)
-    form.append('mailto', this._mailto)
+    // Only send email if it passed client-side validation
+    form.append('mailto', this._mailtoError ? '' : this._mailto)
 
     try {
       const response = await fetch('/api/validate-stream', { method: 'POST', body: form })
@@ -1720,8 +1833,9 @@ export class AppRoot extends LitElement {
   }
 
   private _renderStep1Form() {
-    const hasFile = !!this._bibFile
-    const isProc  = this.status === 'processing'
+    const hasFile   = !!this._bibFile
+    const isProc    = this.status === 'processing'
+    const emailOk   = !this._mailto || !this._mailtoError
 
     return html`
       <div class="card">
@@ -1773,18 +1887,31 @@ export class AppRoot extends LitElement {
             ${this._t('s1_email_lbl')}
             <span class="optional-tag">${this._t('s1_email_opt')}</span>
           </label>
-          <input class="text-input" type="email" placeholder="you@university.edu"
-            @input=${(e: Event) => this._mailto = (e.target as HTMLInputElement).value} />
-          <div style="font-size:11px;color:#3a4d42;margin-top:5px">
-            ${this._t('s1_email_hint')}
-          </div>
+          <input
+            class="text-input ${this._mailtoError ? 'input-err' : this._mailto ? 'input-ok' : ''}"
+            type="text"
+            inputmode="email"
+            autocomplete="email"
+            placeholder="you@university.edu"
+            maxlength="254"
+            spellcheck="false"
+            autocorrect="off"
+            autocapitalize="off"
+            @input=${this._onMailtoInput}
+          />
+          ${this._mailtoError
+            ? html`<div class="field-msg err">✕ ${this._mailtoError}</div>`
+            : this._mailto
+              ? html`<div class="field-msg ok">✓ ${this._lang === 'ru' ? 'Email принят' : 'Email accepted'}</div>`
+              : html`<div class="field-msg" style="color:#3a4d42">${this._t('s1_email_hint')}</div>`
+          }
         </div>
 
         ${this._renderLog()}
 
         <!-- Action cards -->
         <div class="action-row">
-          <button class="action-card primary" ?disabled=${!hasFile || isProc}
+          <button class="action-card primary" ?disabled=${!hasFile || isProc || !emailOk}
             @click=${this._runValidate}>
             <div class="ac-icon">🔍</div>
             <div class="ac-title ac-primary">
@@ -2194,6 +2321,36 @@ export class AppRoot extends LitElement {
         ${this._t('s4_tip')}
       </div>
 
+      <!-- Donate card -->
+      <div class="donate-card">
+        <div class="donate-header">
+          <div>
+            <div class="donate-label">${this._lang === 'ru' ? 'поддержать проект' : 'support the project'}</div>
+            <div class="donate-title">${this._lang === 'ru' ? 'Понравился инструмент?' : 'Found this useful?'}</div>
+            <div class="donate-network">
+              <svg width="12" height="12" viewBox="0 0 32 32" style="flex-shrink:0"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+              USDT · TRC-20 · TRON
+            </div>
+          </div>
+        </div>
+        ${this._qrDataUrl ? html`
+          <div class="donate-qr-wrap">
+            <img class="donate-qr" src="${this._qrDataUrl}" alt="USDT TRC-20 QR code"/>
+          </div>` : nothing}
+        <div class="donate-addr-row">
+          <code class="donate-addr-text">${DONATE_WALLET}</code>
+          <button class="donate-copy-btn ${this._walletCopied ? 'copied' : ''}"
+            @click=${this._copyWallet}>
+            ${this._walletCopied ? '✓ OK' : (this._lang === 'ru' ? 'Копировать' : 'Copy')}
+          </button>
+        </div>
+        <div class="donate-hint">
+          ${this._lang === 'ru'
+            ? html`<strong>Только USDT (TRC-20) на сеть TRON.</strong> Другие активы будут утеряны безвозвратно.`
+            : html`<strong>USDT (TRC-20) on TRON network only.</strong> Sending other assets will result in permanent loss.`}
+        </div>
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-ghost" @click=${() => this._goStep(3)}>${this._t('s4_back')}</button>
         <div class="spacer"></div>
@@ -2215,8 +2372,62 @@ export class AppRoot extends LitElement {
 
     return html`
       <header>
-        <div class="logo-dot">Z</div>
-        <span class="logo-name">Zotero Inject</span>
+        <a class="logo-link" href="/" title="Back to home">
+          <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;overflow:visible">
+            <!-- background -->
+            <rect width="36" height="36" rx="10" fill="#060e06"/>
+
+            <!-- outer dashed orbit ring, spinning CW -->
+            <circle cx="18" cy="18" r="13.5" fill="none" stroke="#a3e635"
+              stroke-width="0.7" stroke-dasharray="3.8 6.7" opacity="0.2">
+              <animateTransform attributeName="transform" type="rotate"
+                from="0 18 18" to="360 18 18" dur="16s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- inner dashed orbit ring, spinning CCW -->
+            <circle cx="18" cy="18" r="7.5" fill="none" stroke="#a3e635"
+              stroke-width="0.5" stroke-dasharray="2.5 6.2" opacity="0.15">
+              <animateTransform attributeName="transform" type="rotate"
+                from="0 18 18" to="-360 18 18" dur="10s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- outer equilateral triangle + 3 nodes rotating CW (slow) -->
+            <!-- r=13.5: 0°=(31.5,18) 120°=(11.25,29.69) 240°=(11.25,6.31) -->
+            <g>
+              <animateTransform attributeName="transform" type="rotate"
+                from="0 18 18" to="360 18 18" dur="11s" repeatCount="indefinite"/>
+              <polygon points="31.5,18 11.25,29.69 11.25,6.31"
+                fill="none" stroke="#a3e635" stroke-width="0.8" opacity="0.18"
+                stroke-linejoin="round"/>
+              <circle cx="31.5" cy="18"    r="2.5" fill="#a3e635"/>
+              <circle cx="11.25" cy="29.69" r="2.5" fill="#a3e635"/>
+              <circle cx="11.25" cy="6.31"  r="2.5" fill="#a3e635"/>
+            </g>
+
+            <!-- 3 inner nodes, CCW, 60° phase offset, faster -->
+            <!-- r=7.5: 60°=(21.75,24.5) 180°=(10.5,18) 300°=(21.75,11.5) -->
+            <g>
+              <animateTransform attributeName="transform" type="rotate"
+                from="60 18 18" to="-300 18 18" dur="6.5s" repeatCount="indefinite"/>
+              <circle cx="21.75" cy="24.5"  r="1.6" fill="#c8f564" opacity="0.85"/>
+              <circle cx="10.5"  cy="18"    r="1.6" fill="#c8f564" opacity="0.85"/>
+              <circle cx="21.75" cy="11.5"  r="1.6" fill="#c8f564" opacity="0.85"/>
+            </g>
+
+            <!-- center glow pulse (expanding ring) -->
+            <circle cx="18" cy="18" r="3" fill="none" stroke="#a3e635" stroke-width="1.2" opacity="0">
+              <animate attributeName="r"       values="3;10;3"     dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.5;0;0.5"  dur="3s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- center nucleus -->
+            <circle cx="18" cy="18" r="3.4" fill="#a3e635">
+              <animate attributeName="r"    values="3;3.8;3"            dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="fill" values="#a3e635;#ddf77e;#a3e635" dur="3s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+          <span class="logo-name">Zotero Inject</span>
+        </a>
         <span class="logo-tag">Citation processor</span>
         <div class="header-spacer"></div>
         <div class="lang-toggle">
