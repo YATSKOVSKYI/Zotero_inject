@@ -757,50 +757,68 @@ export class AppRoot extends LitElement {
       background: #080f08;
       border: 1px solid rgba(163,230,53,0.18);
       border-radius: 20px;
-      padding: 28px 24px 24px;
       margin-bottom: 16px;
-      text-align: center;
     }
     .donate-card::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% -20%, rgba(163,230,53,0.09) 0%, transparent 65%);
+      background: radial-gradient(ellipse at 50% 0%, rgba(163,230,53,0.06) 0%, transparent 60%);
       pointer-events: none;
     }
-    .donate-header {
-      display: flex; align-items: center; gap: 12px;
-      justify-content: center; margin-bottom: 20px;
+    .donate-photo-wrap { position: relative; overflow: hidden; }
+    .donate-photo {
+      width: 100%; display: block;
+      height: 165px; object-fit: contain; object-position: center center; background: #030404;
+      filter: grayscale(20%) contrast(1.08) brightness(0.8);
     }
-    .donate-label {
-      font-size: 10px; font-weight: 700; letter-spacing: .12em;
-      color: #a3e635; text-transform: uppercase; margin-bottom: 2px;
+    .donate-photo-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(8,15,8,0) 20%, rgba(8,15,8,1) 100%);
     }
-    .donate-title {
-      font-size: 17px; font-weight: 800; color: #edf7ed;
+    .donate-photo-text {
+      position: absolute; bottom: 14px; left: 0; right: 0;
+      z-index: 2; text-align: center; padding: 0 20px;
     }
-    .donate-network {
+    .donate-photo-title {
+      font-size: 17px; font-weight: 900; color: #fff;
+      text-shadow: 0 2px 16px rgba(0,0,0,.9); line-height: 1.15; margin-bottom: 3px;
+    }
+    .donate-photo-title em { color: #a3e635; font-style: normal; }
+    .donate-photo-sub {
+      font-size: 10px; color: rgba(255,255,255,.4);
+      letter-spacing: .12em; text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .donate-body {
+      padding: 18px 20px 22px;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .donate-net {
       display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(239,0,39,0.08); border: 1px solid rgba(239,0,39,0.18);
+      border-radius: 6px; padding: 3px 9px;
       font-size: 10px; font-weight: 700; letter-spacing: .1em;
-      color: #3a4d42; text-transform: uppercase; margin-top: 2px;
+      text-transform: uppercase; color: rgba(255,100,100,0.7);
+      margin-bottom: 14px;
     }
     .donate-qr-wrap {
       display: inline-block;
       padding: 10px; border-radius: 14px;
       background: #060e06;
-      border: 1px solid rgba(163,230,53,0.2);
+      border: 1px solid rgba(163,230,53,0.22);
       box-shadow: 0 0 40px rgba(163,230,53,0.12);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-    .donate-qr { display: block; border-radius: 6px; width: 160px; height: 160px; }
+    .donate-qr { display: block; border-radius: 6px; width: 150px; height: 150px; }
     .donate-addr-row {
       display: flex; align-items: center; gap: 8px;
       background: #0d1a0d; border: 1px solid rgba(163,230,53,0.15);
       border-radius: 10px; padding: 9px 12px;
-      margin: 0 auto 14px; max-width: 360px;
+      width: 100%; max-width: 340px; margin-bottom: 12px;
     }
     .donate-addr-text {
       flex: 1; font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: #a3e635; word-break: break-all; text-align: left;
+      font-size: 10px; color: #a3e635; word-break: break-all; text-align: left;
       line-height: 1.5;
     }
     .donate-copy-btn {
@@ -812,7 +830,7 @@ export class AppRoot extends LitElement {
     .donate-copy-btn:hover { background: rgba(163,230,53,0.2); }
     .donate-copy-btn.copied { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3); color: #34d399; }
     .donate-hint {
-      font-size: 11px; color: #3a4d42; line-height: 1.5;
+      font-size: 11px; color: #3a4d42; line-height: 1.5; max-width: 320px;
     }
     .donate-hint strong { color: #748f80; }
 
@@ -2323,31 +2341,38 @@ export class AppRoot extends LitElement {
 
       <!-- Donate card -->
       <div class="donate-card">
-        <div class="donate-header">
-          <div>
-            <div class="donate-label">${this._lang === 'ru' ? 'поддержать проект' : 'support the project'}</div>
-            <div class="donate-title">${this._lang === 'ru' ? 'Понравился инструмент?' : 'Found this useful?'}</div>
-            <div class="donate-network">
-              <svg width="12" height="12" viewBox="0 0 32 32" style="flex-shrink:0"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
-              USDT · TRC-20 · TRON
+        <div class="donate-photo-wrap">
+          <img class="donate-photo" src="/app/donate-photo.webp" alt="Please donate"/>
+          <div class="donate-photo-text">
+            <div class="donate-photo-title">
+              ${this._lang === 'ru'
+                ? html`Понравился? Ваш донат — <em>топливо</em>.`
+                : html`Found it useful? Your donation <em>fuels</em> this.`}
             </div>
+            <div class="donate-photo-sub">USDT · TRC-20 · TRON</div>
           </div>
         </div>
-        ${this._qrDataUrl ? html`
-          <div class="donate-qr-wrap">
-            <img class="donate-qr" src="${this._qrDataUrl}" alt="USDT TRC-20 QR code"/>
-          </div>` : nothing}
-        <div class="donate-addr-row">
-          <code class="donate-addr-text">${DONATE_WALLET}</code>
-          <button class="donate-copy-btn ${this._walletCopied ? 'copied' : ''}"
-            @click=${this._copyWallet}>
-            ${this._walletCopied ? '✓ OK' : (this._lang === 'ru' ? 'Копировать' : 'Copy')}
-          </button>
-        </div>
-        <div class="donate-hint">
-          ${this._lang === 'ru'
-            ? html`<strong>Только USDT (TRC-20) на сеть TRON.</strong> Другие активы будут утеряны безвозвратно.`
-            : html`<strong>USDT (TRC-20) on TRON network only.</strong> Sending other assets will result in permanent loss.`}
+        <div class="donate-body">
+          <div class="donate-net">
+            <svg width="11" height="11" viewBox="0 0 32 32" style="flex-shrink:0"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+            USDT · TRC-20
+          </div>
+          ${this._qrDataUrl ? html`
+            <div class="donate-qr-wrap">
+              <img class="donate-qr" src="${this._qrDataUrl}" alt="USDT TRC-20 QR code"/>
+            </div>` : nothing}
+          <div class="donate-addr-row">
+            <code class="donate-addr-text">${DONATE_WALLET}</code>
+            <button class="donate-copy-btn ${this._walletCopied ? 'copied' : ''}"
+              @click=${this._copyWallet}>
+              ${this._walletCopied ? '✓ OK' : (this._lang === 'ru' ? 'Копировать' : 'Copy')}
+            </button>
+          </div>
+          <div class="donate-hint">
+            ${this._lang === 'ru'
+              ? html`<strong>Только USDT (TRC-20) на сеть TRON.</strong> Другие активы будут утеряны безвозвратно.`
+              : html`<strong>USDT (TRC-20) on TRON network only.</strong> Sending other assets will result in permanent loss.`}
+          </div>
         </div>
       </div>
 

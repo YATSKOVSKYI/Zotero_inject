@@ -453,27 +453,38 @@
     .btt svg { display:block; }
 
     /* ─── DONATE ─── */
-    .donate-wrap { padding:60px 20px; border-top:1px solid var(--border); background:radial-gradient(ellipse at 50% 0%,rgba(163,230,53,.05) 0%,transparent 60%); }
-    .donate-in { max-width:480px; margin:0 auto; text-align:center; }
-    .donate-eyebrow { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--lime); margin-bottom:10px; }
-    .donate-h { font-size:26px; font-weight:800; color:var(--text1); margin-bottom:8px; line-height:1.25; }
-    .donate-p { font-size:14px; color:var(--text2); margin-bottom:32px; line-height:1.6; }
-    .donate-card-l { display:flex; align-items:center; gap:32px; background:#080f08; border:1px solid rgba(163,230,53,.18); border-radius:20px; padding:28px; margin-bottom:16px; }
-    @media(max-width:520px){ .donate-card-l { flex-direction:column; } }
-    .donate-qr-box { flex-shrink:0; padding:10px; background:#060e06; border:1px solid rgba(163,230,53,.2); border-radius:14px; box-shadow:0 0 40px rgba(163,230,53,.12); }
-    .donate-qr-box canvas { display:block; border-radius:6px; }
-    .donate-info { flex:1; text-align:left; }
-    .donate-net-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--lime3); margin-bottom:10px; }
-    .donate-net-badge span { background:rgba(163,230,53,.12); border:1px solid rgba(163,230,53,.2); border-radius:4px; padding:2px 7px; }
-    .donate-info-title { font-size:15px; font-weight:700; color:var(--text1); margin-bottom:4px; }
-    .donate-info-sub { font-size:12px; color:var(--text3); margin-bottom:14px; line-height:1.5; }
-    .donate-addr-box { display:flex; align-items:center; gap:8px; background:#0d1a0d; border:1px solid rgba(163,230,53,.15); border-radius:10px; padding:9px 11px; }
-    .donate-addr-code { flex:1; font-family:var(--mono); font-size:10.5px; color:var(--lime); word-break:break-all; line-height:1.5; }
-    .donate-copy { flex-shrink:0; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.25); border-radius:6px; color:var(--lime); font-family:var(--mono); font-size:11px; font-weight:700; padding:4px 10px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .donate-wrap { padding:0 0 80px; border-top:1px solid var(--border); }
+    .donate-hero { position:relative; width:100%; overflow:hidden; margin-bottom:56px; background:#030404; display:flex; justify-content:center; }
+    .donate-hero img { width:auto; max-width:100%; max-height:460px; object-fit:contain; display:block; filter:grayscale(20%) contrast(1.08) brightness(.88); }
+    .donate-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(3,4,4,0) 30%, rgba(3,4,4,1) 100%); }
+    .donate-hero-txt { position:absolute; bottom:40px; left:0; right:0; z-index:2; text-align:center; padding:0 24px; }
+    .donate-hero-h { font-size:clamp(26px,5vw,52px); font-weight:900; color:#fff; text-shadow:0 4px 32px rgba(0,0,0,.85); line-height:1.1; margin-bottom:8px; letter-spacing:-.01em; }
+    .donate-hero-h em { color:#a3e635; font-style:normal; }
+    .donate-hero-s { font-size:11px; color:rgba(255,255,255,.4); letter-spacing:.14em; text-transform:uppercase; font-family:var(--mono); }
+    .donate-body { max-width:720px; margin:0 auto; padding:0 20px; text-align:center; }
+    .donate-tag { display:inline-flex; align-items:center; gap:8px; font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(163,230,53,.6); margin-bottom:12px; }
+    .donate-tag::before,.donate-tag::after { content:''; display:inline-block; width:24px; height:1px; background:rgba(163,230,53,.25); }
+    .donate-hl { font-size:clamp(22px,4vw,30px); font-weight:800; color:var(--text1); margin-bottom:10px; line-height:1.2; }
+    .donate-desc { font-size:14px; color:var(--text2); margin-bottom:36px; line-height:1.65; max-width:440px; margin-left:auto; margin-right:auto; }
+    .donate-panel { display:grid; grid-template-columns:auto 1fr; background:linear-gradient(135deg,#080f08 0%,#0a1410 100%); border:1px solid rgba(163,230,53,.16); border-radius:24px; overflow:hidden; box-shadow:0 0 80px rgba(163,230,53,.05),0 24px 60px rgba(0,0,0,.4); text-align:left; }
+    @media(max-width:540px){ .donate-panel { grid-template-columns:1fr; } }
+    .donate-qr-col { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 28px; border-right:1px solid rgba(163,230,53,.1); background:rgba(163,230,53,.02); }
+    @media(max-width:540px){ .donate-qr-col { border-right:none; border-bottom:1px solid rgba(163,230,53,.1); padding:28px 20px; } }
+    .donate-qr-frame { padding:12px; background:#060e06; border:1px solid rgba(163,230,53,.22); border-radius:16px; box-shadow:0 0 40px rgba(163,230,53,.12),inset 0 0 20px rgba(163,230,53,.03); margin-bottom:9px; }
+    .donate-qr-frame canvas,.donate-qr-frame img { display:block; border-radius:6px; }
+    .donate-qr-lbl { font-size:10px; font-family:var(--mono); color:rgba(163,230,53,.4); letter-spacing:.08em; text-transform:uppercase; text-align:center; }
+    .donate-info-col { padding:32px 28px; display:flex; flex-direction:column; justify-content:center; }
+    @media(max-width:540px){ .donate-info-col { padding:24px 20px; } }
+    .donate-net { display:inline-flex; align-items:center; gap:6px; background:rgba(239,0,39,.08); border:1px solid rgba(239,0,39,.18); border-radius:6px; padding:4px 10px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,80,80,.75); margin-bottom:14px; }
+    .donate-info-t { font-size:15px; font-weight:700; color:var(--text1); margin-bottom:5px; }
+    .donate-info-s { font-size:12px; color:var(--text3); line-height:1.6; margin-bottom:18px; }
+    .donate-addr-row { display:flex; align-items:center; gap:8px; background:#0d1a0d; border:1px solid rgba(163,230,53,.18); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
+    .donate-addr-code { flex:1; font-family:var(--mono); font-size:10px; color:var(--lime); word-break:break-all; line-height:1.6; }
+    .donate-copy { flex-shrink:0; background:rgba(163,230,53,.1); border:1px solid rgba(163,230,53,.28); border-radius:6px; color:var(--lime); font-family:var(--mono); font-size:11px; font-weight:700; padding:5px 11px; cursor:pointer; transition:all .15s; white-space:nowrap; }
     .donate-copy:hover { background:rgba(163,230,53,.2); }
     .donate-copy.ok { background:rgba(52,211,153,.15); border-color:rgba(52,211,153,.3); color:#34d399; }
-    .donate-warn { font-size:11px; color:var(--text3); margin-top:10px; line-height:1.5; }
-    .donate-warn strong { color:var(--text2); }
+    .donate-caution { font-size:11px; color:var(--text3); line-height:1.5; }
+    .donate-caution strong { color:var(--text2); }
 
     /* ─── FOOTER ─── */
     footer { border-top:1px solid var(--border); padding:36px 20px; }
@@ -893,27 +904,37 @@
 </button>
 
 <!-- DONATE -->
-<div class="donate-wrap reveal">
-  <div class="donate-in">
-    <div class="donate-eyebrow" data-i="donate_eyebrow">поддержать проект</div>
-    <h2 class="donate-h" data-i="donate_h">Инструмент понравился?</h2>
-    <p class="donate-p" data-i="donate_p">Это бесплатный проект. Если он сэкономил тебе время — можно поддержать разработку.</p>
-    <div class="donate-card-l">
-      <div class="donate-qr-box">
-        <canvas id="donate-qr-canvas"></canvas>
-      </div>
-      <div class="donate-info">
-        <div class="donate-net-badge">
-          <svg width="12" height="12" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
-          <span>USDT · TRC-20</span>
+<div class="donate-wrap">
+  <div class="donate-hero">
+    <img src="/app/donate-photo.webp" alt="Please donate" loading="lazy"/>
+    <div class="donate-hero-txt">
+      <div class="donate-hero-h" data-i="donate_photo_main">Это занимает часы.<br>Ваш донат — <em>топливо</em>.</div>
+      <div class="donate-hero-s">USDT · TRC-20 · TRON</div>
+    </div>
+  </div>
+  <div class="donate-body">
+    <div class="donate-tag" data-i="donate_eyebrow">поддержать проект</div>
+    <h2 class="donate-hl" data-i="donate_h">Инструмент понравился?</h2>
+    <p class="donate-desc" data-i="donate_p">Это бесплатный open-source проект. Если он сэкономил тебе время на диплом или статью — поддержи разработку парой USDT.</p>
+    <div class="donate-panel">
+      <div class="donate-qr-col">
+        <div class="donate-qr-frame">
+          <div id="donate-qr-canvas"></div>
         </div>
-        <div class="donate-info-title" data-i="donate_card_t">Криптовалюта USDT</div>
-        <div class="donate-info-sub" data-i="donate_card_s">Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.</div>
-        <div class="donate-addr-box">
+        <div class="donate-qr-lbl">Scan to donate</div>
+      </div>
+      <div class="donate-info-col">
+        <div class="donate-net">
+          <svg width="12" height="12" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#ef0027"/><path d="M16 4l12 7v10l-12 7L4 21V11z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>
+          USDT · TRC-20
+        </div>
+        <div class="donate-info-t" data-i="donate_card_t">Криптовалюта USDT</div>
+        <div class="donate-info-s" data-i="donate_card_s">Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.</div>
+        <div class="donate-addr-row">
           <code class="donate-addr-code" id="donate-addr">TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3</code>
           <button class="donate-copy" id="donate-copy-btn" onclick="copyDonateAddr(this)">Copy</button>
         </div>
-        <div class="donate-warn" data-i="donate_warn"><strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.</div>
+        <div class="donate-caution" data-i="donate_warn"><strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.</div>
       </div>
     </div>
   </div>
@@ -1198,16 +1219,17 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
 setLang(lang);
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
 (function(){
-  const WALLET = 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3';
-  const canvas = document.getElementById('donate-qr-canvas');
-  if (canvas && window.QRCode) {
-    QRCode.toCanvas(canvas, WALLET, {
-      width: 160, margin: 2,
-      color: { dark: '#a3e635', light: '#060e06' },
-      errorCorrectionLevel: 'H'
+  var el = document.getElementById('donate-qr-canvas');
+  if (el && window.QRCode) {
+    new QRCode(el, {
+      text: 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3',
+      width: 160, height: 160,
+      colorDark: '#a3e635',
+      colorLight: '#060e06',
+      correctLevel: QRCode.CorrectLevel.H
     });
   }
 })();
@@ -1228,7 +1250,8 @@ const donateI18n = {
     donate_p: 'Это бесплатный open-source проект. Если он сэкономил тебе время на диплом или статью — поддержи разработку парой USDT.',
     donate_card_t: 'Криптовалюта USDT',
     donate_card_s: 'Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.',
-    donate_warn: '<strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.',
+      donate_warn: '<strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.',
+    donate_photo_main: 'Это занимает часы.<br>Ваш донат — <em>топливо</em>.',
   },
   en: {
     donate_eyebrow: 'support the project',
@@ -1237,12 +1260,13 @@ const donateI18n = {
     donate_card_t: 'USDT Cryptocurrency',
     donate_card_s: 'TRON network (TRC-20). USDT only — other assets will be permanently lost.',
     donate_warn: '<strong>Warning:</strong> send only TRON network assets to this address.',
+    donate_photo_main: 'This takes hours to build.<br>Your donation <em>keeps it alive</em>.',
   }
 };
 
 const _origSetLang = window._setLangOrig || function(){};
 // Patch applyTranslations to handle donate keys too
-const _donateKeys = Object.keys(donateI18n.ru);
+const _donateKeys = Object.keys(donateI18n.ru).concat(['donate_photo_main']);
 document.querySelectorAll('[data-i]').forEach(function(el){
   if (_donateKeys.includes(el.dataset.i)) {
     const key = el.dataset.i;
