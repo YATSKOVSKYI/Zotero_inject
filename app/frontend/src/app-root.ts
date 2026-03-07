@@ -1167,7 +1167,9 @@ export class AppRoot extends LitElement {
 
     .table-scroll {
       overflow-x: auto;
+      overflow-x: auto;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       max-height: 520px;
       scrollbar-width: thin;
       scrollbar-color: #1c2a2a transparent;
@@ -1303,6 +1305,68 @@ export class AppRoot extends LitElement {
     .results-title {
       font-size: 17px; font-weight: 700; color: #edf7ed;
       flex: 1;
+    }
+
+    /* ─── Mobile ──────────────────────────────────────────────────────────── */
+
+    @media (max-width: 640px) {
+      /* Header */
+      header { padding: 0 16px; gap: 8px; }
+      .logo-tag { display: none; }
+      .header-badge { display: none; }
+
+      /* Stepper */
+      .stepper { padding: 12px 8px; }
+      .step-pill { padding: 5px 8px; gap: 5px; }
+      .step-name { font-size: 10px; }
+      .step-connector { width: 20px; }
+
+      /* Main */
+      main { padding: 20px 14px 80px; }
+
+      /* Cards */
+      .card { padding: 18px 16px; margin-bottom: 12px; }
+      .card-header { gap: 10px; margin-bottom: 14px; }
+
+      /* File grids — collapse to 1 column */
+      .file-grid-3 { grid-template-columns: 1fr; }
+      .file-grid-2 { grid-template-columns: 1fr; }
+
+      /* Inputs — 16px prevents iOS from zooming on focus */
+      .text-input { font-size: 16px; }
+      .cell-input  { font-size: 16px; }
+
+      /* Table */
+      .table-scroll { max-height: 360px; }
+      .table-footer { flex-wrap: wrap; gap: 8px; }
+
+      /* Results */
+      .results-actions { gap: 8px; }
+      .results-title { font-size: 14px; }
+
+      /* Donate */
+      .donate-qr { width: 130px; height: 130px; }
+      .donate-addr-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      .donate-copy-btn { width: 100%; justify-content: center; padding: 10px; }
+    }
+
+    @media (max-width: 400px) {
+      /* Stepper — dots only, no labels */
+      .step-name { display: none; }
+      .step-connector { width: 10px; }
+      .step-pill { padding: 5px; }
+
+      /* Extra compact */
+      main { padding: 14px 10px 80px; }
+      .card { padding: 14px 12px; }
+      .card-header { gap: 8px; }
+      .btn { padding: 8px 14px; font-size: 12px; }
+    }
+
+    /* Touch devices — no sticky hover states */
+    @media (hover: none) {
+      .card:hover { border-color: #1c2a2a; box-shadow: none; }
+      .btn:hover  { filter: none; }
     }
   `
 
