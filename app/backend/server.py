@@ -84,7 +84,7 @@ async def validate_stream(
                 "--types", "article,book,inproceedings,incollection,misc,phdthesis,mastersthesis,techreport,unpublished,proceedings,conference",
                 "--sleep", "0",
                 "--timeout", "6",
-                "--workers", "6",
+                "--workers", "3",
                 "--json-events",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL,

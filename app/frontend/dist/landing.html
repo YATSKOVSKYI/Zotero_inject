@@ -98,9 +98,7 @@
     @keyframes fl1 { 0%,100%{transform:translate(0,0)} 40%{transform:translate(40px,-30px)} 70%{transform:translate(-25px,20px)} }
     @keyframes fl2 { 0%,100%{transform:translate(0,0)} 35%{transform:translate(-35px,28px)} 65%{transform:translate(22px,-16px)} }
     @keyframes fl3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-28px,-22px)} }
-    /* scan line */
-    .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(163,230,53,.18),transparent); animation:scan 10s linear infinite; pointer-events:none; }
-    @keyframes scan { 0%{top:0} 100%{top:100%} }
+    .scan { display:none; }
 
     /* Academic label */
     .hero-label {
@@ -229,24 +227,52 @@
 
     /* ─── SCROLL HINT ─── */
     .scroll-hint {
-      position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
-      display:flex; flex-direction:column; align-items:center; gap:7px;
-      color:var(--text3); z-index:2; cursor:pointer; user-select:none;
+      position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:0;
+      z-index:2; cursor:pointer; user-select:none; text-decoration:none;
+    }
+    .sh-label {
+      font-family:var(--mono); font-size:8.5px; font-weight:700;
+      letter-spacing:3px; text-transform:uppercase; color:var(--text3);
+      margin-bottom:10px;
       transition:color .2s;
     }
-    .scroll-hint:hover { color:var(--text2); }
-    .scroll-hint span {
-      font-family:var(--mono); font-size:9px; font-weight:600;
-      letter-spacing:2.5px; text-transform:uppercase;
+    .scroll-hint:hover .sh-label { color:var(--lime); }
+    .sh-mouse {
+      width:24px; height:38px; border-radius:12px;
+      border:1.5px solid rgba(163,230,53,.3);
+      display:flex; justify-content:center; padding-top:7px;
+      position:relative;
+      transition:border-color .2s;
     }
-    .scroll-arrow {
-      display:flex; flex-direction:column; align-items:center; gap:2px;
-      animation:scrollBounce 2.2s ease-in-out infinite;
+    .scroll-hint:hover .sh-mouse { border-color:rgba(163,230,53,.7); }
+    .sh-wheel {
+      width:3px; height:7px; border-radius:2px;
+      background:var(--lime);
+      animation:shWheel 2s cubic-bezier(.4,0,.2,1) infinite;
+      opacity:.8;
     }
-    .scroll-arrow svg { display:block; }
-    @keyframes scrollBounce {
-      0%,100% { transform:translateY(0); opacity:.5; }
-      50%      { transform:translateY(7px); opacity:1; }
+    @keyframes shWheel {
+      0%   { transform:translateY(0);   opacity:.8; }
+      50%  { transform:translateY(8px); opacity:.3; }
+      51%  { transform:translateY(0);   opacity:0; }
+      52%  { opacity:.8; }
+      100% { transform:translateY(0);   opacity:.8; }
+    }
+    .sh-arrows {
+      display:flex; flex-direction:column; align-items:center;
+      margin-top:8px; gap:0;
+    }
+    .sh-arrow {
+      width:10px; height:6px; opacity:0;
+      animation:shArrow 2s ease-in-out infinite;
+    }
+    .sh-arrow:nth-child(1) { animation-delay:0s; }
+    .sh-arrow:nth-child(2) { animation-delay:.2s; }
+    .sh-arrow:nth-child(3) { animation-delay:.4s; }
+    @keyframes shArrow {
+      0%,100% { opacity:0; }
+      50%      { opacity:.5; }
     }
 
     /* ─── SECTION ─── */
@@ -573,11 +599,14 @@
 
   <!-- Scroll hint -->
   <a href="#what" class="scroll-hint" aria-label="Прокрутить вниз">
-    <span data-i="scroll_hint">прокрути</span>
-    <div class="scroll-arrow">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+    <span class="sh-label" data-i="scroll_hint">прокрути</span>
+    <div class="sh-mouse">
+      <div class="sh-wheel"></div>
+    </div>
+    <div class="sh-arrows">
+      <svg class="sh-arrow" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="#a3e635" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="sh-arrow" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="#a3e635" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="sh-arrow" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="#a3e635" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
   </a>
 </section>

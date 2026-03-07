@@ -13,31 +13,195 @@ interface EntryState {
   idx: number
 }
 
-const ISSUE_LABELS: Record<string, string> = {
-  crossref_unresolved:     'Не найдено в Crossref',
-  doi_not_found:           'DOI не найден',
-  doi_invalid_format:      'Неверный формат DOI',
-  doi_title_mismatch:      'DOI не совпадает с названием',
-  doi_duplicate:           'Дублирующийся DOI',
-  metadata_not_corrected:  'Метаданные расходятся',
-  mismatch_title:          'Название расходится',
-  mismatch_author:         'Авторы расходятся',
-  mismatch_year:           'Год расходится',
-  mismatch_journal:        'Журнал расходится',
-  mismatch_doi:            'DOI расходится',
-  crossref_error:          'Ошибка API',
-}
+type Lang = 'ru' | 'en'
 
-const STAT_LABELS: Record<string, string> = {
-  processed:        'Проверено',
-  doi_valid:        'DOI валиден',
-  doi_added:        'DOI добавлено',
-  doi_corrected:    'DOI исправлено',
-  unresolved:       'Не найдено',
-  problem_entries:  'С проблемами',
-  entries_changed:  'Изменено записей',
-  fields_changed:   'Изменено полей',
-}
+const APP_I18N = {
+  ru: {
+    step_badge: (n: number) => `Шаг ${n} из 4`,
+    step1: 'Библиография', step2: 'URI карта', step3: 'Обработка', step4: 'Готово',
+    log_label: 'Лог выполнения',
+    // Step 1
+    s1_title: 'Загрузи файл библиографии',
+    s1_desc: 'BibTeX-файл (.bib) со списком источников. Убедись, что перед каждой записью стоит номерной комментарий — смотри пример ниже.',
+    s1_format_hd: 'Как должен выглядеть .bib файл',
+    s1_file_sec: 'Выбери файл', s1_drop_lbl: 'Перетащи .bib файл или кликни для выбора',
+    s1_file_ready: 'Файл загружен · готов к использованию',
+    s1_email_lbl: 'Email для Crossref API', s1_email_opt: 'необязательно',
+    s1_email_hint: 'Ускоряет и стабилизирует запросы к Crossref (полезно при большом списке)',
+    s1_btn_check: 'Проверить DOI через Crossref',
+    s1_btn_check_sub: 'Найдёт недостающие DOI, исправит метаданные. Займёт ~1 мин на 50 источников.',
+    s1_btn_skip: 'Пропустить проверку',
+    s1_btn_skip_sub: 'Перейти к следующему шагу без проверки. DOI в документе останутся как есть.',
+    s1_checking: 'Проверяю...',
+    // Validation
+    v_checking: 'Проверка источников через Crossref...',
+    v_results: 'Результаты проверки',
+    v_dl_enriched: '↓ Скачать обогащённый .bib', v_dl_original: '↓ Скачать оригинальный .bib',
+    v_edit_hint: 'Отредактированные поля сохранятся в скачанном файле.',
+    v_generate_bib: '⟳ Сгенерировать .bib', v_generating: 'Генерирую...',
+    v_next: 'Далее →', v_recheck: '↺ Перепроверить',
+    th_num: '#', th_key: 'Ключ', th_title: 'Название', th_author: 'Авторы',
+    th_year: 'Год', th_journal: 'Журнал / Источник', th_doi: 'DOI', th_status: 'Статус',
+    st_ok: 'OK', st_warn: 'Предупреждение', st_err: 'Ошибка', st_checking: 'Проверяю...',
+    badge_ok: '✓ OK', badge_warn: '⚠ Предупреждение', badge_err: '✕ Ошибка',
+    // Step 2
+    s2_title: 'Создай URI карту',
+    s2_desc: 'Нужна для привязки ссылок из .bib к элементам Zotero. Сохрани коллекцию из Zotero как HTML и загрузи сюда.',
+    s2_upload_sec: 'Загрузи файл', s2_html_col: 'HTML экспорт из Zotero',
+    s2_tsv_col: 'Готовый uri-map.tsv', s2_or: 'или',
+    s2_html_drop: 'Перетащи или кликни', s2_tsv_drop: 'Уже есть готовый файл?',
+    s2_result_title: 'URI карта успешно создана',
+    s2_match_ok: 'Количество источников совпадает с .bib файлом',
+    s2_match_warn: 'Количество не совпадает с .bib — проверь предупреждение ниже',
+    s2_file_ready: 'Файл готов к использованию', s2_count_label: 'источников',
+    s2_back: '← Назад', s2_dl_tsv: '↓ Скачать uri-map.tsv', s2_recreate: '↺ Пересоздать',
+    s2_next: 'Далее →', s2_create_btn: '⚙ Создать uri-map.tsv', s2_creating: 'Создаю карту…',
+    s2_err_title: 'Ошибка при обработке файла',
+    s2_p1_t: 'Открой Zotero', s2_p2_t: 'Экспортируй коллекцию',
+    s2_p3_t: 'Загрузи HTML', s2_p4_t: 'URI карта готова',
+    s2_p1_b: 'с нужной коллекцией', s2_p2_b: 'Файл → Экспорт → HTML',
+    s2_p3_b: 'сюда в поле ниже', s2_p4_b: 'для следующего шага',
+    // Step 3
+    s3_title: 'Вшить живые поля Zotero в документ',
+    s3_desc: 'Загрузи Word-файл — скрипт заменит [1], [5][6][7] на живые поля Zotero. После этого в Word: одна кнопка «Add Bibliography» — список литературы готов и сам обновляется.',
+    s3_prereq_sec: 'Что нужно для обработки',
+    s3_map_title: 'URI карта (Шаг 2)',
+    s3_map_ok: (n: number) => n ? `${n} источников привязано` : 'Карта загружена',
+    s3_map_miss: 'Вернись на Шаг 2 →', s3_bib_title: 'Библиография (Шаг 1)',
+    s3_bib_miss: 'Вернись на Шаг 1 →',
+    s3_transform_sec: 'Что произойдёт с документом',
+    s3_before_lbl: 'Сейчас в .docx', s3_after_lbl: 'После обработки — поля Zotero',
+    s3_docx_sec: 'Загрузи статью', s3_docx_drop: 'Перетащи .docx файл или кликни',
+    s3_result_title: 'Документ успешно обработан!',
+    s3_result_sub: 'ADDIN-поля Zotero вшиты · скачай → открой Word → нажми «Add/Edit Bibliography»',
+    s3_stat_replaced: 'Ссылок заменено', s3_stat_groups: 'Групп цитирований',
+    s3_err_title: 'Ошибка при обработке',
+    s3_back: '← Назад', s3_run: '▶ Запустить обработку', s3_rerun: '↺ Обработать снова',
+    s3_running: 'Обрабатываю...', s3_dl: '↓ Скачать результат',
+    s3_next: 'Далее → Инструкция Word',
+    // Step 4
+    s4_title: 'Готово — осталось одно нажатие.',
+    s4_sub: 'Скачай файл, открой в Word с плагином Zotero, нажми «Add/Edit Bibliography» — список литературы появится сам. Меняй стиль, удаляй ссылки — библиография обновится автоматически.',
+    s4_dl_main: 'Скачать output_zotero.docx', s4_dl_sub: 'Нажми, затем открой в Microsoft Word',
+    s4_word_hd: 'Что делать дальше — в Word с плагином Zotero',
+    s4_ws1_t: 'Открой скачанный файл в Microsoft Word',
+    s4_ws1_s: 'Двойной клик по output_zotero.docx — ссылки в тексте уже выглядят как живые поля Zotero',
+    s4_ws2_t: 'Нажми «Add/Edit Bibliography» — список литературы готов',
+    s4_ws2_s: 'Zotero панель → Add/Edit Bibliography → список источников появляется автоматически',
+    s4_ws3_t: 'Меняй стиль — всё обновится само',
+    s4_ws3_s: 'Zotero → Document Preferences → выбери стиль (ГОСТ, APA, IEEE...) — ссылки переформатируются мгновенно. Удаляешь цитату — она пропадает из библиографии.',
+    s4_ws3_badge: 'Готово',
+    s4_tip_title: '💡 Как это работает:',
+    s4_tip: 'В документ вшиты те же ADDIN-поля, что плагин Zotero создаёт при ручной вставке ссылок. Word их «знает» и передаёт управление Zotero: библиография управляется динамически.',
+    s4_back: '← Назад', s4_restart: '↺ Обработать другой документ',
+    s4_refs_replaced: 'Ссылок заменено', s4_cit_groups: 'Групп цитирований',
+    // Issue / stat labels
+    issue: {
+      crossref_unresolved: 'Не найдено в Crossref', doi_not_found: 'DOI не найден',
+      doi_invalid_format: 'Неверный формат DOI', doi_title_mismatch: 'DOI не совпадает с названием',
+      doi_duplicate: 'Дублирующийся DOI', metadata_not_corrected: 'Метаданные расходятся',
+      mismatch_title: 'Название расходится', mismatch_author: 'Авторы расходятся',
+      mismatch_year: 'Год расходится', mismatch_journal: 'Журнал расходится',
+      mismatch_doi: 'DOI расходится', crossref_error: 'Ошибка API',
+    } as Record<string, string>,
+    stat: {
+      processed: 'Проверено', doi_valid: 'DOI валиден', doi_added: 'DOI добавлено',
+      doi_corrected: 'DOI исправлено', unresolved: 'Не найдено',
+      problem_entries: 'С проблемами', entries_changed: 'Изменено записей', fields_changed: 'Изменено полей',
+    } as Record<string, string>,
+  },
+  en: {
+    step_badge: (n: number) => `Step ${n} of 4`,
+    step1: 'Bibliography', step2: 'URI Map', step3: 'Processing', step4: 'Done',
+    log_label: 'Execution log',
+    s1_title: 'Upload bibliography file',
+    s1_desc: 'A BibTeX file (.bib) with your references. Make sure each entry has a numbered comment before it — see the example below.',
+    s1_format_hd: 'How your .bib file should look',
+    s1_file_sec: 'Select file', s1_drop_lbl: 'Drop .bib file here or click to select',
+    s1_file_ready: 'File loaded · ready to use',
+    s1_email_lbl: 'Email for Crossref API', s1_email_opt: 'optional',
+    s1_email_hint: 'Speeds up and stabilises Crossref requests (useful for large reference lists)',
+    s1_btn_check: 'Validate DOIs via Crossref',
+    s1_btn_check_sub: 'Finds missing DOIs, corrects metadata. Takes ~1 min per 50 sources.',
+    s1_btn_skip: 'Skip validation',
+    s1_btn_skip_sub: 'Go to the next step without checking. DOIs will remain as is.',
+    s1_checking: 'Checking...',
+    v_checking: 'Validating sources via Crossref...',
+    v_results: 'Validation results',
+    v_dl_enriched: '↓ Download enriched .bib', v_dl_original: '↓ Download original .bib',
+    v_edit_hint: 'Edited fields will be saved in the downloaded file.',
+    v_generate_bib: '⟳ Generate .bib', v_generating: 'Generating...',
+    v_next: 'Next →', v_recheck: '↺ Re-validate',
+    th_num: '#', th_key: 'Key', th_title: 'Title', th_author: 'Authors',
+    th_year: 'Year', th_journal: 'Journal / Source', th_doi: 'DOI', th_status: 'Status',
+    st_ok: 'OK', st_warn: 'Warning', st_err: 'Error', st_checking: 'Checking...',
+    badge_ok: '✓ OK', badge_warn: '⚠ Warning', badge_err: '✕ Error',
+    s2_title: 'Create URI map',
+    s2_desc: 'Needed to link references from .bib to Zotero items. Export your Zotero collection as HTML and upload it here.',
+    s2_upload_sec: 'Upload file', s2_html_col: 'HTML export from Zotero',
+    s2_tsv_col: 'Ready-made uri-map.tsv', s2_or: 'or',
+    s2_html_drop: 'Drop or click', s2_tsv_drop: 'Already have a file?',
+    s2_result_title: 'URI map created successfully',
+    s2_match_ok: 'Source count matches the .bib file',
+    s2_match_warn: 'Count does not match .bib — check the warning below',
+    s2_file_ready: 'File ready to use', s2_count_label: 'sources',
+    s2_back: '← Back', s2_dl_tsv: '↓ Download uri-map.tsv', s2_recreate: '↺ Recreate',
+    s2_next: 'Next →', s2_create_btn: '⚙ Create uri-map.tsv', s2_creating: 'Creating map…',
+    s2_err_title: 'Error processing file',
+    s2_p1_t: 'Open Zotero', s2_p2_t: 'Export collection',
+    s2_p3_t: 'Upload HTML', s2_p4_t: 'URI map ready',
+    s2_p1_b: 'with the needed collection', s2_p2_b: 'File → Export → HTML',
+    s2_p3_b: 'into the field below', s2_p4_b: 'for the next step',
+    s3_title: 'Inject live Zotero fields into document',
+    s3_desc: 'Upload a Word file — the script replaces [1], [5][6][7] with live Zotero ADDIN fields. Then in Word: click "Add Bibliography" — reference list is ready and updates automatically.',
+    s3_prereq_sec: 'Required for processing',
+    s3_map_title: 'URI Map (Step 2)',
+    s3_map_ok: (n: number) => n ? `${n} sources linked` : 'Map loaded',
+    s3_map_miss: 'Go back to Step 2 →', s3_bib_title: 'Bibliography (Step 1)',
+    s3_bib_miss: 'Go back to Step 1 →',
+    s3_transform_sec: 'What happens to the document',
+    s3_before_lbl: 'Current .docx', s3_after_lbl: 'After processing — Zotero fields',
+    s3_docx_sec: 'Upload your paper', s3_docx_drop: 'Drop .docx file here or click',
+    s3_result_title: 'Document processed successfully!',
+    s3_result_sub: 'Zotero ADDIN fields injected · download → open Word → click "Add/Edit Bibliography"',
+    s3_stat_replaced: 'Citations replaced', s3_stat_groups: 'Citation groups',
+    s3_err_title: 'Processing error',
+    s3_back: '← Back', s3_run: '▶ Start processing', s3_rerun: '↺ Process again',
+    s3_running: 'Processing...', s3_dl: '↓ Download result',
+    s3_next: 'Next → Word instructions',
+    s4_title: 'Done — one click left.',
+    s4_sub: 'Download the file, open it in Word with the Zotero plugin, click "Add/Edit Bibliography" — reference list appears automatically. Switch styles, delete citations — bibliography updates on its own.',
+    s4_dl_main: 'Download output_zotero.docx', s4_dl_sub: 'Click, then open in Microsoft Word',
+    s4_word_hd: 'What to do next — in Word with the Zotero plugin',
+    s4_ws1_t: 'Open the downloaded file in Microsoft Word',
+    s4_ws1_s: 'Double-click output_zotero.docx — citations already look like live Zotero fields',
+    s4_ws2_t: 'Click "Add/Edit Bibliography" — reference list is ready',
+    s4_ws2_s: 'Zotero panel → Add/Edit Bibliography → reference list appears automatically',
+    s4_ws3_t: 'Switch styles — everything updates automatically',
+    s4_ws3_s: 'Zotero → Document Preferences → choose style (APA, IEEE, ГОСТ...) — citations reformat instantly.',
+    s4_ws3_badge: 'Done',
+    s4_tip_title: '💡 How it works:',
+    s4_tip: 'The document contains the same ADDIN fields that the Zotero plugin creates when inserting citations manually. Word recognises them and hands control to Zotero: bibliography is managed dynamically.',
+    s4_back: '← Back', s4_restart: '↺ Process another document',
+    s4_refs_replaced: 'Citations replaced', s4_cit_groups: 'Citation groups',
+    issue: {
+      crossref_unresolved: 'Not found in Crossref', doi_not_found: 'DOI not found',
+      doi_invalid_format: 'Invalid DOI format', doi_title_mismatch: 'DOI/title mismatch',
+      doi_duplicate: 'Duplicate DOI', metadata_not_corrected: 'Metadata mismatch',
+      mismatch_title: 'Title mismatch', mismatch_author: 'Author mismatch',
+      mismatch_year: 'Year mismatch', mismatch_journal: 'Journal mismatch',
+      mismatch_doi: 'DOI mismatch', crossref_error: 'API error',
+    } as Record<string, string>,
+    stat: {
+      processed: 'Processed', doi_valid: 'DOI valid', doi_added: 'DOI added',
+      doi_corrected: 'DOI corrected', unresolved: 'Unresolved',
+      problem_entries: 'Problem entries', entries_changed: 'Entries changed', fields_changed: 'Fields changed',
+    } as Record<string, string>,
+  },
+} as const
+
+const ISSUE_LABELS: Record<string, string> = APP_I18N.ru.issue
+const STAT_LABELS: Record<string, string> = APP_I18N.ru.stat
 
 @customElement('app-root')
 export class AppRoot extends LitElement {
@@ -75,6 +239,18 @@ export class AppRoot extends LitElement {
   @state() private _editingCell: { key: string; field: string } | null = null
   @state() private _editedFields: Record<string, Record<string, string>> = {}
   @state() private _generatingBib = false
+
+  // --- Language ---
+  @state() private _lang: Lang = (localStorage.getItem('lang') as Lang) || 'ru'
+
+  private _t(key: string): any {
+    return (APP_I18N[this._lang] as any)[key] ?? (APP_I18N['ru'] as any)[key] ?? key
+  }
+
+  private _setLang(l: Lang) {
+    this._lang = l
+    localStorage.setItem('lang', l)
+  }
 
   // ── CSS ───────────────────────────────────────────────────────────────────
 
@@ -121,6 +297,26 @@ export class AppRoot extends LitElement {
       padding: 4px 10px;
       color: #748f80;
     }
+    .lang-toggle {
+      display: flex; align-items: center; gap: 2px;
+      background: #101414;
+      border: 1px solid #1c2a2a;
+      border-radius: 6px;
+      padding: 3px;
+    }
+    .lang-btn {
+      font-size: 11px; font-weight: 600;
+      background: none; border: none; cursor: pointer;
+      border-radius: 4px;
+      padding: 3px 8px;
+      color: #748f80;
+      transition: all 0.15s;
+    }
+    .lang-btn.active {
+      background: #a3e635;
+      color: #091200;
+    }
+    .lang-btn:not(.active):hover { color: #edf7ed; }
 
     /* ── Stepper ── */
     .stepper {
@@ -1051,6 +1247,10 @@ export class AppRoot extends LitElement {
     return this._editedFields[entry.key]?.[field] ?? entry.fields[field] ?? ''
   }
 
+  private _clean(val: string): string {
+    return val.replace(/[{}]/g, '')
+  }
+
   private _isEdited(entry: EntryState, field: string): boolean {
     const edited = this._editedFields[entry.key]?.[field]
     return edited !== undefined && edited !== (entry.fields[field] ?? '')
@@ -1280,7 +1480,7 @@ export class AppRoot extends LitElement {
     if (!this.log) return nothing
     return html`
       <div class="log-wrap">
-        <div class="log-label">Лог выполнения</div>
+        <div class="log-label">${this._t('log_label')}</div>
         <div class="log-box">${this.log}</div>
       </div>`
   }
@@ -1296,22 +1496,24 @@ export class AppRoot extends LitElement {
   }
 
   private _statusLabel(e: EntryState): string {
-    if (e.status === 'checking') return 'Проверяю...'
-    if (e.status === 'ok')       return 'OK'
-    if (e.status === 'warn')     return e.issues.length ? ISSUE_LABELS[e.issues[0]] ?? 'Предупреждение' : 'Предупреждение'
-    if (e.status === 'error')    return e.issues.length ? ISSUE_LABELS[e.issues[0]] ?? 'Ошибка' : 'Ошибка'
+    const i = APP_I18N[this._lang].issue as Record<string, string>
+    if (e.status === 'checking') return this._t('st_checking')
+    if (e.status === 'ok')       return this._t('st_ok')
+    if (e.status === 'warn')     return e.issues.length ? i[e.issues[0]] ?? this._t('st_warn') : this._t('st_warn')
+    if (e.status === 'error')    return e.issues.length ? i[e.issues[0]] ?? this._t('st_err') : this._t('st_err')
     return ''
   }
 
   private _statusBadge(status: EntryState['status']) {
-    if (status === 'ok')    return html`<span class="badge badge-ok">✓ OK</span>`
-    if (status === 'warn')  return html`<span class="badge badge-warn">⚠ Предупреждение</span>`
-    if (status === 'error') return html`<span class="badge badge-error">✕ Ошибка</span>`
+    if (status === 'ok')    return html`<span class="badge badge-ok">${this._t('badge_ok')}</span>`
+    if (status === 'warn')  return html`<span class="badge badge-warn">${this._t('badge_warn')}</span>`
+    if (status === 'error') return html`<span class="badge badge-error">${this._t('badge_err')}</span>`
     return nothing
   }
 
   private _issueTag(issue: string, entryStatus: EntryState['status']) {
-    const label = ISSUE_LABELS[issue] ?? issue
+    const i = APP_I18N[this._lang].issue as Record<string, string>
+    const label = i[issue] ?? issue
     const cls = entryStatus === 'error' ? 'error' : 'warn'
     return html`<span class="issue-tag ${cls}">${label}</span>`
   }
@@ -1334,12 +1536,13 @@ export class AppRoot extends LitElement {
         </div>`
     }
 
+    const display = value ? this._clean(value) : placeholder
     return html`
       <div class="cell-wrap">
         <div class="cell-text ${edited ? 'edited' : ''} ${!value ? 'empty' : ''}"
-          title="${value || placeholder}"
+          title="${display}"
           @click=${() => { this._editingCell = { key: entry.key, field } }}>
-          ${value || placeholder}
+          ${display}
         </div>
       </div>`
   }
@@ -1356,7 +1559,7 @@ export class AppRoot extends LitElement {
           <div class="progress-icon">
             <span class="spinner" style="color:#a3e635"></span>
           </div>
-          <div class="progress-title">Проверка источников через Crossref...</div>
+          <div class="progress-title">${this._t('v_checking')}</div>
           <div class="progress-fraction">${this._checkedCount}&thinsp;/&thinsp;${this._totalEntries || '?'}</div>
         </div>
 
@@ -1371,7 +1574,7 @@ export class AppRoot extends LitElement {
             <div class="entry-row ${e.status}">
               <div class="entry-idx">${e.idx}</div>
               <div class="entry-key">${e.key}</div>
-              <div class="entry-title">${this._getField(e, 'title') || e.fields.title || ''}</div>
+              <div class="entry-title">${this._clean(this._getField(e, 'title') || e.fields.title || '')}</div>
               <div class="entry-status ${e.status}">
                 ${this._statusIcon(e.status)}
                 ${this._statusLabel(e)}
@@ -1401,65 +1604,65 @@ export class AppRoot extends LitElement {
       <div class="stats-grid">
         <div class="stat-cell">
           <div class="stat-val">${total}</div>
-          <div class="stat-label">Всего записей</div>
+          <div class="stat-label">${this._lang === 'en' ? 'Total' : 'Всего записей'}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-val ok">${nOk}</div>
-          <div class="stat-label">OK</div>
+          <div class="stat-label">${this._t('st_ok')}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-val warn">${nWarn}</div>
-          <div class="stat-label">Предупреждения</div>
+          <div class="stat-label">${this._lang === 'en' ? 'Warnings' : 'Предупреждения'}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-val error">${nError}</div>
-          <div class="stat-label">Ошибки</div>
+          <div class="stat-label">${this._lang === 'en' ? 'Errors' : 'Ошибки'}</div>
         </div>
       </div>
 
       <!-- Action row -->
       <div class="results-actions">
-        <div class="results-title">Результаты проверки</div>
+        <div class="results-title">${this._t('v_results')}</div>
 
         ${this._bibJobId ? html`
           <a class="btn btn-ghost" style="font-size:12px"
              href="/api/download/${this._bibJobId}/references_enriched.bib"
              download="references_enriched.bib">
-            ↓ Скачать обогащённый .bib
+            ${this._t('v_dl_enriched')}
           </a>` : nothing}
 
         <button class="btn btn-blue" style="font-size:12px"
           ?disabled=${this._generatingBib}
           @click=${this._generateBib}>
           ${this._generatingBib
-            ? html`<span class="spinner"></span> Генерирую...`
-            : html`↓ Сохранить${edits ? ' (с правками)' : ''} .bib`}
+            ? html`<span class="spinner"></span> ${this._t('v_generating')}`
+            : html`↓ ${this._lang === 'en' ? 'Save' : 'Сохранить'}${edits ? (this._lang === 'en' ? ' (with edits)' : ' (с правками)') : ''} .bib`}
         </button>
 
         <button class="btn btn-next" style="font-size:12px"
           @click=${() => this._goStep(2)}>
-          Далее →
+          ${this._t('v_next')}
         </button>
       </div>
 
       <!-- Table -->
       <div class="table-card">
         <div class="table-toolbar">
-          <div class="table-toolbar-title">Источники — кликните ячейку чтобы отредактировать</div>
-          <div class="table-hint">Поля: название, авторы, год, журнал, DOI</div>
+          <div class="table-toolbar-title">${this._lang === 'en' ? 'Sources — click a cell to edit' : 'Источники — кликните ячейку чтобы отредактировать'}</div>
+          <div class="table-hint">${this._lang === 'en' ? 'Fields: title, authors, year, journal, DOI' : 'Поля: название, авторы, год, журнал, DOI'}</div>
         </div>
 
         <div class="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Ключ / Статус</th>
-                <th>Название</th>
-                <th>Авторы</th>
-                <th class="col-year">Год</th>
-                <th>Журнал</th>
-                <th class="col-doi">DOI</th>
+                <th>${this._t('th_num')}</th>
+                <th>${this._t('th_key')} / ${this._t('th_status')}</th>
+                <th>${this._t('th_title')}</th>
+                <th>${this._t('th_author')}</th>
+                <th class="col-year">${this._t('th_year')}</th>
+                <th>${this._t('th_journal')}</th>
+                <th class="col-doi">${this._t('th_doi')}</th>
               </tr>
             </thead>
             <tbody>
@@ -1489,13 +1692,13 @@ export class AppRoot extends LitElement {
 
         ${edits ? html`
           <div class="table-footer">
-            <div class="changed-hint">Есть несохранённые правки — нажмите «Сохранить .bib»</div>
+            <div class="changed-hint">${this._lang === 'en' ? 'Unsaved edits — click "Save .bib"' : 'Есть несохранённые правки — нажмите «Сохранить .bib»'}</div>
             <button class="btn btn-blue" style="font-size:12px"
               ?disabled=${this._generatingBib}
               @click=${this._generateBib}>
               ${this._generatingBib
-                ? html`<span class="spinner"></span> Генерирую...`
-                : '↓ Сохранить с правками .bib'}
+                ? html`<span class="spinner"></span> ${this._t('v_generating')}`
+                : (this._lang === 'en' ? '↓ Save with edits .bib' : '↓ Сохранить с правками .bib')}
             </button>
           </div>` : nothing}
       </div>
@@ -1525,11 +1728,8 @@ export class AppRoot extends LitElement {
         <div class="card-header">
           <div class="card-icon red">📚</div>
           <div>
-            <div class="card-title">Загрузи файл библиографии</div>
-            <div class="card-desc">
-              BibTeX-файл <strong style="color:#edf7ed">(.bib)</strong> со списком источников.
-              Убедись, что перед каждой записью стоит номерной комментарий — смотри пример ниже.
-            </div>
+            <div class="card-title">${this._t('s1_title')}</div>
+            <div class="card-desc">${this._t('s1_desc')}</div>
           </div>
         </div>
 
@@ -1537,7 +1737,7 @@ export class AppRoot extends LitElement {
         <div class="format-hint">
           <div class="format-hint-header">
             <div class="dot"></div>
-            Как должен выглядеть .bib файл
+            ${this._t('s1_format_hd')}
           </div>
           <div class="code-block">
             <span class="cc">% [1]</span><br>
@@ -1551,9 +1751,9 @@ export class AppRoot extends LitElement {
           </div>
         </div>
 
-        <div class="section-label" style="margin-top:20px">Выбери файл</div>
+        <div class="section-label" style="margin-top:20px">${this._t('s1_file_sec')}</div>
         <file-drop
-          label="Перетащи .bib файл или кликни для выбора"
+          label="${this._t('s1_drop_lbl')}"
           ext=".bib" accept=".bib"
           @file-selected=${(e: CustomEvent) => { this._bibFile = e.detail; this._clearValidation() }}
         ></file-drop>
@@ -1563,20 +1763,20 @@ export class AppRoot extends LitElement {
             <div class="bfi-icon">📄</div>
             <div>
               <div class="bfi-name">${this._bibFile!.name}</div>
-              <div class="bfi-sub">Файл загружен · готов к использованию</div>
+              <div class="bfi-sub">${this._t('s1_file_ready')}</div>
             </div>
           </div>` : nothing}
 
         <!-- Email input -->
         <div class="input-wrap" style="margin-top:16px">
           <label class="input-label">
-            Email для Crossref API
-            <span class="optional-tag">необязательно</span>
+            ${this._t('s1_email_lbl')}
+            <span class="optional-tag">${this._t('s1_email_opt')}</span>
           </label>
           <input class="text-input" type="email" placeholder="you@university.edu"
             @input=${(e: Event) => this._mailto = (e.target as HTMLInputElement).value} />
           <div style="font-size:11px;color:#3a4d42;margin-top:5px">
-            Ускоряет и стабилизирует запросы к Crossref (полезно при большом списке)
+            ${this._t('s1_email_hint')}
           </div>
         </div>
 
@@ -1589,16 +1789,16 @@ export class AppRoot extends LitElement {
             <div class="ac-icon">🔍</div>
             <div class="ac-title ac-primary">
               ${isProc ? html`<span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;color:#a3e635"></span>` : nothing}
-              ${isProc ? 'Проверяю...' : 'Проверить DOI через Crossref'}
+              ${isProc ? this._t('s1_checking') : this._t('s1_btn_check')}
             </div>
-            <div class="ac-sub">Найдёт недостающие DOI, исправит метаданные. Займёт ~1 мин на 50 источников.</div>
+            <div class="ac-sub">${this._t('s1_btn_check_sub')}</div>
           </button>
 
           <button class="action-card" ?disabled=${!hasFile || isProc}
             @click=${() => this._goStep(2)}>
             <div class="ac-icon">⏭</div>
-            <div class="ac-title">Пропустить проверку</div>
-            <div class="ac-sub">Перейти к следующему шагу без проверки. DOI в документе останутся как есть.</div>
+            <div class="ac-title">${this._t('s1_btn_skip')}</div>
+            <div class="ac-sub">${this._t('s1_btn_skip_sub')}</div>
           </button>
         </div>
       </div>
@@ -1631,12 +1831,8 @@ export class AppRoot extends LitElement {
         <div class="card-header">
           <div class="card-icon blue">🔗</div>
           <div>
-            <div class="card-title">URI карта источников</div>
-            <div class="card-desc">
-              Привязывает маркеры <strong style="color:#edf7ed">[1], [2]…</strong>
-              к реальным записям в твоей библиотеке Zotero — чтобы каждый ADDIN-field в документе
-              указывал именно на твой источник. Следуй шагам ниже — занимает меньше минуты.
-            </div>
+            <div class="card-title">${this._t('s2_title')}</div>
+            <div class="card-desc">${this._t('s2_desc')}</div>
           </div>
         </div>
 
@@ -1644,15 +1840,15 @@ export class AppRoot extends LitElement {
         <div class="pipeline">
           <div class="ps ${s1}">
             <div class="ps-icon">📚</div>
-            <div class="ps-title">Открой Zotero</div>
-            <div class="ps-sub">Выдели все источники Ctrl+A</div>
+            <div class="ps-title">${this._t('s2_p1_t')}</div>
+            <div class="ps-sub">${this._lang === 'en' ? 'Select all Ctrl+A' : 'Выдели все источники Ctrl+A'}</div>
           </div>
 
           <div class="pa">${arrowSvg}</div>
 
           <div class="ps ${s2}">
             <div class="ps-icon">📋</div>
-            <div class="ps-title">Создай библиографию</div>
+            <div class="ps-title">${this._t('s2_p2_t')}</div>
             <div class="ps-sub">Scannable Cite → Save as HTML</div>
           </div>
 
@@ -1661,8 +1857,8 @@ export class AppRoot extends LitElement {
           <div class="ps ${s3}">
             ${isDone || hasHtml ? html`<div class="ps-badge">✓</div>` : nothing}
             <div class="ps-icon">${hasHtml || isDone ? '📄' : '⬆'}</div>
-            <div class="ps-title">${hasHtml || isDone ? 'HTML загружен' : 'Загрузи HTML'}</div>
-            <div class="ps-sub">${hasHtml ? this._htmlFile!.name.slice(0,22) + (this._htmlFile!.name.length > 22 ? '…' : '') : 'файл из Zotero'}</div>
+            <div class="ps-title">${hasHtml || isDone ? (this._lang === 'en' ? 'HTML uploaded' : 'HTML загружен') : this._t('s2_p3_t')}</div>
+            <div class="ps-sub">${hasHtml ? this._htmlFile!.name.slice(0,22) + (this._htmlFile!.name.length > 22 ? '…' : '') : (this._lang === 'en' ? 'file from Zotero' : 'файл из Zotero')}</div>
           </div>
 
           <div class="pa ${isDone ? 'pa-done' : hasHtml ? 'pa-active' : ''}">${arrowSvg}</div>
@@ -1673,17 +1869,17 @@ export class AppRoot extends LitElement {
               ${isProc ? html`<span class="spinner" style="color:#a3e635;width:20px;height:20px;border-width:2.5px"></span>`
                        : isDone ? '✅' : '⚙'}
             </div>
-            <div class="ps-title">${isDone ? 'URI карта готова' : isProc ? 'Создаю карту…' : 'Создай URI карту'}</div>
-            <div class="ps-sub">${isDone ? `${this._parseCount} источников` : isProc ? 'Обрабатываю файл' : 'Нажми кнопку ниже'}</div>
+            <div class="ps-title">${isDone ? this._t('s2_p4_t') : isProc ? this._t('s2_creating') : (this._lang === 'en' ? 'Create URI map' : 'Создай URI карту')}</div>
+            <div class="ps-sub">${isDone ? `${this._parseCount} ${this._t('s2_count_label')}` : isProc ? (this._lang === 'en' ? 'Processing…' : 'Обрабатываю файл') : (this._lang === 'en' ? 'Click the button below' : 'Нажми кнопку ниже')}</div>
           </div>
         </div>
 
         <!-- Upload options -->
-        <div class="section-label">Загрузи файл</div>
+        <div class="section-label">${this._t('s2_upload_sec')}</div>
         <div class="upload-options">
           <div class="upload-col">
-            <div class="upload-col-label">HTML экспорт из Zotero</div>
-            <file-drop label="Перетащи или кликни" ext=".html" accept=".html,.htm"
+            <div class="upload-col-label">${this._t('s2_html_col')}</div>
+            <file-drop label="${this._t('s2_html_drop')}" ext=".html" accept=".html,.htm"
               @file-selected=${(e: CustomEvent) => {
                 this._htmlFile = e.detail; this._uriMapDirect = null
                 this._uriMapJobId = ''; this._parseCount = 0; this._parseMatch = null
@@ -1694,13 +1890,13 @@ export class AppRoot extends LitElement {
 
           <div class="upload-divider">
             <div class="upload-divider-line"></div>
-            <div class="upload-divider-text">или</div>
+            <div class="upload-divider-text">${this._t('s2_or')}</div>
             <div class="upload-divider-line"></div>
           </div>
 
           <div class="upload-col">
-            <div class="upload-col-label">Готовый uri-map.tsv</div>
-            <file-drop label="Уже есть готовый файл?" ext=".tsv" accept=".tsv,.txt"
+            <div class="upload-col-label">${this._t('s2_tsv_col')}</div>
+            <file-drop label="${this._t('s2_tsv_drop')}" ext=".tsv" accept=".tsv,.txt"
               @file-selected=${(e: CustomEvent) => {
                 this._uriMapDirect = e.detail; this._htmlFile = null
                 this._uriMapJobId = ''; this._parseCount = 0
@@ -1715,18 +1911,18 @@ export class AppRoot extends LitElement {
           <div class="parse-result">
             <div class="parse-result-ico">✅</div>
             <div class="parse-result-body">
-              <div class="parse-result-title">URI карта успешно создана</div>
+              <div class="parse-result-title">${this._t('s2_result_title')}</div>
               <div class="parse-result-sub">
                 ${this._parseMatch === true
-                  ? 'Количество источников совпадает с .bib файлом'
+                  ? this._t('s2_match_ok')
                   : this._parseMatch === false
-                    ? 'Количество не совпадает с .bib — проверь предупреждение ниже'
-                    : 'Файл готов к использованию'}
+                    ? this._t('s2_match_warn')
+                    : this._t('s2_file_ready')}
               </div>
             </div>
             <div class="parse-count">
               <div class="parse-count-num">${this._parseCount}</div>
-              <div class="parse-count-label">источников</div>
+              <div class="parse-count-label">${this._t('s2_count_label')}</div>
             </div>
           </div>
 
@@ -1741,38 +1937,38 @@ export class AppRoot extends LitElement {
           <div class="parse-warning" style="margin-top:12px">
             <span style="font-size:16px;flex-shrink:0">✕</span>
             <div>
-              <div style="font-weight:700;margin-bottom:4px">Ошибка при обработке файла</div>
+              <div style="font-weight:700;margin-bottom:4px">${this._t('s2_err_title')}</div>
               <div style="font-size:11px;opacity:0.8">${this.log}</div>
             </div>
           </div>` : nothing}
 
         <div class="btn-row" style="margin-top:20px">
-          <button class="btn btn-ghost" @click=${() => this._goStep(1)}>← Назад</button>
+          <button class="btn btn-ghost" @click=${() => this._goStep(1)}>${this._t('s2_back')}</button>
 
           ${hasHtml && !isDone ? html`
             <button class="btn btn-blue"
               ?disabled=${isProc}
               @click=${this._runParseHtml}>
               ${isProc
-                ? html`<span class="spinner"></span> Создаю карту…`
-                : '⚙ Создать uri-map.tsv'}
+                ? html`<span class="spinner"></span> ${this._t('s2_creating')}`
+                : this._t('s2_create_btn')}
             </button>` : nothing}
 
           ${isDone ? html`
             <a class="btn btn-ghost" style="font-size:12px"
                href="/api/download/${this._uriMapJobId}/uri-map.tsv"
-               download="uri-map.tsv">↓ Скачать uri-map.tsv</a>
+               download="uri-map.tsv">${this._t('s2_dl_tsv')}</a>
             <button class="btn btn-ghost" style="font-size:12px"
               @click=${() => {
                 this._uriMapJobId = ''; this._htmlFile = null; this._parseCount = 0
                 this._parseMatch = null; this.status = 'idle'; this.log = ''
                 this.shadowRoot?.querySelectorAll('file-drop').forEach((el: any) => el.reset?.())
-              }}>↺ Пересоздать</button>` : nothing}
+              }}>${this._t('s2_recreate')}</button>` : nothing}
 
           <div class="spacer"></div>
           <button class="btn btn-next" ?disabled=${!hasMap}
             @click=${() => this._goStep(3)}>
-            Далее →
+            ${this._t('s2_next')}
           </button>
         </div>
       </div>
@@ -1800,48 +1996,43 @@ export class AppRoot extends LitElement {
         <div class="card-header">
           <div class="card-icon purple">⚡</div>
           <div>
-            <div class="card-title">Вшить живые поля Zotero в документ</div>
-            <div class="card-desc">
-              Загрузи Word-файл — скрипт заменит
-              <strong style="color:#edf7ed">[1], [5][6][7]</strong> на живые поля Zotero.
-              После этого в Word: одна кнопка «Add Bibliography» — список литературы готов
-              и сам обновляется при любых правках.
-            </div>
+            <div class="card-title">${this._t('s3_title')}</div>
+            <div class="card-desc">${this._t('s3_desc')}</div>
           </div>
         </div>
 
         <!-- Prerequisites -->
-        <div class="section-label">Что нужно для обработки</div>
+        <div class="section-label">${this._t('s3_prereq_sec')}</div>
         <div class="prereq-panel">
           <div class="prereq-item ${hasMap ? 'ok' : 'missing'}">
             <div class="prereq-ico">${hasMap ? '✓' : '!'}</div>
             <div>
-              <div class="prereq-title">URI карта (Шаг 2)</div>
+              <div class="prereq-title">${this._t('s3_map_title')}</div>
               <div class="prereq-sub">
                 ${hasMap
-                  ? mapCount ? `${mapCount} источников привязано` : 'Карта загружена'
-                  : 'Вернись на Шаг 2 →'}
+                  ? this._t('s3_map_ok')(mapCount)
+                  : this._t('s3_map_miss')}
               </div>
             </div>
           </div>
           <div class="prereq-item ${this._bibFile ? 'ok' : 'missing'}">
             <div class="prereq-ico">${this._bibFile ? '✓' : '!'}</div>
             <div>
-              <div class="prereq-title">Библиография (Шаг 1)</div>
+              <div class="prereq-title">${this._t('s3_bib_title')}</div>
               <div class="prereq-sub">
                 ${this._bibFile
                   ? this._bibFile.name.slice(0, 28) + (this._bibFile.name.length > 28 ? '…' : '')
-                  : 'Вернись на Шаг 1 →'}
+                  : this._t('s3_bib_miss')}
               </div>
             </div>
           </div>
         </div>
 
         <!-- Transform preview -->
-        <div class="section-label">Что произойдёт с документом</div>
+        <div class="section-label">${this._t('s3_transform_sec')}</div>
         <div class="transform-vis">
           <div class="tv-side">
-            <div class="tv-label">Сейчас в .docx</div>
+            <div class="tv-label">${this._t('s3_before_lbl')}</div>
             <div class="tv-doc">
               ...результаты показали<br>
               значительный эффект
@@ -1852,7 +2043,7 @@ export class AppRoot extends LitElement {
           </div>
           <div class="tv-arrow-col">${arrowSvg}</div>
           <div class="tv-side after">
-            <div class="tv-label">После обработки — поля Zotero</div>
+            <div class="tv-label">${this._t('s3_after_lbl')}</div>
             <div class="tv-doc">
               ...результаты показали<br>
               значительный эффект
@@ -1864,8 +2055,8 @@ export class AppRoot extends LitElement {
         </div>
 
         <!-- Docx upload -->
-        <div class="section-label" style="margin-top:20px">Загрузи статью</div>
-        <file-drop label="Перетащи .docx файл или кликни" ext=".docx" accept=".docx"
+        <div class="section-label" style="margin-top:20px">${this._t('s3_docx_sec')}</div>
+        <file-drop label="${this._t('s3_docx_drop')}" ext=".docx" accept=".docx"
           @file-selected=${(e: CustomEvent) => {
             this._docxFile = e.detail; this._injectJobId = ''
             this._injectGroups = 0; this._injectReplaced = 0
@@ -1878,17 +2069,17 @@ export class AppRoot extends LitElement {
           <div class="inject-result">
             <div class="ir-icon">✅</div>
             <div class="ir-body">
-              <div class="ir-title">Документ успешно обработан!</div>
-              <div class="ir-sub">ADDIN-поля Zotero вшиты · скачай → открой Word → нажми «Add/Edit Bibliography»</div>
+              <div class="ir-title">${this._t('s3_result_title')}</div>
+              <div class="ir-sub">${this._t('s3_result_sub')}</div>
             </div>
             <div class="ir-stats">
               <div class="ir-stat">
                 <div class="ir-stat-num">${this._injectReplaced}</div>
-                <div class="ir-stat-label">Ссылок<br>заменено</div>
+                <div class="ir-stat-label">${this._t('s3_stat_replaced')}</div>
               </div>
               <div class="ir-stat">
                 <div class="ir-stat-num">${this._injectGroups}</div>
-                <div class="ir-stat-label">Групп<br>цитирований</div>
+                <div class="ir-stat-label">${this._t('s3_stat_groups')}</div>
               </div>
             </div>
           </div>` : nothing}
@@ -1897,29 +2088,29 @@ export class AppRoot extends LitElement {
           <div class="parse-warning" style="margin-top:12px">
             <span style="font-size:16px;flex-shrink:0">✕</span>
             <div>
-              <div style="font-weight:700;margin-bottom:4px">Ошибка при обработке</div>
+              <div style="font-weight:700;margin-bottom:4px">${this._t('s3_err_title')}</div>
               <div style="font-size:11px;opacity:0.8;white-space:pre-wrap">${this.log}</div>
             </div>
           </div>` : nothing}
 
         <div class="btn-row" style="margin-top:20px">
-          <button class="btn btn-ghost" @click=${() => this._goStep(2)}>← Назад</button>
+          <button class="btn btn-ghost" @click=${() => this._goStep(2)}>${this._t('s3_back')}</button>
 
           <button class="btn btn-red"
             ?disabled=${!hasDocx || !hasMap || isProc}
             @click=${this._runInject}>
             ${isProc
-              ? html`<span class="spinner"></span> Обрабатываю...`
-              : isDone ? '↺ Обработать снова' : '▶ Запустить обработку'}
+              ? html`<span class="spinner"></span> ${this._t('s3_running')}`
+              : isDone ? this._t('s3_rerun') : this._t('s3_run')}
           </button>
 
           ${isDone ? html`
             <a class="btn btn-green"
                href="/api/download/${this._injectJobId}/output_zotero.docx"
-               download="output_zotero.docx">↓ Скачать результат</a>
+               download="output_zotero.docx">${this._t('s3_dl')}</a>
             <div class="spacer"></div>
             <button class="btn btn-next" @click=${() => this._goStep(4)}>
-              Далее → Инструкция Word
+              ${this._t('s3_next')}
             </button>` : nothing}
         </div>
       </div>
@@ -1933,17 +2124,17 @@ export class AppRoot extends LitElement {
       <!-- Success hero -->
       <div class="success-hero">
         <div class="sh-ring">🎉</div>
-        <div class="sh-title">Готово — осталось одно нажатие.</div>
-        <div class="sh-sub">Скачай файл, открой в Word с плагином Zotero,<br>нажми «Add/Edit Bibliography» — список литературы появится сам.<br>Меняй стиль, удаляй ссылки — библиография обновится автоматически.</div>
+        <div class="sh-title">${this._t('s4_title')}</div>
+        <div class="sh-sub">${this._t('s4_sub')}</div>
         ${this._injectReplaced || this._injectGroups ? html`
           <div class="sh-stats">
             <div class="sh-stat">
               <div class="sh-stat-n">${this._injectReplaced}</div>
-              <div class="sh-stat-l">Ссылок заменено</div>
+              <div class="sh-stat-l">${this._t('s4_refs_replaced')}</div>
             </div>
             <div class="sh-stat">
               <div class="sh-stat-n">${this._injectGroups}</div>
-              <div class="sh-stat-l">Групп цитирований</div>
+              <div class="sh-stat-l">${this._t('s4_cit_groups')}</div>
             </div>
           </div>` : nothing}
       </div>
@@ -1956,22 +2147,22 @@ export class AppRoot extends LitElement {
              download="output_zotero.docx">
             <span class="btn-dl-icon">↓</span>
             <span class="btn-dl-text">
-              <span class="btn-dl-main">Скачать output_zotero.docx</span>
-              <span class="btn-dl-sub">Нажми, затем открой в Microsoft Word</span>
+              <span class="btn-dl-main">${this._t('s4_dl_main')}</span>
+              <span class="btn-dl-sub">${this._t('s4_dl_sub')}</span>
             </span>
           </a>
         </div>` : nothing}
 
       <!-- Steps in Word -->
       <div class="word-steps">
-        <div class="ws-header">Что делать дальше — в Word с плагином Zotero</div>
+        <div class="ws-header">${this._t('s4_word_hd')}</div>
 
         <div class="ws-step">
           <div class="ws-num">1</div>
           <div class="ws-icon-wrap">📂</div>
           <div class="ws-body">
-            <div class="ws-title">Открой скачанный файл в Microsoft Word</div>
-            <div class="ws-sub">Двойной клик по <strong>output_zotero.docx</strong> — ссылки в тексте уже выглядят как живые поля Zotero</div>
+            <div class="ws-title">${this._t('s4_ws1_t')}</div>
+            <div class="ws-sub">${this._t('s4_ws1_s')}</div>
           </div>
           <span class="ws-badge blue">Word</span>
         </div>
@@ -1980,8 +2171,8 @@ export class AppRoot extends LitElement {
           <div class="ws-num">2</div>
           <div class="ws-icon-wrap">📋</div>
           <div class="ws-body">
-            <div class="ws-title">Нажми «Add/Edit Bibliography» — список литературы готов</div>
-            <div class="ws-sub">Zotero панель → <strong>Add/Edit Bibliography</strong> → список источников появляется автоматически и привязан к ссылкам в тексте</div>
+            <div class="ws-title">${this._t('s4_ws2_t')}</div>
+            <div class="ws-sub">${this._t('s4_ws2_s')}</div>
           </div>
           <span class="ws-badge blue">Zotero</span>
         </div>
@@ -1990,26 +2181,23 @@ export class AppRoot extends LitElement {
           <div class="ws-num">3</div>
           <div class="ws-icon-wrap">🎨</div>
           <div class="ws-body">
-            <div class="ws-title">Меняй стиль — всё обновится само</div>
-            <div class="ws-sub">Zotero → Document Preferences → выбери стиль (<strong>ГОСТ, APA, IEEE, Vancouver...</strong>) — ссылки и список литературы переформатируются мгновенно. Удаляешь цитату — она пропадает из библиографии.</div>
+            <div class="ws-title">${this._t('s4_ws3_t')}</div>
+            <div class="ws-sub">${this._t('s4_ws3_s')}</div>
           </div>
-          <span class="ws-badge green">Готово</span>
+          <span class="ws-badge green">${this._t('s4_ws3_badge')}</span>
         </div>
       </div>
 
       <!-- Tip -->
       <div style="padding:14px 18px;background:#101414;border:1px solid #1c2a2a;border-radius:12px;font-size:12px;color:#748f80;line-height:1.7;margin-bottom:16px">
-        <strong style="color:#edf7ed">💡 Как это работает:</strong>
-        В документ вшиты те же ADDIN-поля, что плагин Zotero создаёт при ручной вставке ссылок.
-        Word их «знает» и передаёт управление Zotero: библиография управляется динамически.
-        Группы <strong style="color:#edf7ed">[5][6][7][8]</strong> автоматически сожмутся в
-        <strong style="color:#34d399">[5–8]</strong> согласно выбранному стилю.
+        <strong style="color:#edf7ed">${this._t('s4_tip_title')}</strong>
+        ${this._t('s4_tip')}
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-ghost" @click=${() => this._goStep(3)}>← Назад</button>
+        <button class="btn btn-ghost" @click=${() => this._goStep(3)}>${this._t('s4_back')}</button>
         <div class="spacer"></div>
-        <button class="btn btn-ghost" @click=${this._reset}>↺ Обработать другой документ</button>
+        <button class="btn btn-ghost" @click=${this._reset}>${this._t('s4_restart')}</button>
       </div>
     `
   }
@@ -2018,10 +2206,10 @@ export class AppRoot extends LitElement {
 
   render() {
     const steps = [
-      { n: 1, name: 'Библиография' },
-      { n: 2, name: 'URI карта' },
-      { n: 3, name: 'Обработка' },
-      { n: 4, name: 'Готово' },
+      { n: 1, name: this._t('step1') },
+      { n: 2, name: this._t('step2') },
+      { n: 3, name: this._t('step3') },
+      { n: 4, name: this._t('step4') },
     ]
     const wide = this._validationDone && this.step === 1
 
@@ -2031,7 +2219,13 @@ export class AppRoot extends LitElement {
         <span class="logo-name">Zotero Inject</span>
         <span class="logo-tag">Citation processor</span>
         <div class="header-spacer"></div>
-        <div class="header-badge">Шаг ${this.step} из 4</div>
+        <div class="lang-toggle">
+          <button class="lang-btn ${this._lang === 'ru' ? 'active' : ''}"
+            @click=${() => this._setLang('ru')}>RU</button>
+          <button class="lang-btn ${this._lang === 'en' ? 'active' : ''}"
+            @click=${() => this._setLang('en')}>EN</button>
+        </div>
+        <div class="header-badge">${this._t('step_badge')(this.step)}</div>
       </header>
 
       <div class="stepper">

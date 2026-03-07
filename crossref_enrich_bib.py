@@ -167,18 +167,16 @@ def parse_bibtex_entries(text: str) -> list[BibEntry]:
         depth = 1
         j = comma_pos + 1
         in_quotes = False
-        escape = False
         while j < n:
             ch = text[j]
             if in_quotes:
-                if escape:
-                    escape = False
-                elif ch == "\\":
-                    escape = True
-                elif ch == '"':
+                if ch == '"':
                     in_quotes = False
             else:
-                if ch == '"':
+                # Only treat " as a quote delimiter at depth 1 (entry body level).
+                # At depth >= 2 (inside a {…} block), " is a LaTeX character
+                # (e.g. {\"u} for ü) and must NOT trigger quote mode.
+                if ch == '"' and depth == 1:
                     in_quotes = True
                 elif ch == "{":
                     depth += 1
@@ -281,7 +279,11 @@ def build_bibtex(entries: Iterable[BibEntry]) -> str:
 def http_json(url: str, user_agent: str, timeout: float = 8.0) -> dict:
     req = Request(url, headers={"User-Agent": user_agent, "Accept": "application/json"})
     with urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        raw = resp.read()
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise URLError(f"Bad JSON from server: {exc}") from exc
 
 
 def crossref_get_work_by_doi(
@@ -912,7 +914,22 @@ def process_entries(
             }
             for future in as_completed(futures):
                 entry = futures[future]
-                stat_delta, issues = future.result()
+                try:
+                    stat_delta, issues = future.result()
+                except Exception as exc:
+                    print(f"[WARN] {entry.key}: worker thread error ({exc})", file=sys.stderr)
+                    issues = {"crossref_error"}
+                    if json_events:
+                        _emit_event({
+                            "type": "entry_done",
+                            "idx": -1,
+                            "key": entry.key,
+                            "status": "error",
+                            "issues": ["crossref_error"],
+                            "fields": dict(entry.fields),
+                        })
+                    issues_by_key[entry.key] = issues
+                    continue
                 for k, v in stat_delta.items():
                     if k in stats:
                         stats[k] += v
