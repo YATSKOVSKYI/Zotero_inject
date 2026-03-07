@@ -18,7 +18,9 @@
   <meta name="twitter:card" content="summary_large_image">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Zotero Inject","applicationCategory":"AcademicApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap"></noscript>
   <style>
     :root {
       --bg:      #030404;
@@ -1282,20 +1284,24 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
 setLang(lang);
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-(function(){
-  var el = document.getElementById('donate-qr-canvas');
-  if (el && window.QRCode) {
-    new QRCode(el, {
-      text: 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3',
-      width: 160, height: 160,
-      colorDark: '#a3e635',
-      colorLight: '#060e06',
-      correctLevel: QRCode.CorrectLevel.H
-    });
-  }
-})();
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+  s.onload = function() {
+    var el = document.getElementById('donate-qr-canvas');
+    if (el) {
+      new QRCode(el, {
+        text: 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3',
+        width: 160, height: 160,
+        colorDark: '#a3e635',
+        colorLight: '#060e06',
+        correctLevel: 3
+      });
+    }
+  };
+  document.head.appendChild(s);
+});
 
 function copyDonateAddr(btn) {
   navigator.clipboard.writeText('TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3').then(function() {
