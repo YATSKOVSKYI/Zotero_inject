@@ -1,6 +1,23 @@
+<div align="center">
+
+<img src="logo.svg" width="110" height="110" alt="Zotero Inject"/>
+
 # Zotero Inject
 
-**Zotero Inject** is a free, open-source web tool that automates academic reference management — validating BibTeX entries against the Crossref database and replacing Zotero citation placeholders inside `.docx` files with properly formatted references.
+**Free, open-source academic reference manager for the real world.**
+
+[![Live](https://img.shields.io/badge/Live-zotero--inject.yatskovskyi.top-a3e635?style=flat-square&logo=google-chrome&logoColor=white)](https://zotero-inject.yatskovskyi.top/)
+[![License](https://img.shields.io/badge/License-MIT-a3e635?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Deploy](https://img.shields.io/badge/Deploy-Railway-7b2bf9?style=flat-square&logo=railway&logoColor=white)](https://railway.app/)
+
+[**→ Open the app**](https://zotero-inject.yatskovskyi.top/)
+
+</div>
+
+---
+
+Validate BibTeX entries against the Crossref database and replace Zotero citation placeholders inside `.docx` files with properly formatted references — all in a browser, no installation needed.
 
 Built for students, researchers, and academics who want clean, verified citations without manual work.
 

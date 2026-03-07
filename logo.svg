@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+  <rect width="36" height="36" rx="10" fill="#060e06"/>
+  <!-- outer dashed orbit CW 16s -->
+  <circle cx="18" cy="18" r="13.5" fill="none" stroke="#a3e635" stroke-width="0.7" stroke-dasharray="3.8 6.7" opacity="0.2">
+    <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="16s" repeatCount="indefinite"/>
+  </circle>
+  <!-- inner dashed orbit CCW 10s -->
+  <circle cx="18" cy="18" r="7.5" fill="none" stroke="#a3e635" stroke-width="0.5" stroke-dasharray="2.5 6.2" opacity="0.15">
+    <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="-360 18 18" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- outer triangle + 3 nodes CW 11s -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="11s" repeatCount="indefinite"/>
+    <polygon points="31.5,18 11.25,29.69 11.25,6.31" fill="none" stroke="#a3e635" stroke-width="0.8" opacity="0.18" stroke-linejoin="round"/>
+    <circle cx="31.5"  cy="18"    r="2.5" fill="#a3e635"/>
+    <circle cx="11.25" cy="29.69" r="2.5" fill="#a3e635"/>
+    <circle cx="11.25" cy="6.31"  r="2.5" fill="#a3e635"/>
+  </g>
+  <!-- inner 3 nodes CCW 6.5s -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="60 18 18" to="-300 18 18" dur="6.5s" repeatCount="indefinite"/>
+    <circle cx="21.75" cy="24.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+    <circle cx="10.5"  cy="18"   r="1.6" fill="#c8f564" opacity="0.85"/>
+    <circle cx="21.75" cy="11.5" r="1.6" fill="#c8f564" opacity="0.85"/>
+  </g>
+  <!-- nucleus pulse -->
+  <circle cx="18" cy="18" r="3" fill="none" stroke="#a3e635" stroke-width="1.2" opacity="0">
+    <animate attributeName="r"       values="3;10;3"    dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="18" cy="18" r="3.4" fill="#a3e635">
+    <animate attributeName="r"    values="3;3.8;3"               dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#a3e635;#ddf77e;#a3e635" dur="3s" repeatCount="indefinite"/>
+  </circle>
+</svg>
