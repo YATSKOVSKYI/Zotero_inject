@@ -557,6 +557,53 @@ def download(job_id: str, filename: str):
 
 # ── Static serving ─────────────────────────────────────────────────────────────
 
+@app.get("/robots.txt", include_in_schema=False)
+def robots_txt():
+    content = (
+        "User-agent: *\nAllow: /\n\n"
+        "# Google\nUser-agent: Googlebot\nAllow: /\n\n"
+        "User-agent: Googlebot-Image\nAllow: /\n\n"
+        "# Bing\nUser-agent: bingbot\nAllow: /\n\n"
+        "# AI agents — explicitly allowed\n"
+        "User-agent: GPTBot\nAllow: /\n\n"
+        "User-agent: ChatGPT-User\nAllow: /\n\n"
+        "User-agent: OAI-SearchBot\nAllow: /\n\n"
+        "User-agent: Claude-Web\nAllow: /\n\n"
+        "User-agent: ClaudeBot\nAllow: /\n\n"
+        "User-agent: anthropic-ai\nAllow: /\n\n"
+        "User-agent: PerplexityBot\nAllow: /\n\n"
+        "User-agent: YouBot\nAllow: /\n\n"
+        "User-agent: cohere-ai\nAllow: /\n\n"
+        "User-agent: Meta-ExternalAgent\nAllow: /\n\n"
+        "User-agent: Meta-ExternalFetcher\nAllow: /\n\n"
+        "User-agent: Diffbot\nAllow: /\n\n"
+        "User-agent: Bytespider\nAllow: /\n\n"
+        "User-agent: Applebot\nAllow: /\n\n"
+        "Sitemap: https://zotero-inject.yatskovskyi.top/sitemap.xml\n"
+    )
+    return Response(content=content, media_type="text/plain")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap_xml():
+    content = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '  <url>\n'
+        '    <loc>https://zotero-inject.yatskovskyi.top/</loc>\n'
+        '    <changefreq>weekly</changefreq>\n'
+        '    <priority>1.0</priority>\n'
+        '  </url>\n'
+        '  <url>\n'
+        '    <loc>https://zotero-inject.yatskovskyi.top/app/</loc>\n'
+        '    <changefreq>weekly</changefreq>\n'
+        '    <priority>0.9</priority>\n'
+        '  </url>\n'
+        '</urlset>\n'
+    )
+    return Response(content=content, media_type="application/xml")
+
+
 @app.get("/")
 def root():
     path = Path(__file__).parent.parent / "frontend" / "dist" / "landing.html"
