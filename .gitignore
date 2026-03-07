@@ -20,6 +20,9 @@ app/backend/work/
 .env
 *.bak
 
+# Claude CLI
+.claude/
+
 # OS
 .DS_Store
 Thumbs.db
