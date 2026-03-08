@@ -21,18 +21,18 @@ type Lang = 'ru' | 'en'
 const APP_I18N = {
   ru: {
     step_badge: (n: number) => `Шаг ${n} из 4`,
-    step1: 'Библиография', step2: 'URI карта', step3: 'Обработка', step4: 'Готово',
-    log_label: 'Лог выполнения',
+    step1: 'Библиография', step2: 'URI-карта', step3: 'Обработка', step4: 'Готово',
+    log_label: 'Журнал выполнения',
     // Step 1
-    s1_title: 'Загрузи файл библиографии',
-    s1_desc: 'BibTeX-файл (.bib) со списком источников. Убедись, что перед каждой записью стоит номерной комментарий — смотри пример ниже.',
-    s1_format_hd: 'Как должен выглядеть .bib файл',
-    s1_file_sec: 'Выбери файл', s1_drop_lbl: 'Перетащи .bib файл или кликни для выбора',
+    s1_title: 'Загрузите файл библиографии',
+    s1_desc: 'BibTeX-файл (.bib) со списком источников. Убедитесь, что перед каждой записью указан номерной комментарий — см. пример ниже.',
+    s1_format_hd: 'Как должен выглядеть .bib-файл',
+    s1_file_sec: 'Выберите файл', s1_drop_lbl: 'Перетащите .bib-файл или нажмите, чтобы выбрать',
     s1_file_ready: 'Файл загружен · готов к использованию',
     s1_email_lbl: 'Email для Crossref API', s1_email_opt: 'необязательно',
-    s1_email_hint: 'Ускоряет и стабилизирует запросы к Crossref (полезно при большом списке)',
+    s1_email_hint: 'Ускоряет и стабилизирует запросы к Crossref (полезно при большом списке источников)',
     s1_btn_check: 'Проверить DOI через Crossref',
-    s1_btn_check_sub: 'Найдёт недостающие DOI, исправит метаданные. Займёт ~1 мин на 50 источников.',
+    s1_btn_check_sub: 'Найдёт недостающие DOI и исправит метаданные. Около 1 минуты на 50 источников.',
     s1_btn_skip: 'Пропустить проверку',
     s1_btn_skip_sub: 'Перейти к следующему шагу без проверки. DOI в документе останутся как есть.',
     s1_checking: 'Проверяю...',
@@ -48,69 +48,69 @@ const APP_I18N = {
     st_ok: 'OK', st_warn: 'Предупреждение', st_err: 'Ошибка', st_checking: 'Проверяю...',
     badge_ok: '✓ OK', badge_warn: '⚠ Предупреждение', badge_err: '✕ Ошибка',
     // Step 2
-    s2_title: 'Создай URI карту',
-    s2_desc: 'Нужна для привязки ссылок из .bib к элементам Zotero. Сохрани коллекцию из Zotero как HTML и загрузи сюда.',
-    s2_upload_sec: 'Загрузи файл', s2_html_col: 'HTML экспорт из Zotero',
+    s2_title: 'Создайте URI-карту',
+    s2_desc: 'Нужна для привязки ссылок из .bib к элементам Zotero. Сохраните коллекцию Zotero в формате HTML и загрузите её сюда.',
+    s2_upload_sec: 'Загрузите файл', s2_html_col: 'HTML-экспорт из Zotero',
     s2_tsv_col: 'Готовый uri-map.tsv', s2_or: 'или',
-    s2_html_drop: 'Перетащи или кликни', s2_tsv_drop: 'Уже есть готовый файл?',
-    s2_result_title: 'URI карта успешно создана',
-    s2_match_ok: 'Количество источников совпадает с .bib файлом',
-    s2_match_warn: 'Количество не совпадает с .bib — проверь предупреждение ниже',
+    s2_html_drop: 'Перетащите файл или нажмите', s2_tsv_drop: 'Уже есть готовый файл?',
+    s2_result_title: 'URI-карта успешно создана',
+    s2_match_ok: 'Количество источников совпадает с .bib-файлом',
+    s2_match_warn: 'Количество не совпадает с .bib-файлом — проверьте предупреждение ниже',
     s2_file_ready: 'Файл готов к использованию', s2_count_label: 'источников',
     s2_back: '← Назад', s2_dl_tsv: '↓ Скачать uri-map.tsv', s2_recreate: '↺ Пересоздать',
     s2_next: 'Далее →', s2_create_btn: '⚙ Создать uri-map.tsv', s2_creating: 'Создаю карту…',
     s2_err_title: 'Ошибка при обработке файла',
-    s2_p1_t: 'Открой Zotero', s2_p2_t: 'Экспортируй коллекцию',
-    s2_p3_t: 'Загрузи HTML', s2_p4_t: 'URI карта готова',
+    s2_p1_t: 'Откройте Zotero', s2_p2_t: 'Экспортируйте коллекцию',
+    s2_p3_t: 'Загрузите HTML', s2_p4_t: 'URI-карта готова',
     s2_p1_b: 'с нужной коллекцией', s2_p2_b: 'Файл → Экспорт → HTML',
-    s2_p3_b: 'сюда в поле ниже', s2_p4_b: 'для следующего шага',
+    s2_p3_b: 'в поле ниже', s2_p4_b: 'для следующего шага',
     // Step 3
-    s3_title: 'Вшить живые поля Zotero в документ',
-    s3_desc: 'Загрузи Word-файл — скрипт заменит [1], [5][6][7] на живые поля Zotero. После этого в Word: одна кнопка «Add Bibliography» — список литературы готов и сам обновляется.',
+    s3_title: 'Добавьте живые поля Zotero в документ',
+    s3_desc: 'Загрузите Word-файл — скрипт заменит [1], [5][6][7] на живые поля Zotero. После этого в Word достаточно нажать «Add Bibliography»: список литературы будет создан и обновляться автоматически.',
     s3_prereq_sec: 'Что нужно для обработки',
-    s3_map_title: 'URI карта (Шаг 2)',
+    s3_map_title: 'URI-карта (шаг 2)',
     s3_map_ok: (n: number) => n ? `${n} источников привязано` : 'Карта загружена',
-    s3_map_miss: 'Вернись на Шаг 2 →', s3_bib_title: 'Библиография (Шаг 1)',
-    s3_bib_miss: 'Вернись на Шаг 1 →',
+    s3_map_miss: 'Вернитесь к шагу 2 →', s3_bib_title: 'Библиография (шаг 1)',
+    s3_bib_miss: 'Вернитесь к шагу 1 →',
     s3_transform_sec: 'Что произойдёт с документом',
     s3_before_lbl: 'Сейчас в .docx', s3_after_lbl: 'После обработки — поля Zotero',
-    s3_docx_sec: 'Загрузи статью', s3_docx_drop: 'Перетащи .docx файл или кликни',
+    s3_docx_sec: 'Загрузите документ', s3_docx_drop: 'Перетащите .docx-файл или нажмите',
     s3_result_title: 'Документ успешно обработан!',
-    s3_result_sub: 'ADDIN-поля Zotero вшиты · скачай → открой Word → нажми «Add/Edit Bibliography»',
+    s3_result_sub: 'ADDIN-поля Zotero вшиты · скачайте → откройте Word → нажмите «Add/Edit Bibliography»',
     s3_stat_replaced: 'Ссылок заменено', s3_stat_groups: 'Групп цитирований',
     s3_err_title: 'Ошибка при обработке',
     s3_back: '← Назад', s3_run: '▶ Запустить обработку', s3_rerun: '↺ Обработать снова',
     s3_running: 'Обрабатываю...', s3_dl: '↓ Скачать результат',
-    s3_next: 'Далее → Инструкция Word',
+    s3_next: 'Далее → Инструкция для Word',
     // Step 4
     s4_title: 'Готово — осталось одно нажатие.',
-    s4_sub: 'Скачай файл, открой в Word с плагином Zotero, нажми «Add/Edit Bibliography» — список литературы появится сам. Меняй стиль, удаляй ссылки — библиография обновится автоматически.',
-    s4_dl_main: 'Скачать output_zotero.docx', s4_dl_sub: 'Нажми, затем открой в Microsoft Word',
+    s4_sub: 'Скачайте файл, откройте его в Word с плагином Zotero и нажмите «Add/Edit Bibliography» — список литературы появится автоматически. Меняйте стиль и удаляйте ссылки — библиография обновится сама.',
+    s4_dl_main: 'Скачать output_zotero.docx', s4_dl_sub: 'Нажмите и откройте в Microsoft Word',
     s4_word_hd: 'Что делать дальше — в Word с плагином Zotero',
-    s4_ws1_t: 'Открой скачанный файл в Microsoft Word',
-    s4_ws1_s: 'Двойной клик по output_zotero.docx — ссылки в тексте уже выглядят как живые поля Zotero',
-    s4_ws2_t: 'Нажми «Add/Edit Bibliography» — список литературы готов',
-    s4_ws2_s: 'Zotero панель → Add/Edit Bibliography → список источников появляется автоматически',
-    s4_ws3_t: 'Меняй стиль — всё обновится само',
-    s4_ws3_s: 'Zotero → Document Preferences → выбери стиль (ГОСТ, APA, IEEE...) — ссылки переформатируются мгновенно. Удаляешь цитату — она пропадает из библиографии.',
+    s4_ws1_t: 'Откройте скачанный файл в Microsoft Word',
+    s4_ws1_s: 'Дважды нажмите на output_zotero.docx — ссылки в тексте уже отображаются как живые поля Zotero',
+    s4_ws2_t: 'Нажмите «Add/Edit Bibliography» — список литературы готов',
+    s4_ws2_s: 'Панель Zotero → Add/Edit Bibliography → список источников формируется автоматически',
+    s4_ws3_t: 'Меняйте стиль — всё обновится автоматически',
+    s4_ws3_s: 'Zotero → Document Preferences → выберите стиль (ГОСТ, APA, IEEE...) — ссылки переформатируются мгновенно. При удалении цитаты она исчезает из библиографии.',
     s4_ws3_badge: 'Готово',
     s4_tip_title: '💡 Как это работает:',
-    s4_tip: 'В документ вшиты те же ADDIN-поля, что плагин Zotero создаёт при ручной вставке ссылок. Word их «знает» и передаёт управление Zotero: библиография управляется динамически.',
+    s4_tip: 'В документ вшиты те же ADDIN-поля, которые плагин Zotero создаёт при ручной вставке ссылок. Word распознаёт их и передаёт управление Zotero: библиография управляется динамически.',
     s4_back: '← Назад', s4_restart: '↺ Обработать другой документ',
     s4_refs_replaced: 'Ссылок заменено', s4_cit_groups: 'Групп цитирований',
     // Issue / stat labels
     issue: {
       crossref_unresolved: 'Не найдено в Crossref', doi_not_found: 'DOI не найден',
       doi_invalid_format: 'Неверный формат DOI', doi_title_mismatch: 'DOI не совпадает с названием',
-      doi_duplicate: 'Дублирующийся DOI', metadata_not_corrected: 'Метаданные расходятся',
-      mismatch_title: 'Название расходится', mismatch_author: 'Авторы расходятся',
-      mismatch_year: 'Год расходится', mismatch_journal: 'Журнал расходится',
-      mismatch_doi: 'DOI расходится', crossref_error: 'Ошибка API',
+      doi_duplicate: 'Дублирующийся DOI', metadata_not_corrected: 'Метаданные не совпадают',
+      mismatch_title: 'Название не совпадает', mismatch_author: 'Авторы не совпадают',
+      mismatch_year: 'Год не совпадает', mismatch_journal: 'Журнал не совпадает',
+      mismatch_doi: 'DOI не совпадает', crossref_error: 'Ошибка API',
     } as Record<string, string>,
     stat: {
-      processed: 'Проверено', doi_valid: 'DOI валиден', doi_added: 'DOI добавлено',
-      doi_corrected: 'DOI исправлено', unresolved: 'Не найдено',
-      problem_entries: 'С проблемами', entries_changed: 'Изменено записей', fields_changed: 'Изменено полей',
+      processed: 'Проверено', doi_valid: 'DOI валиден', doi_added: 'Добавлено DOI',
+      doi_corrected: 'Исправлено DOI', unresolved: 'Не найдено',
+      problem_entries: 'Проблемные записи', entries_changed: 'Изменено записей', fields_changed: 'Изменено полей',
     } as Record<string, string>,
   },
   en: {
@@ -1843,7 +1843,7 @@ export class AppRoot extends LitElement {
       <!-- Table -->
       <div class="table-card">
         <div class="table-toolbar">
-          <div class="table-toolbar-title">${this._lang === 'en' ? 'Sources — click a cell to edit' : 'Источники — кликните ячейку чтобы отредактировать'}</div>
+          <div class="table-toolbar-title">${this._lang === 'en' ? 'Sources — click a cell to edit' : 'Источники — нажмите на ячейку, чтобы отредактировать'}</div>
           <div class="table-hint">${this._lang === 'en' ? 'Fields: title, authors, year, journal, DOI' : 'Поля: название, авторы, год, журнал, DOI'}</div>
         </div>
 
@@ -1984,7 +1984,7 @@ export class AppRoot extends LitElement {
           ${this._mailtoError
             ? html`<div class="field-msg err">✕ ${this._mailtoError}</div>`
             : this._mailto
-              ? html`<div class="field-msg ok">✓ ${this._lang === 'ru' ? 'Email принят' : 'Email accepted'}</div>`
+              ? html`<div class="field-msg ok">✓ ${this._lang === 'ru' ? 'Email подтверждён' : 'Email accepted'}</div>`
               : html`<div class="field-msg" style="color:#3a4d42">${this._t('s1_email_hint')}</div>`
           }
         </div>
@@ -2050,7 +2050,7 @@ export class AppRoot extends LitElement {
           <div class="ps ${s1}">
             <div class="ps-icon">📚</div>
             <div class="ps-title">${this._t('s2_p1_t')}</div>
-            <div class="ps-sub">${this._lang === 'en' ? 'Select all Ctrl+A' : 'Выдели все источники Ctrl+A'}</div>
+            <div class="ps-sub">${this._lang === 'en' ? 'Select all Ctrl+A' : 'Выделите все источники: Ctrl+A'}</div>
           </div>
 
           <div class="pa">${arrowSvg}</div>
@@ -2078,8 +2078,8 @@ export class AppRoot extends LitElement {
               ${isProc ? html`<span class="spinner" style="color:#a3e635;width:20px;height:20px;border-width:2.5px"></span>`
                        : isDone ? '✅' : '⚙'}
             </div>
-            <div class="ps-title">${isDone ? this._t('s2_p4_t') : isProc ? this._t('s2_creating') : (this._lang === 'en' ? 'Create URI map' : 'Создай URI карту')}</div>
-            <div class="ps-sub">${isDone ? `${this._parseCount} ${this._t('s2_count_label')}` : isProc ? (this._lang === 'en' ? 'Processing…' : 'Обрабатываю файл') : (this._lang === 'en' ? 'Click the button below' : 'Нажми кнопку ниже')}</div>
+            <div class="ps-title">${isDone ? this._t('s2_p4_t') : isProc ? this._t('s2_creating') : (this._lang === 'en' ? 'Create URI map' : 'Создайте URI-карту')}</div>
+            <div class="ps-sub">${isDone ? `${this._parseCount} ${this._t('s2_count_label')}` : isProc ? (this._lang === 'en' ? 'Processing…' : 'Обрабатываю файл') : (this._lang === 'en' ? 'Click the button below' : 'Нажмите кнопку ниже')}</div>
           </div>
         </div>
 
@@ -2410,7 +2410,7 @@ export class AppRoot extends LitElement {
           <div class="donate-photo-text">
             <div class="donate-photo-title">
               ${this._lang === 'ru'
-                ? html`Понравился? Ваш донат — <em>топливо</em>.`
+                ? html`Понравилось? Ваш донат — <em>топливо</em>.`
                 : html`Found it useful? Your donation <em>fuels</em> this.`}
             </div>
             <div class="donate-photo-sub">USDT · TRC-20 · TRON</div>
@@ -2434,7 +2434,7 @@ export class AppRoot extends LitElement {
           </div>
           <div class="donate-hint">
             ${this._lang === 'ru'
-              ? html`<strong>Только USDT (TRC-20) на сеть TRON.</strong> Другие активы будут утеряны безвозвратно.`
+              ? html`<strong>Отправляйте только USDT (TRC-20) в сети TRON.</strong> Другие активы будут безвозвратно утеряны.`
               : html`<strong>USDT (TRC-20) on TRON network only.</strong> Sending other assets will result in permanent loss.`}
           </div>
         </div>
