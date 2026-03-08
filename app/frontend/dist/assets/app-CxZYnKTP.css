@@ -1,0 +1,1 @@
+body.page-app{animation:appFadeIn .6s cubic-bezier(.16,1,.3,1) both}@keyframes appFadeIn{0%{opacity:0}to{opacity:1}}body.page-app::-webkit-scrollbar{width:6px}body.page-app::-webkit-scrollbar-track{background:transparent}body.page-app::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
