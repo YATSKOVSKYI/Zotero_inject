@@ -473,8 +473,6 @@
     .foot-gh:hover svg { fill:#a3e635; }
 
     /* ─── PAGE LOAD ─── */
-    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-    body { animation: fadeIn 0.7s cubic-bezier(0.16,1,0.3,1) both; }
 
     /* ─── REVEAL ─── */
     .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
