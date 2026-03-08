@@ -522,7 +522,7 @@
       .hero-h1 { font-size:clamp(27px,9vw,36px); }
       .hero-sub { font-size:14px; }
       .hero-label { margin-bottom:12px; }
-      .hero-actions { flex-direction:column; align-items:stretch; width:100%; max-width:300px; }
+      .hero-actions { flex-direction:column; align-items:stretch; width:100%; max-width:300px; margin-left:auto; margin-right:auto; }
       .btn-primary, .btn-ghost { width:100%; justify-content:center; padding:14px 20px; }
       .hero-proof { justify-content:center; }
       .proof-pill { font-size:9px; }
