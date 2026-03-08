@@ -248,6 +248,12 @@
 
     /* ─── SECTION ─── */
     .sec { max-width:1080px; margin:0 auto; padding:80px 20px; }
+    @supports (content-visibility:auto) {
+      #what, #how, #prompt, #features, .ticker-wrap, .cta-wrap, #donate-section, footer {
+        content-visibility:auto;
+        contain-intrinsic-size:1px 900px;
+      }
+    }
     .stag {
       display:inline-flex; align-items:center; gap:10px; margin-bottom:14px;
       font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:2px;
@@ -424,7 +430,7 @@
     /* ─── DONATE ─── */
     .donate-wrap { padding:0 0 80px; border-top:1px solid var(--border); }
     .donate-hero { position:relative; width:100%; overflow:hidden; margin-bottom:56px; background:#030404; display:flex; justify-content:center; }
-    .donate-hero img { width:auto; max-width:100%; max-height:460px; object-fit:contain; display:block; filter:grayscale(20%) contrast(1.08) brightness(.88); }
+    .donate-hero img { width:auto; max-width:100%; max-height:460px; object-fit:contain; aspect-ratio:1095/1643; display:block; filter:grayscale(20%) contrast(1.08) brightness(.88); }
     .donate-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(3,4,4,0) 30%, rgba(3,4,4,1) 100%); }
     .donate-hero-txt { position:absolute; bottom:40px; left:0; right:0; z-index:2; text-align:center; padding:0 24px; }
     .donate-hero-h { font-size:clamp(26px,5vw,52px); font-weight:900; color:#fff; text-shadow:0 4px 32px rgba(0,0,0,.85); line-height:1.1; margin-bottom:8px; letter-spacing:-.01em; }
@@ -565,6 +571,12 @@
     @media (hover:none) {
       .btn-primary:hover { transform:none; box-shadow:0 0 36px rgba(163,230,53,.26); }
       .nav-cta:hover { transform:none; }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      *, *::before, *::after { animation:none !important; transition:none !important; }
+      .ticker-track { animation:none; transform:none; }
     }
   
 

@@ -359,9 +359,9 @@ export const landingTemplate = html`
 </button>
 
 <!-- DONATE -->
-<div class="donate-wrap">
+<div class="donate-wrap" id="donate-section">
   <div class="donate-hero">
-    <img src="/app/donate-photo.webp" alt="Please donate" loading="lazy"/>
+    <img src="/app/donate-photo.webp" alt="Please donate" loading="lazy" decoding="async" fetchpriority="low" width="1095" height="1643"/>
     <div class="donate-hero-txt">
       <div class="donate-hero-h" data-i="donate_photo_main">На это уходят часы.<br>Ваш донат — <em>топливо</em>.</div>
       <div class="donate-hero-s">USDT · TRC-20 · TRON</div>

@@ -48,13 +48,15 @@ export class LandingRoot extends LitElement {
   private lang: Lang = 'ru'
   private transitioning = false
   private revealObserver: IntersectionObserver | null = null
+  private donateQrObserver: IntersectionObserver | null = null
   private anchorHandlers = new Map<HTMLAnchorElement, EventListener>()
+  private navEl: HTMLElement | null = null
+  private bttEl: HTMLElement | null = null
+  private donateQrInitialized = false
 
   private readonly onScroll = () => {
-    const nav = this.querySelector<HTMLElement>('#nav')
-    const btt = this.querySelector<HTMLElement>('#btt')
-    nav?.classList.toggle('scrolled', window.scrollY > 60)
-    btt?.classList.toggle('visible', window.scrollY > 400)
+    this.navEl?.classList.toggle('scrolled', window.scrollY > 60)
+    this.bttEl?.classList.toggle('visible', window.scrollY > 400)
   }
 
   private readonly globalSetLang = (lang: string) => {
@@ -79,13 +81,15 @@ export class LandingRoot extends LitElement {
 
   firstUpdated() {
     this.attachGlobals()
-    this.initializeTicker()
+    window.setTimeout(() => this.initializeTicker(), 180)
     this.initializeAnchors()
     this.initializeReveals()
+    this.navEl = this.querySelector<HTMLElement>('#nav')
+    this.bttEl = this.querySelector<HTMLElement>('#btt')
     window.addEventListener('scroll', this.onScroll, { passive: true })
     this.onScroll()
     this.initializeLanguage()
-    this.initializeDonateQr()
+    this.observeDonateSectionForQr()
   }
 
   disconnectedCallback() {
@@ -95,6 +99,8 @@ export class LandingRoot extends LitElement {
     this.revealObserver = null
     this.anchorHandlers.forEach((handler, anchor) => anchor.removeEventListener('click', handler))
     this.anchorHandlers.clear()
+    this.donateQrObserver?.disconnect()
+    this.donateQrObserver = null
 
     if (window.setLang === this.globalSetLang) delete window.setLang
     if (window.copyPrompt === this.globalCopyPrompt) delete window.copyPrompt
@@ -114,10 +120,10 @@ export class LandingRoot extends LitElement {
     const next = qp === 'en' || qp === 'ru'
       ? qp
       : (saved === 'en' || saved === 'ru' ? saved : browserLang)
-    this.setLang(next)
+    this.setLang(next, false)
   }
 
-  private setLang(next: Lang) {
+  private setLang(next: Lang, animate = true) {
     if (this.transitioning) return
     this.transitioning = true
     this.lang = next
@@ -130,48 +136,55 @@ export class LandingRoot extends LitElement {
     const dict = I18N[next] as TranslationMap
     const donateDict = DONATE_I18N[next]
     const body = document.body
-    body.style.transition = 'opacity 200ms ease-in'
-    body.style.opacity = '0'
 
+    if (!animate) {
+      this.applyTranslations(dict, donateDict, next)
+      this.transitioning = false
+      return
+    }
+
+    body.style.transition = 'opacity 120ms ease'
+    body.style.opacity = '0.82'
     window.setTimeout(() => {
-      this.querySelectorAll<HTMLElement>('[data-i]').forEach((el) => {
-        const key = el.dataset.i
-        if (!key) return
-        const value = dict[key] ?? donateDict[key]
-        if (value === undefined) return
-        if (HTML_I18N_KEYS.has(key)) {
-          el.innerHTML = value
-        } else {
-          el.textContent = value
-        }
-      })
-
-      const prompt = this.querySelector<HTMLElement>('#prompt-body')
-      if (prompt && dict.prompt_text) prompt.textContent = dict.prompt_text
-
-      const copyLabel = this.querySelector<HTMLElement>('#copy-lbl')
-      if (copyLabel && dict.copy_lbl) copyLabel.textContent = dict.copy_lbl
-
-      const title = document.getElementById('meta-title')
-      if (title && dict.meta_title) title.textContent = dict.meta_title
-
-      const desc = document.getElementById('meta-desc')
-      if (desc && dict.meta_desc) desc.setAttribute('content', dict.meta_desc)
-
-      const donateCopyBtn = this.querySelector<HTMLButtonElement>('#donate-copy-btn')
-      if (donateCopyBtn && !donateCopyBtn.classList.contains('ok')) {
-        donateCopyBtn.textContent = next === 'ru' ? 'Копировать' : 'Copy'
-      }
-
-      body.style.transition = 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1)'
+      this.applyTranslations(dict, donateDict, next)
       body.style.opacity = '1'
-
       window.setTimeout(() => {
         body.style.transition = ''
         body.style.opacity = ''
         this.transitioning = false
-      }, 520)
-    }, 210)
+      }, 140)
+    }, 80)
+  }
+
+  private applyTranslations(dict: TranslationMap, donateDict: TranslationMap, lang: Lang) {
+    this.querySelectorAll<HTMLElement>('[data-i]').forEach((el) => {
+      const key = el.dataset.i
+      if (!key) return
+      const value = dict[key] ?? donateDict[key]
+      if (value === undefined) return
+      if (HTML_I18N_KEYS.has(key)) {
+        el.innerHTML = value
+      } else {
+        el.textContent = value
+      }
+    })
+
+    const prompt = this.querySelector<HTMLElement>('#prompt-body')
+    if (prompt && dict.prompt_text) prompt.textContent = dict.prompt_text
+
+    const copyLabel = this.querySelector<HTMLElement>('#copy-lbl')
+    if (copyLabel && dict.copy_lbl) copyLabel.textContent = dict.copy_lbl
+
+    const title = document.getElementById('meta-title')
+    if (title && dict.meta_title) title.textContent = dict.meta_title
+
+    const desc = document.getElementById('meta-desc')
+    if (desc && dict.meta_desc) desc.setAttribute('content', dict.meta_desc)
+
+    const donateCopyBtn = this.querySelector<HTMLButtonElement>('#donate-copy-btn')
+    if (donateCopyBtn && !donateCopyBtn.classList.contains('ok')) {
+      donateCopyBtn.textContent = lang === 'ru' ? 'Копировать' : 'Copy'
+    }
   }
 
   private async copyPrompt() {
@@ -235,7 +248,30 @@ export class LandingRoot extends LitElement {
     this.querySelectorAll('.reveal').forEach((el) => this.revealObserver?.observe(el))
   }
 
+  private observeDonateSectionForQr() {
+    const donateSection = this.querySelector<HTMLElement>('#donate-section')
+    if (!donateSection) return
+
+    if (!('IntersectionObserver' in window)) {
+      this.initializeDonateQr()
+      return
+    }
+
+    this.donateQrObserver = new IntersectionObserver((entries) => {
+      const hasVisible = entries.some((entry) => entry.isIntersecting)
+      if (!hasVisible) return
+      this.donateQrObserver?.disconnect()
+      this.donateQrObserver = null
+      this.initializeDonateQr()
+    }, { rootMargin: '280px 0px' })
+
+    this.donateQrObserver.observe(donateSection)
+  }
+
   private initializeDonateQr() {
+    if (this.donateQrInitialized) return
+    this.donateQrInitialized = true
+
     if (window.QRCode) {
       this.renderDonateQr()
       return
@@ -249,8 +285,11 @@ export class LandingRoot extends LitElement {
 
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'
+    script.async = true
+    script.defer = true
     script.dataset.qrcodeLib = 'qrcodejs'
     script.onload = () => this.renderDonateQr()
+    script.onerror = () => { this.donateQrInitialized = false }
     document.head.appendChild(script)
   }
 
