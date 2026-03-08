@@ -56,83 +56,68 @@ export const landingTemplate = html`
 <!-- HERO -->
 <section class="hero" id="hero">
   <div class="hero-grid"></div>
-  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
-  <div class="scan"></div>
+  <div class="orb orb1"></div><div class="orb orb2"></div>
 
-  <!-- Academic label -->
-  <div class="hero-label">
-    <span class="hl-rule"></span>
-    <span class="hl-text" data-i="hero_label">CITATION AUTOMATION · ZOTERO NATIVE</span>
-    <span class="hl-rule"></span>
-  </div>
-
-  <!-- Headline -->
-  <h1 class="hero-h1">
-    <span data-i="h1a"></span><br>
-    <span class="grad-text" data-i="h1b"></span>
-  </h1>
-
-  <!-- Sub -->
-  <p class="hero-sub" data-i="hero_sub"></p>
-
-  <!-- Credibility metadata strip -->
-  <div class="hero-meta">
-    <div class="hm-pill hm-lime"><span class="hm-key">styles</span><span class="hm-val">9 000+</span></div>
-    <span class="hm-sep">·</span>
-    <div class="hm-pill"><span class="hm-key">formats</span><span class="hm-val">IEEE · APA · ГОСТ · MLA</span></div>
-    <span class="hm-sep">·</span>
-    <div class="hm-pill"><span class="hm-key">output</span><span class="hm-val">Zotero ADDIN</span></div>
-    <span class="hm-sep">·</span>
-    <div class="hm-pill hm-lime"><span class="hm-val" data-i="hm_free">Free</span></div>
-  </div>
-
-  <!-- CTA -->
-  <div class="hero-actions">
-    <a href="/app" class="btn-primary" data-i="cta_main"></a>
-    <a href="#what" class="btn-ghost" data-i="cta_how"></a>
-  </div>
-
-  <!-- Document transform widget -->
-  <div class="tp-wrap">
-    <!-- BEFORE card -->
-    <div class="tp-card">
-      <div class="tp-bar">
-        <div class="tp-dots"><div class="tp-dot tp-d1"></div><div class="tp-dot tp-d2"></div><div class="tp-dot tp-d3"></div></div>
-        <span class="tp-fname">introduction_draft.docx</span>
-        <span class="tp-badge tp-badge-before">AI output</span>
+  <div class="hero-shell">
+    <div class="hero-copy">
+      <div class="hero-label">
+        <span class="hl-rule"></span>
+        <span class="hl-text" data-i="hero_label">CITATION AUTOMATION · ZOTERO NATIVE</span>
       </div>
-      <div class="tp-body">
-        <span class="tp-comment">// plain text markers</span><br>
-        Bacterial resistance evolves<br>
-        through mutation <span class="tp-mark">[1]</span><span class="tp-mark">[2]</span><br>
-        and selection <span class="tp-mark">[3]</span> at 37°C.
-      </div>
-    </div>
 
-    <!-- Arrow -->
-    <div class="tp-mid">
-      <div class="tp-mid-icon">⚡</div>
-      <div class="tp-mid-lbl">inject</div>
-    </div>
+      <h1 class="hero-h1">
+        <span data-i="h1a"></span><br>
+        <span class="grad-text" data-i="h1b"></span>
+      </h1>
 
-    <!-- AFTER card -->
-    <div class="tp-card tp-after">
-      <div class="tp-bar">
-        <div class="tp-dots"><div class="tp-dot tp-d1"></div><div class="tp-dot tp-d2"></div><div class="tp-dot tp-d3"></div></div>
-        <span class="tp-fname">output_zotero.docx</span>
-        <span class="tp-badge tp-badge-after">Live Zotero</span>
-      </div>
-      <div class="tp-body">
-        <span class="tp-comment">// real ADDIN fields</span><br>
-        Bacterial resistance evolves<br>
-        through mutation <span class="tp-zfield">⚡ [1]</span><span class="tp-zfield">⚡ [2]</span><br>
-        and selection <span class="tp-zfield">⚡ [3]</span> at 37°C.
-        <div class="tp-refblock">
-          <div class="tp-refblock-hd">Bibliography · auto-generated</div>
-          1.&nbsp;Smith J. et al. // <em>Nature</em>, 2023. Vol. 14<br>
-          2.&nbsp;Иванов А.В. // <em>ЖМБ</em>, 2022. №3. С. 45–52
+      <p class="hero-sub" data-i="hero_sub"></p>
+
+      <div class="hero-points">
+        <div class="hero-point">
+          <div class="hp-k" data-i="hero_point_1_k"></div>
+          <div class="hp-v" data-i="hero_point_1_v"></div>
+        </div>
+        <div class="hero-point">
+          <div class="hp-k" data-i="hero_point_2_k"></div>
+          <div class="hp-v" data-i="hero_point_2_v"></div>
+        </div>
+        <div class="hero-point">
+          <div class="hp-k" data-i="hero_point_3_k"></div>
+          <div class="hp-v" data-i="hero_point_3_v"></div>
         </div>
       </div>
+
+      <div class="hero-actions">
+        <a href="/app" class="btn-primary" data-i="cta_main"></a>
+        <a href="#what" class="btn-ghost" data-i="cta_how"></a>
+      </div>
+
+      <div class="hero-proof">
+        <span class="proof-pill">9000+ styles</span>
+        <span class="proof-pill">Word + Zotero</span>
+        <span class="proof-pill" data-i="hm_free"></span>
+      </div>
+    </div>
+
+    <div class="hero-demo">
+      <div class="hero-demo-head">
+        <span class="hd-tag" data-i="hero_demo_tag"></span>
+        <span class="hd-file">intro.docx</span>
+      </div>
+      <div class="hero-demo-grid">
+        <div class="hero-demo-col">
+          <div class="hd-col-title" data-i="hero_demo_before"></div>
+          <p><span class="hd-mark">[1]</span> <span class="hd-mark">[2]</span> <span class="hd-mark">[3]</span></p>
+          <p class="hd-muted" data-i="hero_demo_before_note"></p>
+        </div>
+        <div class="hero-demo-arrow">→</div>
+        <div class="hero-demo-col hero-demo-col-ok">
+          <div class="hd-col-title" data-i="hero_demo_after"></div>
+          <p><span class="hd-zotero">⚡ (Smith, 2023)</span></p>
+          <p class="hd-muted" data-i="hero_demo_after_note"></p>
+        </div>
+      </div>
+      <div class="hero-demo-foot" data-i="hero_demo_foot"></div>
     </div>
   </div>
 
