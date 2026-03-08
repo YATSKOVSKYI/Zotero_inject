@@ -1,27 +1,8 @@
-﻿
-    :root {
-      --bg:      #030404;
-      --bg2:     #070909;
-      --surface: #0b0e0e;
-      --srf2:    #101414;
-      --border:  rgba(255,255,255,.07);
-      --lime:    #a3e635;
-      --lime2:   #d9f99d;
-      --lime3:   #bef264;
-      --emerald: #34d399;
-      --teal:    #2dd4bf;
-      --violet:  #5b21b6;
-      --sky:     #0ea5e9;
-      --text:    #edf7ed;
-      --text2:   #748f80;
-      --text3:   #3a4d42;
-      --mono:    'JetBrains Mono', monospace;
-      --r:       16px;
-    }
-
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
-    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; line-height:1.6; -webkit-font-smoothing:antialiased; }
+﻿body.page-landing {
+  --border: var(--border-alpha);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
 
     /* ─── NAV ─── */
     nav {
@@ -566,3 +547,4 @@
       .nav-cta:hover { transform:none; }
     }
   
+

@@ -1,6 +1,5 @@
 import { LitElement, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import landingStyles from './landing/landing-styles.css?raw'
 import { I18N, STYLES } from './landing/i18n'
 import { landingTemplate } from './landing/landing-template'
 
@@ -75,7 +74,7 @@ export class LandingRoot extends LitElement {
   }
 
   render() {
-    return html`<style>${landingStyles}</style>${landingTemplate}`
+    return html`${landingTemplate}`
   }
 
   firstUpdated() {
