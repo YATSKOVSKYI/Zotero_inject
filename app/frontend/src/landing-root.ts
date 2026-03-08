@@ -4,34 +4,10 @@ import { I18N, STYLES } from './landing/i18n'
 import { landingTemplate } from './landing/landing-template'
 
 type Lang = 'ru' | 'en'
-
 type TranslationMap = Record<string, string>
-
 type QRCodeCtor = new (el: HTMLElement, opts: Record<string, unknown>) => unknown
 
 const DONATE_WALLET = 'TG52nkCuupK1dwVkiQXCjLDmNd4zoyfbA3'
-
-const DONATE_I18N: Record<Lang, TranslationMap> = {
-  ru: {
-    donate_eyebrow: 'поддержать проект',
-    donate_h: 'Инструмент понравился?',
-    donate_p: 'Это бесплатный open-source проект. Если он сэкономил вам время на диплом или статью — поддержите разработку парой USDT.',
-    donate_card_t: 'Криптовалюта USDT',
-    donate_card_s: 'Сеть TRON (TRC-20). Только USDT — другие активы будут потеряны.',
-    donate_warn: '<strong>Внимание:</strong> отправляйте только активы сети TRON на этот адрес.',
-    donate_photo_main: 'На это уходят часы.<br>Ваш донат — <em>топливо</em>.',
-  },
-  en: {
-    donate_eyebrow: 'support the project',
-    donate_h: 'Found this useful?',
-    donate_p: 'This is a free open-source tool. If it saved you time on your thesis or paper — consider supporting development with a small USDT donation.',
-    donate_card_t: 'USDT Cryptocurrency',
-    donate_card_s: 'TRON network (TRC-20). USDT only — other assets will be permanently lost.',
-    donate_warn: '<strong>Warning:</strong> send only TRON network assets to this address.',
-    donate_photo_main: 'This takes hours to build.<br>Your donation <em>keeps it alive</em>.',
-  },
-}
-
 const HTML_I18N_KEYS = new Set(['donate_warn', 'donate_photo_main'])
 
 declare global {
@@ -50,13 +26,35 @@ export class LandingRoot extends LitElement {
   private revealObserver: IntersectionObserver | null = null
   private donateQrObserver: IntersectionObserver | null = null
   private anchorHandlers = new Map<HTMLAnchorElement, EventListener>()
+
   private navEl: HTMLElement | null = null
   private bttEl: HTMLElement | null = null
   private donateQrInitialized = false
 
+  private scrollTicking = false
+  private latestScrollY = 0
+  private navScrolled = false
+  private bttVisible = false
+
   private readonly onScroll = () => {
-    this.navEl?.classList.toggle('scrolled', window.scrollY > 60)
-    this.bttEl?.classList.toggle('visible', window.scrollY > 400)
+    this.latestScrollY = window.scrollY
+    if (this.scrollTicking) return
+    this.scrollTicking = true
+
+    window.requestAnimationFrame(() => {
+      this.scrollTicking = false
+      const shouldNavScroll = this.latestScrollY > 60
+      const shouldShowBtt = this.latestScrollY > 400
+
+      if (shouldNavScroll !== this.navScrolled) {
+        this.navScrolled = shouldNavScroll
+        this.navEl?.classList.toggle('scrolled', shouldNavScroll)
+      }
+      if (shouldShowBtt !== this.bttVisible) {
+        this.bttVisible = shouldShowBtt
+        this.bttEl?.classList.toggle('visible', shouldShowBtt)
+      }
+    })
   }
 
   private readonly globalSetLang = (lang: string) => {
@@ -84,10 +82,13 @@ export class LandingRoot extends LitElement {
     window.setTimeout(() => this.initializeTicker(), 180)
     this.initializeAnchors()
     this.initializeReveals()
+
     this.navEl = this.querySelector<HTMLElement>('#nav')
     this.bttEl = this.querySelector<HTMLElement>('#btt')
+
     window.addEventListener('scroll', this.onScroll, { passive: true })
     this.onScroll()
+
     this.initializeLanguage()
     this.observeDonateSectionForQr()
   }
@@ -97,14 +98,24 @@ export class LandingRoot extends LitElement {
     window.removeEventListener('scroll', this.onScroll)
     this.revealObserver?.disconnect()
     this.revealObserver = null
-    this.anchorHandlers.forEach((handler, anchor) => anchor.removeEventListener('click', handler))
-    this.anchorHandlers.clear()
     this.donateQrObserver?.disconnect()
     this.donateQrObserver = null
+
+    this.anchorHandlers.forEach((handler, anchor) => anchor.removeEventListener('click', handler))
+    this.anchorHandlers.clear()
 
     if (window.setLang === this.globalSetLang) delete window.setLang
     if (window.copyPrompt === this.globalCopyPrompt) delete window.copyPrompt
     if (window.copyDonateAddr === this.globalCopyDonate) delete window.copyDonateAddr
+  }
+
+  private getDict(lang: Lang = this.lang): TranslationMap {
+    return I18N[lang] as TranslationMap
+  }
+
+  private getCopyLabel(lang: Lang = this.lang): string {
+    const dict = this.getDict(lang)
+    return dict.copy_lbl || 'Copy'
   }
 
   private attachGlobals() {
@@ -116,10 +127,11 @@ export class LandingRoot extends LitElement {
   private initializeLanguage() {
     const qp = new URLSearchParams(window.location.search).get('lang')
     const saved = localStorage.getItem('lang')
-    const browserLang = navigator.language.startsWith('ru') ? 'ru' : 'en'
-    const next = qp === 'en' || qp === 'ru'
+    const browserLang: Lang = navigator.language.startsWith('ru') ? 'ru' : 'en'
+    const next: Lang = qp === 'en' || qp === 'ru'
       ? qp
       : (saved === 'en' || saved === 'ru' ? saved : browserLang)
+
     this.setLang(next, false)
   }
 
@@ -133,20 +145,18 @@ export class LandingRoot extends LitElement {
       btn.classList.toggle('active', (index === 0 && next === 'ru') || (index === 1 && next === 'en'))
     })
 
-    const dict = I18N[next] as TranslationMap
-    const donateDict = DONATE_I18N[next]
-    const body = document.body
-
     if (!animate) {
-      this.applyTranslations(dict, donateDict, next)
+      this.applyTranslations(next)
       this.transitioning = false
       return
     }
 
+    const body = document.body
     body.style.transition = 'opacity 120ms ease'
     body.style.opacity = '0.82'
+
     window.setTimeout(() => {
-      this.applyTranslations(dict, donateDict, next)
+      this.applyTranslations(next)
       body.style.opacity = '1'
       window.setTimeout(() => {
         body.style.transition = ''
@@ -156,11 +166,13 @@ export class LandingRoot extends LitElement {
     }, 80)
   }
 
-  private applyTranslations(dict: TranslationMap, donateDict: TranslationMap, lang: Lang) {
+  private applyTranslations(lang: Lang) {
+    const dict = this.getDict(lang)
+
     this.querySelectorAll<HTMLElement>('[data-i]').forEach((el) => {
       const key = el.dataset.i
       if (!key) return
-      const value = dict[key] ?? donateDict[key]
+      const value = dict[key]
       if (value === undefined) return
       if (HTML_I18N_KEYS.has(key)) {
         el.innerHTML = value
@@ -183,18 +195,22 @@ export class LandingRoot extends LitElement {
 
     const donateCopyBtn = this.querySelector<HTMLButtonElement>('#donate-copy-btn')
     if (donateCopyBtn && !donateCopyBtn.classList.contains('ok')) {
-      donateCopyBtn.textContent = lang === 'ru' ? 'Копировать' : 'Copy'
+      donateCopyBtn.textContent = this.getCopyLabel(lang)
     }
+
+    document.documentElement.lang = lang
   }
 
   private async copyPrompt() {
-    const dict = I18N[this.lang] as TranslationMap
+    const dict = this.getDict()
     const prompt = dict.prompt_text
     if (!prompt) return
+
     await navigator.clipboard.writeText(prompt)
     const btn = this.querySelector<HTMLButtonElement>('#copy-btn')
     const lbl = this.querySelector<HTMLElement>('#copy-lbl')
     if (!btn || !lbl) return
+
     btn.classList.add('ok')
     lbl.textContent = dict.copy_ok || 'Copied!'
     window.setTimeout(() => {
@@ -205,10 +221,10 @@ export class LandingRoot extends LitElement {
 
   private async copyDonateAddress(btn: HTMLButtonElement) {
     await navigator.clipboard.writeText(DONATE_WALLET)
-    btn.textContent = '✓ OK'
+    btn.textContent = '? OK'
     btn.classList.add('ok')
     window.setTimeout(() => {
-      btn.textContent = this.lang === 'ru' ? 'Копировать' : 'Copy'
+      btn.textContent = this.getCopyLabel(this.lang)
       btn.classList.remove('ok')
     }, 2000)
   }
@@ -229,6 +245,7 @@ export class LandingRoot extends LitElement {
         if (!id) return
         const target = this.querySelector<HTMLElement>(`#${id}`)
         if (!target) return
+
         evt.preventDefault()
         target.scrollIntoView({ behavior: 'smooth' })
       }
@@ -245,6 +262,7 @@ export class LandingRoot extends LitElement {
         this.revealObserver?.unobserve(entry.target)
       })
     }, { threshold: 0.08 })
+
     this.querySelectorAll('.reveal').forEach((el) => this.revealObserver?.observe(el))
   }
 
@@ -297,6 +315,7 @@ export class LandingRoot extends LitElement {
     const QRCode = window.QRCode
     const canvas = this.querySelector<HTMLElement>('#donate-qr-canvas')
     if (!QRCode || !canvas) return
+
     canvas.innerHTML = ''
     new QRCode(canvas, {
       text: DONATE_WALLET,

@@ -3,54 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="meta-title">Zotero Inject — Автоматические цитаты из ИИ в Zotero | Бесплатно</title>
+    <meta name="theme-color" content="#030404" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title id="meta-title">Zotero Inject - Turn AI markers into live Zotero citations</title>
     <meta
       name="description"
       id="meta-desc"
-      content="Бесплатный инструмент. ИИ пишет введение с маркерами [1][2][3] — Zotero Inject связывает их с Zotero динамически. Любой стиль цитирования мгновенно."
+      content="Free Zotero tool: convert AI [1][2][3] citation markers in DOCX into live Zotero fields. Open in Word and click Add/Edit Bibliography."
     />
-    <meta
-      name="keywords"
-      content="zotero автоматически, список литературы ИИ, ChatGPT цитаты, BibTeX зотеро, диплом введение ИИ, citation automation, zotero ai, bibliography generator"
-    />
-    <meta name="robots" content="index, follow" />
+    <meta name="keywords" content="zotero, ai citations, bibtex, bibliography, word citations, chatgpt citations, better bibtex" />
+    <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
     <meta name="author" content="Zotero Inject" />
-    <link rel="alternate" hreflang="ru" href="/?lang=ru" />
-    <link rel="alternate" hreflang="en" href="/?lang=en" />
-    <link rel="alternate" hreflang="x-default" href="/" />
+
+    <link rel="canonical" href="https://zotero-inject.yatskovskyi.top/" />
+    <link rel="alternate" hreflang="ru" href="https://zotero-inject.yatskovskyi.top/?lang=ru" />
+    <link rel="alternate" hreflang="en" href="https://zotero-inject.yatskovskyi.top/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://zotero-inject.yatskovskyi.top/" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Zotero Inject — Бесплатные живые ссылки из ИИ в Zotero" />
+    <meta property="og:site_name" content="Zotero Inject" />
+    <meta property="og:url" content="https://zotero-inject.yatskovskyi.top/" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="Zotero Inject - live Zotero citations from AI text" />
     <meta
       property="og:description"
-      content="ИИ пишет маркеры [1][2][3] — мы связываем их с Zotero динамически. Любой стиль цитирования."
+      content="Convert AI [1][2][3] markers to real Zotero fields in DOCX. Add/Edit Bibliography in Word and get auto-updating references."
     />
-    <meta property="og:site_name" content="Zotero Inject" />
+    <meta property="og:image" content="https://zotero-inject.yatskovskyi.top/app/donate-photo.webp" />
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Zotero Inject - AI to live Zotero citations" />
+    <meta
+      name="twitter:description"
+      content="Free tool to convert AI citation markers into live Zotero fields for Word documents."
+    />
+    <meta name="twitter:image" content="https://zotero-inject.yatskovskyi.top/app/donate-photo.webp" />
+
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Zotero Inject","applicationCategory":"AcademicApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "name": "Zotero Inject",
+            "applicationCategory": "AcademicApplication",
+            "operatingSystem": "Web",
+            "inLanguage": ["ru", "en"],
+            "url": "https://zotero-inject.yatskovskyi.top/",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          },
+          {
+            "@type": "WebSite",
+            "name": "Zotero Inject",
+            "url": "https://zotero-inject.yatskovskyi.top/"
+          }
+        ]
+      }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap"
-      />
-    </noscript>
-    <script type="module" crossorigin src="/assets/landing-CWkbhJAg.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/custom-element-qv0l5FCG.js">
-    <link rel="stylesheet" crossorigin href="/assets/custom-element-Cb5JVkW4.css">
+    <style>
+      body.page-landing {
+        margin: 0;
+        background: #030404;
+        color: #edf7ed;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      }
+      landing-root:not(:defined) {
+        display: block;
+        min-height: 100vh;
+      }
+      landing-root:not(:defined) .landing-fallback {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px 20px;
+        text-align: center;
+      }
+      landing-root:not(:defined) .lf-card {
+        max-width: 760px;
+        border: 1px solid rgba(163, 230, 53, 0.18);
+        border-radius: 16px;
+        padding: 28px 22px;
+        background: rgba(11, 14, 14, 0.86);
+      }
+      landing-root:not(:defined) .lf-badge {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: #a3e635;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      landing-root:not(:defined) h1 {
+        margin: 0 0 12px;
+        line-height: 1.1;
+        font-size: clamp(26px, 5vw, 46px);
+      }
+      landing-root:not(:defined) p {
+        margin: 0 auto 18px;
+        max-width: 62ch;
+        color: #c8d8cc;
+        line-height: 1.6;
+      }
+      landing-root:not(:defined) a {
+        display: inline-block;
+        background: #a3e635;
+        color: #040804;
+        text-decoration: none;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 12px 18px;
+      }
+      landing-root:defined .landing-fallback {
+        display: none;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/landing-DhVnNxaQ.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/custom-element-D7xiZl9l.js">
+    <link rel="stylesheet" crossorigin href="/assets/custom-element-c6f5h4wc.css">
     <link rel="stylesheet" crossorigin href="/assets/landing-B4Syckz3.css">
   </head>
   <body class="page-landing">
-    <landing-root></landing-root>
+    <landing-root>
+      <main class="landing-fallback" aria-label="Zotero Inject overview">
+        <div class="lf-card">
+          <div class="lf-badge">Zotero Inject</div>
+          <h1>AI [1][2][3] markers to live Zotero citations in Word</h1>
+          <p>
+            Upload your <strong>.docx</strong>, <strong>.bib</strong> and Zotero <strong>HTML export</strong>.
+            Zotero Inject links citations and returns the same document with real Zotero fields.
+          </p>
+          <a href="/app">Open App</a>
+        </div>
+      </main>
+    </landing-root>
   </body>
 </html>

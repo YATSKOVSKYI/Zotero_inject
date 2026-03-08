@@ -41,7 +41,7 @@
     --text-3: #3a4d42;
     --text2: #748f80;
     --text3: #3a4d42;
-    --mono: 'JetBrains Mono', monospace;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     --radius: 12px;
     --radius-sm: 8px;
     --r: 16px;
@@ -56,7 +56,7 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 }

@@ -15,6 +15,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -24,7 +25,7 @@ WORK_DIR.mkdir(exist_ok=True)
 
 PYTHON = str(Path(sys.executable))
 
-# ── Security limits ────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Security limits в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 MAX_CONCURRENT  = 5
 MAX_BIB_SIZE    = 5  * 1024 * 1024   # 5 MB
 MAX_DOCX_SIZE   = 1  * 1024 * 1024   # 1 MB
@@ -32,8 +33,8 @@ MAX_HTML_SIZE   = 10 * 1024 * 1024   # 10 MB
 MAX_TSV_SIZE    = 2  * 1024 * 1024   # 2 MB
 MAX_JSON_SIZE   = 2  * 1024 * 1024   # 2 MB  (generate-bib body)
 MAX_ENTRIES     = 500                 # max BibTeX entries in generate-bib
-JOB_MAX_AGE     = 3600               # seconds — job dirs older than this are deleted
-CLEANUP_INTERVAL = 1800              # seconds — background cleanup runs every 30 min
+JOB_MAX_AGE     = 3600               # seconds вЂ” job dirs older than this are deleted
+CLEANUP_INTERVAL = 1800              # seconds вЂ” background cleanup runs every 30 min
 
 # Only these filenames may be downloaded
 ALLOWED_FILENAMES = frozenset({
@@ -55,7 +56,7 @@ _JOBID_RE  = re.compile(r'^[0-9a-f]{32}$')
 # Simple email check
 _EMAIL_RE  = re.compile(r'^[\w.%+\-]{1,64}@[\w.\-]{1,253}\.[a-zA-Z]{2,}$')
 
-# ── Concurrent-job counter (asyncio single-threaded → no lock needed) ─────────
+# в”Ђв”Ђ Concurrent-job counter (asyncio single-threaded в†’ no lock needed) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 _active_jobs: int = 0
 
 
@@ -67,7 +68,7 @@ async def _job_slot():
         raise HTTPException(
             status_code=429,
             detail=(
-                f"Server busy — {_active_jobs}/{MAX_CONCURRENT} jobs running. "
+                f"Server busy вЂ” {_active_jobs}/{MAX_CONCURRENT} jobs running. "
                 "Please try again in a moment."
             ),
             headers={"Retry-After": "15"},
@@ -79,7 +80,7 @@ async def _job_slot():
         _active_jobs -= 1
 
 
-# ── Input validators ───────────────────────────────────────────────────────────
+# в”Ђв”Ђ Input validators в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
 def _read_limited(upload: UploadFile, max_bytes: int, label: str = "File") -> bytes:
     """Read upload file enforcing a size limit."""
@@ -185,7 +186,7 @@ def _sanitize_bib_entry(e: dict) -> dict:
     return {"key": key, "entry_type": entry_type, "fields": clean_fields}
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Helpers в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
 def _save_bytes(data: bytes, dest: Path) -> None:
     dest.write_bytes(data)
@@ -225,7 +226,7 @@ def _cleanup_old_jobs() -> None:
         pass
 
 
-# ── FastAPI app ────────────────────────────────────────────────────────────────
+# в”Ђв”Ђ FastAPI app в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
 app = FastAPI(title="Zotero Inject API")
 
@@ -245,6 +246,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 
 @app.middleware("http")
@@ -261,10 +263,22 @@ async def _security_middleware(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+    path = request.url.path
+    if path.startswith("/assets/"):
+        response.headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+    elif path in {"/", "/app", "/app/", "/robots.txt", "/sitemap.xml", "/llms.txt"}:
+        response.headers.setdefault("Cache-Control", "public, max-age=3600")
+    elif path.endswith(".html"):
+        response.headers.setdefault("Cache-Control", "public, max-age=0, must-revalidate")
+
+    if path in {"/", "/app", "/app/"}:
+        response.headers.setdefault("X-Robots-Tag", "index, follow, max-image-preview:large")
     return response
 
 
-# ── Endpoints ──────────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Endpoints в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
 @app.post("/api/validate-stream")
 async def validate_stream(
@@ -294,7 +308,7 @@ async def validate_stream(
     _save_bytes(bib_data, job / "references.bib")
     job_id = job.name
 
-    # Acquire slot — generator must release it in finally
+    # Acquire slot вЂ” generator must release it in finally
     _active_jobs += 1
 
     async def event_gen():
@@ -470,10 +484,10 @@ async def inject(
 
             groups = replaced = 0
             for line in log.splitlines():
-                m = re.search(r"[Гг]рупп[^:]*:\s*(\d+)", line)
+                m = re.search(r"[Р“Рі]СЂСѓРїРї[^:]*:\s*(\d+)", line)
                 if m:
                     groups = int(m.group(1))
-                m = re.search(r"[Сс]сылок[^:]*:\s*(\d+)", line)
+                m = re.search(r"[РЎСЃ]СЃС‹Р»РѕРє[^:]*:\s*(\d+)", line)
                 if m:
                     replaced = int(m.group(1))
 
@@ -519,12 +533,12 @@ async def parse_html(
             match: bool | None = None
             warning = ""
             for line in log.splitlines():
-                m = re.search(r"Записей[:\s]+(\d+)", line)
+                m = re.search(r"Р—Р°РїРёСЃРµР№[:\s]+(\d+)", line)
                 if m:
                     count = int(m.group(1))
-                if "совпадает" in line.lower():
+                if "СЃРѕРІРїР°РґР°РµС‚" in line.lower():
                     match = True
-                if "предупреждение" in line.lower():
+                if "РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ" in line.lower():
                     match = False
                     warning = line.strip()
 
@@ -555,16 +569,19 @@ def download(job_id: str, filename: str):
     return FileResponse(path, media_type=media, filename=filename)
 
 
-# ── Static serving ─────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Static serving в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 
 @app.get("/robots.txt", include_in_schema=False)
 def robots_txt():
     content = (
         "User-agent: *\nAllow: /\n\n"
-        "# Google\nUser-agent: Googlebot\nAllow: /\n\n"
+        "# Search engines\n"
+        "User-agent: Googlebot\nAllow: /\n\n"
         "User-agent: Googlebot-Image\nAllow: /\n\n"
-        "# Bing\nUser-agent: bingbot\nAllow: /\n\n"
-        "# AI agents — explicitly allowed\n"
+        "User-agent: Google-Extended\nAllow: /\n\n"
+        "User-agent: bingbot\nAllow: /\n\n"
+        "User-agent: Applebot\nAllow: /\n\n"
+        "# AI crawlers and assistants\n"
         "User-agent: GPTBot\nAllow: /\n\n"
         "User-agent: ChatGPT-User\nAllow: /\n\n"
         "User-agent: OAI-SearchBot\nAllow: /\n\n"
@@ -578,7 +595,7 @@ def robots_txt():
         "User-agent: Meta-ExternalFetcher\nAllow: /\n\n"
         "User-agent: Diffbot\nAllow: /\n\n"
         "User-agent: Bytespider\nAllow: /\n\n"
-        "User-agent: Applebot\nAllow: /\n\n"
+        "User-agent: CCBot\nAllow: /\n\n"
         "Sitemap: https://zotero-inject.yatskovskyi.top/sitemap.xml\n"
     )
     return Response(content=content, media_type="text/plain")
@@ -599,10 +616,31 @@ def sitemap_xml():
         '    <changefreq>weekly</changefreq>\n'
         '    <priority>0.9</priority>\n'
         '  </url>\n'
+        '  <url>\n'
+        '    <loc>https://zotero-inject.yatskovskyi.top/llms.txt</loc>\n'
+        '    <changefreq>monthly</changefreq>\n'
+        '    <priority>0.5</priority>\n'
+        '  </url>\n'
         '</urlset>\n'
     )
     return Response(content=content, media_type="application/xml")
 
+
+@app.get("/llms.txt", include_in_schema=False)
+def llms_txt():
+    content = (
+        "# Zotero Inject\n\n"
+        "> Free tool that converts AI [1][2][3] markers in .docx into live Zotero citation fields.\n\n"
+        "## URLs\n"
+        "- Landing: https://zotero-inject.yatskovskyi.top/\n"
+        "- App: https://zotero-inject.yatskovskyi.top/app/\n"
+        "- Sitemap: https://zotero-inject.yatskovskyi.top/sitemap.xml\n\n"
+        "## Capabilities\n"
+        "- Links AI markers to Zotero library references\n"
+        "- Returns .docx with live Zotero fields\n"
+        "- Works with Better BibTeX keys and Zotero HTML export\n"
+    )
+    return Response(content=content, media_type="text/plain; charset=utf-8")
 
 @app.get("/")
 def root():
