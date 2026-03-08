@@ -79,7 +79,7 @@ export class LandingRoot extends LitElement {
 
   firstUpdated() {
     this.attachGlobals()
-    window.setTimeout(() => this.initializeTicker(), 180)
+    this.deferTickerInit()
     this.initializeAnchors()
     this.initializeReveals()
 
@@ -91,6 +91,17 @@ export class LandingRoot extends LitElement {
 
     this.initializeLanguage()
     this.observeDonateSectionForQr()
+  }
+
+  private deferTickerInit() {
+    const win = window as Window & {
+      requestIdleCallback?: (cb: IdleRequestCallback, options?: IdleRequestOptions) => number
+    }
+    if (typeof win.requestIdleCallback === 'function') {
+      win.requestIdleCallback(() => this.initializeTicker(), { timeout: 1200 })
+      return
+    }
+    window.setTimeout(() => this.initializeTicker(), 320)
   }
 
   disconnectedCallback() {

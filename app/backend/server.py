@@ -267,14 +267,14 @@ async def _security_middleware(request: Request, call_next):
 
     path = request.url.path
     if path.startswith("/assets/"):
-        response.headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     elif path in {"/", "/app", "/app/", "/robots.txt", "/sitemap.xml", "/llms.txt"}:
-        response.headers.setdefault("Cache-Control", "public, max-age=3600")
+        response.headers["Cache-Control"] = "public, max-age=3600"
     elif path.endswith(".html"):
-        response.headers.setdefault("Cache-Control", "public, max-age=0, must-revalidate")
+        response.headers["Cache-Control"] = "public, max-age=0, must-revalidate"
 
     if path in {"/", "/app", "/app/"}:
-        response.headers.setdefault("X-Robots-Tag", "index, follow, max-image-preview:large")
+        response.headers["X-Robots-Tag"] = "index, follow, max-image-preview:large"
     return response
 
 

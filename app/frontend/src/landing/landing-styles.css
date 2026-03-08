@@ -505,6 +505,8 @@
     /* Large phone ≤640px */
     @media (max-width:640px) {
       .hero { min-height:auto; padding-top:96px; padding-bottom:72px; }
+      .orb { display:none; }
+      nav { backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
       .hero-points { grid-template-columns:1fr; }
       .hero-demo-grid { grid-template-columns:1fr; }
       .hero-demo-arrow { min-height:28px; transform:rotate(90deg); }
